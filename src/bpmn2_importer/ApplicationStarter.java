@@ -34,8 +34,8 @@ public class ApplicationStarter implements IApplication {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/TestSeq.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
-		WorkflowTree wt = new WorkflowTree(res);
-		WorkflowTree rpstWt;
+		BPMNProcessTree wt = new BPMNProcessTree(res);
+		BPMNProcessTree rpstWt;
 		WFNode wftreeRoot;
 		
 		
