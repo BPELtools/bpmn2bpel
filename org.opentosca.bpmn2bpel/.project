@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>BPMN2-importer</name>
+	<name>org.opentosca.bpmn2bpel</name>
 	<comment></comment>
 	<projects>
 	</projects>
