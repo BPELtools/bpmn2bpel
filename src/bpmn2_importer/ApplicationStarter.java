@@ -32,7 +32,7 @@ public class ApplicationStarter implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/TestSeq.xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/TestSeq3.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;
@@ -42,14 +42,16 @@ public class ApplicationStarter implements IApplication {
 		for (EObject content: root.eContents()) {
 			if (content instanceof Definitions) {
 				Definitions def = (Definitions) content;
-				System.out.println(def.getId());
-				System.out.println(def.getClass());
+				System.out.println("id: "+def.getId());
+				System.out.println("class: "+def.getClass());
 				
 				wt.FillTree(content);
+				wt.AssignImports(def.getImports());
 			}
 			else {
 				
 				System.out.println(content.getClass());
+				System.out.println("class: "+content.getClass());
 								
 			}
 		}
@@ -62,7 +64,7 @@ public class ApplicationStarter implements IApplication {
 		System.out.println(rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
-		ProcessImpl bpelmodel = wt.wftree2BpelModel(rpstgraph.getRoot());
+		ProcessImpl bpelmodel = wt.BpmnProctree2BpelModel(rpstgraph.getRoot());
 		
 		// The BPELResource is declared with the bpel model as its content
 		BPELResourceImpl resbpel = new BPELResourceImpl();
