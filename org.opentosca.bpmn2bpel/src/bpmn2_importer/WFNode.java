@@ -17,6 +17,8 @@ import org.jbpt.graph.DirectedEdge;
 import org.jbpt.graph.DirectedGraph;
 import org.jbpt.graph.abs.AbstractDirectedEdge;
 import org.jbpt.graph.abs.AbstractDirectedGraph;
+import org.jbpt.graph.algo.rpst.RPSTNode;
+import org.jbpt.graph.algo.tctree.TCType;
 import org.jbpt.hypergraph.abs.Vertex;
 
 public class WFNode extends Vertex {
@@ -24,12 +26,21 @@ public class WFNode extends Vertex {
 	// Properties of the Node
 	private FlowNode elem;
 	private String id;
+	private String nome;
+	private BPMNProcessTree SubprocessTree;
+	
 	
 	public WFNode(FlowNode son){
 		
 		super(son.getName(),"");
 		this.elem = son;
+		this.SubprocessTree = null;
 		
+	}
+	
+	public WFNode(){
+		
+		super("","");
 	}
 	
 	public String getId(){
@@ -48,19 +59,32 @@ public class WFNode extends Vertex {
 		
 	}
 	
+	public BPMNProcessTree getSubprocessTree(){
+		
+		return SubprocessTree;
+		
+	}
+	
+	public void setSubProcessTree(BPMNProcessTree subprocessT){
+		
+		this.SubprocessTree = subprocessT;
+		
+	}
+	
 	// Gets a List of the edges that belong to the component whose entry node is .this 
-	public boolean isCyclic(Collection<AbstractDirectedEdge> fragmEdges){
+	public boolean isCyclic(Collection<RPSTNode> BondChildren, WFNode node2){
 		
 		boolean iscyclic = false;
 		
-		Iterator<AbstractDirectedEdge> i = fragmEdges.iterator();
-		while (i.hasNext()) {
-			AbstractDirectedEdge e = (AbstractDirectedEdge) i.next();
-			WFNode nodeT = (WFNode) e.getTarget();
-			if(nodeT.equals(this)){
+		for(Object e: BondChildren){
+			
+			RPSTNode poly = (RPSTNode) e;
+			if(poly.getEntry().equals(node2) && poly.getExit().equals(this)){
+				
 				iscyclic = true;
 				break;
 			}
+			
 		}
 		
 		return iscyclic;
@@ -137,24 +161,52 @@ public class WFNode extends Vertex {
 		return f2;
 	}
 
-	public int numberOfEdgesTo(AbstractDirectedGraph graph, WFNode node2) {
+	// Get the number of paths that go from .this to node2
+	public int numberOfPathsto(Collection<RPSTNode> BondChildren, WFNode node2) {
 		
-		Collection<AbstractDirectedEdge> edge = graph.getEdgesWithSource(this);
-		Iterator<AbstractDirectedEdge> it = edge.iterator();
-		int i = 0;
+		int paths = 0;
 		
-		while(it.hasNext()){
-			AbstractDirectedEdge e = (AbstractDirectedEdge) it.next();
-			WFNode nodeS = (WFNode) e.getSource();
+		for(Object e : BondChildren){
+			
+			RPSTNode poly = (RPSTNode) e;
+			
+			if(poly.getEntry().equals(this) && poly.getExit().equals(node2)){
 				
-			if(e.getTarget().equals(node2)){
-				i++;
+				if(poly.getType().equals(TCType.P) || poly.getType().equals(TCType.T)){
+					paths++;
+				}
+				else if(poly.getType().equals(TCType.B)){
+					// If the component is a Bond, then it has at least 2 different paths.
+					paths = paths + 2;
+				}
 			}
 			
 		}
 		
 		
-		return i;
+		return paths;
+		
+	}
+	
+	// Get the number of paths that go directly from .this to node2 (no intermediates)
+	public int numberOfEdgesto(Collection<RPSTNode> BondChildren, WFNode node2){
+		
+		int paths = 0;
+		
+		for(Object e : BondChildren){
+			
+			RPSTNode poly = (RPSTNode) e;
+			
+			if(poly.getType().equals(TCType.T) && poly.getEntry().equals(this) && poly.getExit().equals(node2)){
+				
+				paths++;
+			}
+			
+		}
+		
+		
+		return paths;
+		
 	}
 
 }

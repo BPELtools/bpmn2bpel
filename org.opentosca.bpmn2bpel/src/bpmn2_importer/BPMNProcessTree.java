@@ -3,8 +3,11 @@ package bpmn2_importer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.RepaintManager;
 
@@ -17,12 +20,14 @@ import org.eclipse.bpel.model.Receive;
 import org.eclipse.bpel.model.RepeatUntil;
 import org.eclipse.bpel.model.Sequence;
 import org.eclipse.bpel.model.Variables;
+import org.eclipse.bpel.model.While;
 import org.eclipse.bpel.model.impl.ActivityImpl;
 import org.eclipse.bpel.model.impl.BPELFactoryImpl;
 import org.eclipse.bpel.model.impl.ConditionImpl;
 import org.eclipse.bpel.model.impl.ElseIfImpl;
 import org.eclipse.bpel.model.impl.ElseImpl;
 import org.eclipse.bpel.model.impl.FlowImpl;
+import org.eclipse.bpel.model.impl.ForEachImpl;
 import org.eclipse.bpel.model.impl.IfImpl;
 import org.eclipse.bpel.model.impl.InvokeImpl;
 import org.eclipse.bpel.model.impl.LinkImpl;
@@ -32,15 +37,18 @@ import org.eclipse.bpel.model.impl.OnMessageImpl;
 import org.eclipse.bpel.model.impl.PartnerLinkImpl;
 import org.eclipse.bpel.model.impl.PickImpl;
 import org.eclipse.bpel.model.impl.ReceiveImpl;
+import org.eclipse.bpel.model.impl.ScopeImpl;
 import org.eclipse.bpel.model.impl.SequenceImpl;
 import org.eclipse.bpel.model.impl.ProcessImpl;
 import org.eclipse.bpel.model.impl.SourceImpl;
 import org.eclipse.bpel.model.impl.SourcesImpl;
 import org.eclipse.bpel.model.impl.TargetImpl;
 import org.eclipse.bpel.model.impl.TargetsImpl;
+import org.eclipse.bpel.model.impl.WhileImpl;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataObject;
@@ -57,11 +65,16 @@ import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.ServiceTask;
+import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
@@ -69,11 +82,17 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.impl.DataObjectImpl;
 import org.eclipse.bpmn2.impl.ExpressionImpl;
+import org.eclipse.bpmn2.impl.FormalExpressionImpl;
 import org.eclipse.bpmn2.impl.GatewayImpl;
 import org.eclipse.bpmn2.impl.IntermediateCatchEventImpl;
+import org.eclipse.bpmn2.impl.LoopCharacteristicsImpl;
 import org.eclipse.bpmn2.impl.MessageEventDefinitionImpl;
+import org.eclipse.bpmn2.impl.MultiInstanceLoopCharacteristicsImpl;
+import org.eclipse.bpmn2.impl.SignalEventDefinitionImpl;
+import org.eclipse.bpmn2.impl.SubProcessImpl;
 import org.eclipse.bpmn2.impl.TimerEventDefinitionImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.jbpt.graph.DirectedEdge;
 import org.jbpt.graph.DirectedGraph;
@@ -95,6 +114,10 @@ public class BPMNProcessTree extends DirectedGraph {
 		super();
 		this.BPMN2Resource = res;
 		// TODO Auto-generated constructor stub
+	}
+	
+	public BPMNProcessTree(){
+		super();
 	}
 	
 	// NOTE: Here it could be factorized the function by returning the vertex or null instead of iterating twice
@@ -150,6 +173,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	
 	public void FillTree(EObject eobj){
 		
+
 		for (EObject son: eobj.eContents()) {
 			
 			WFNode n1 = null;
@@ -165,18 +189,28 @@ public class BPMNProcessTree extends DirectedGraph {
 					// It's defined what type of element it is Event, Activity or Gateway
 					FlowNode nodo = (FlowNode) son;
 					n1 = new WFNode(nodo);
-					
+					BPMNProcessTree subTree = new BPMNProcessTree();
 					
 					System.out.println("son: "+nodo.getName());
 					
+					// If the vertex isn't part of the Graph
 					if(this.containsVertex(n1.getId())==null){
+						
+						// If the element found is a subprocess, it's intern graph should be filled
+						if(son instanceof SubProcess){
+							
+							subTree.FillTree(son);
+							n1.setSubProcessTree(subTree);
+							
+						}						
 						if(this.addVertex(n1)!=null)
 							System.out.println("Vertex "+n1.getName()+" newly added succesfully");}
 					else{
 						n1 = this.containsVertex(n1.getId());
-						System.out.println("Vertex not added, already exists");}
+						System.out.println("Vertex "+n1.getName()+ " not added, already exists");}
 					System.out.println("vertices: "+this.countVertices());
 					
+					System.out.println(n1.getElement().getOutgoing().size());
 					
 					// Get outgoing SequenceFlows if any
 					for(SequenceFlow s : ((FlowNode) n1.getElement()).getOutgoing()){
@@ -199,6 +233,12 @@ public class BPMNProcessTree extends DirectedGraph {
 						}
 						else{
 							ntarget = new WFNode(s.getTargetRef());
+							
+							// If the already existing vertex is a subprocess, the intern graph is filled
+							if(s.getTargetRef() instanceof SubProcess){
+								subTree.FillTree(s.getTargetRef());
+								ntarget.setSubProcessTree(subTree);
+							}
 							if(this.addVertex(ntarget)!=null){
 								System.out.println("Vertex "+ntarget.getName()+" added succesfully");
 								System.out.println("vertices: "+this.countVertices());
@@ -221,7 +261,9 @@ public class BPMNProcessTree extends DirectedGraph {
 				}
 				System.out.println("verticess: "+this.countVertices());
 				//System.out.println("clase: "+son.getClass());
-				FillTree(son);
+				if(son instanceof SubProcess == false){
+					FillTree(son);
+				}
 			
 			}
 			
@@ -238,9 +280,9 @@ public class BPMNProcessTree extends DirectedGraph {
       	RPSTNode root = parent;
 		String rootName = "";
 		RPSTNode n = null;
-		boolean orderFinished = false;
 		Collection childrenf = new ArrayList<RPSTNode>();
-		Collection children1 = children;
+		Set<RPSTNode> RPSTset = null;
+		RPSTNode actualNode = null;
 		
 		
 		// The Parent node is analyzed, when its of type Bond the order isn't important
@@ -249,41 +291,60 @@ public class BPMNProcessTree extends DirectedGraph {
 			return children;
 		}
 		else{
-			// Get the name of the entry node
-			rootName = parent.getEntry().getName();
 			
-			// The RPSTRoot 1st Child node is added as first
-			for(Object e : children1){
+			// codigo nuevo****
+			
+				Map<String,Set<RPSTNode>> entry = new Hashtable<String, Set<RPSTNode>>();
 				
-				n = (RPSTNode) e;
-				if(n.getEntry().getName().equals(rootName)){
-					childrenf.add(n);
-					break;
+				// Fill Hash
+				for(Object e : children){
+					
+					n = (RPSTNode) e;
+					String startn = n.getEntry().getName();
+					if (!entry.containsKey(startn))
+						entry.put(startn,new HashSet<RPSTNode>());
+					
+					entry.get(startn).add(n);
+					
 				}
 				
-			}
-			
-			// The collection of children of root is ordered
-			while(!orderFinished){
-			 for(Object e1 : children1){
+				// Get the name of the entry node 
+				rootName = parent.getEntry().getName();
 				
-				RPSTNode n1 = (RPSTNode) e1;
-				
-				if(n1.getEntry().equals(n.getExit())){
-					childrenf.add(n1);
-					n = n1;
-					orderFinished = false;
-					break;	
+				//Organize the elements and add them to a list
+				while(!rootName.equals(parent.getExit().getName())){
+					
+					RPSTset = entry.get(rootName);
+					Iterator<RPSTNode> it = RPSTset.iterator();
+					
+					// First of all the cyclic components (if any) are added
+					while(it.hasNext()){
+						
+						actualNode = (RPSTNode) it.next();
+						if(rootName.equals(actualNode.getExit().getName())){
+						
+							childrenf.add(actualNode);
+							RPSTset.remove(actualNode);						
+							
+						}
+						
+					}
+					//Then the other.
+					it = RPSTset.iterator();
+					while(it.hasNext()){
+						
+						actualNode = (RPSTNode) it.next();
+						childrenf.add(actualNode);
+						
+					}
+					
+					rootName = actualNode.getExit().getName();
 				}
-				else{
-					orderFinished = true;
-				}	
-			 }
-			}
-			return childrenf;
+				
+				return childrenf;
+				
+			//codigo nuevo****
 		}
-		
-		
 		
 	}
 	
@@ -359,23 +420,97 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If instance of normal Task
 				if(nentry.getElement() instanceof Task){
 					
-					Task t1 = (Task) nentry.getElement();
-					InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
-					
-					// Set name of the Invoke
-					i1.setName(nentry.getName());
-					
-					// If DataInputAssociations
-					if(t1.getDataInputAssociations()!=null){
+					if(nentry.getElement() instanceof ServiceTask || nentry.getElement() instanceof SendTask){
 						
-						// For every DataInputAssociation the Dataobjects are obtained
-						for(DataInputAssociation datai: t1.getDataInputAssociations()){
+						Task t1 = (Task) nentry.getElement();
+						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						
+						// Set name of the Invoke
+						i1.setName(nentry.getName());
+						
+						//Check if the task has a Loop definition
+						if(t1.getLoopCharacteristics()!=null){
 							
+							if(t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics){
+								
+								MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
+								ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
+								exprS.setBody("1");
+								exprF.setBody(exp.getId());
+								ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+								scope1.setActivity(i1);
+								fe1.setStartCounterValue(exprS);
+								fe1.setFinalCounterValue(exprF);
+								fe1.setParallel(!mloopchar.isIsSequential());
+								fe1.setActivity(scope1);
+								
+								return fe1;
+								
+							}
+							else{
+								LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
+							 	ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+								WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+								
+								Condition BpelWhileCond = mainfact.createCondition();
+								
+								// The body of the condition set to the id. (NOTE)
+								BpelWhileCond.setBody(loopCond.getId());
+								
+								//The Bpel-While structure is filled with the activity (in this case invoke) and condition
+								while1.setActivity(i1);
+								while1.setCondition(BpelWhileCond);
+								
+								return while1;
+							}
 							
 						}
+						
+						// If DataInputAssociations
+						if(t1.getDataInputAssociations()!=null){
+							
+							// For every DataInputAssociation the Dataobjects are obtained
+							for(DataInputAssociation datai: t1.getDataInputAssociations()){
+								
+								
+							}
+						}
+	
+						return i1;
 					}
-
-					return i1;
+					else if(nentry.getElement() instanceof ReceiveTask){
+						
+						Task t1 = (Task) nentry.getElement();
+						ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+						
+						// Set name of the Invoke
+						r1.setName(nentry.getName());
+						
+						if(t1.getLoopCharacteristics()!=null){
+							
+							LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
+						 	ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+							WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+							
+							Condition BpelWhileCond = mainfact.createCondition();
+							
+							// The body of the condition set to the id. (NOTE)
+							BpelWhileCond.setBody(loopCond.getId());
+							
+							//The Bpel-While structure is filled with the activity (in this case invoke) and condition
+							while1.setActivity(r1);
+							while1.setCondition(BpelWhileCond);
+							
+							return while1;
+							
+					   }
+					 
+						return r1;
+						
+					}
 					
 					
 				}
@@ -388,6 +523,25 @@ public class BPMNProcessTree extends DirectedGraph {
 					r1.setName(nentry.getName());
 					
 					return r1;
+					
+				}
+				else if(nentry.getElement() instanceof SubProcess){
+					
+					SubProcessImpl subproc = (SubProcessImpl) nentry.getElement();
+					ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+					BPMNProcessTree subprocT = nentry.getSubprocessTree();
+					
+					RPST rpstgraph = new RPST(subprocT);
+					RPSTNode subProcRoot = rpstgraph.getRoot();
+					subprocT.setRPST(rpstgraph);
+					nentry.setSubProcessTree(subprocT);
+					ProcessImpl p1 = (ProcessImpl) subprocT.BpmnProctree2BpelModel(subProcRoot);
+					ActivityImpl a1 = (ActivityImpl) p1.getActivity();
+					
+					scope1.setName(nentry.getName());
+					scope1.setActivity(a1);
+					
+					return scope1;
 					
 				}
 				else {
@@ -411,10 +565,11 @@ public class BPMNProcessTree extends DirectedGraph {
 				Collection fragEdges = node.getFragmentEdges();
 				FlowNode entryNode = entry.getElement();
 				FlowNode exitNode = exit.getElement();
+				Collection<RPSTNode> BondChildren = rpstg.getChildren(node);
 				
 				// If the B Component is Acyclic
-				if(!entry.isCyclic(fragEdges)){
-					
+				if(!entry.isCyclic(BondChildren,exit)){
+
 					// If an XOR Structure is found
 					if(entryNode instanceof ExclusiveGateway && exitNode instanceof ExclusiveGateway){
 						
@@ -422,17 +577,18 @@ public class BPMNProcessTree extends DirectedGraph {
 						ElseIfImpl elseif1 = null;
 						org.eclipse.bpel.model.Activity actif;
 						ElseImpl else1 = null;
-						ExpressionImpl expr1 = null;
+						FormalExpressionImpl expr1 = null;
 						
 						// For every Polygon child of the Bond element 
-						for(Object e : rpstg.getChildren(node)){
+						for(Object e : BondChildren){
 							
 							RPSTNode child = (RPSTNode) e;
-							expr1 = (ExpressionImpl) entry.getConditionOfPolygon((AbstractDirectedGraph) child.getFragment());
+							SequenceFlow conditionFlow = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
+							expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression() ;
 							ConditionImpl cond1 = (ConditionImpl) mainfact.createCondition();
 							
 							// The Body of the condition is filled with the id of the corresponding BPMN condition (NOTE)
-							cond1.setBody(expr1.getId());
+							cond1.setBody(expr1.getMixed().getValue(0));
 							
 							if(elseif1==null){
 								
@@ -470,7 +626,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						org.eclipse.bpel.model.Activity actflow;
 						
 						// For every Polygon child of the Bond element 
-						for(Object e : rpstg.getChildren(node)){
+						for(Object e : BondChildren){
 							
 							RPSTNode child = (RPSTNode) e;
 							
@@ -495,16 +651,16 @@ public class BPMNProcessTree extends DirectedGraph {
 						TargetsImpl targetsc = (TargetsImpl) mainfact.createTargets();
 						TargetImpl target1 = (TargetImpl) mainfact.createTarget();
 						SequenceFlow sourceSeqF,targetSeqF = null;
-						ExpressionImpl expr1 = null;
+						FormalExpressionImpl expr1 = null;
 						
 						// For every Outgoing link of the gateway
-						for(Object e : rpstg.getChildren(node)){
+						for(Object e : BondChildren){
 							
 							RPSTNode child = (RPSTNode) e;
 							sourceSeqF = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 							targetSeqF = exit.getTargetOfPolygon((AbstractDirectedGraph) child.getFragment());
 							ConditionImpl cond1 = (ConditionImpl) mainfact.createCondition();
-							expr1 = (ExpressionImpl) sourceSeqF.getConditionExpression();
+							expr1 = (FormalExpressionImpl) sourceSeqF.getConditionExpression();
 							
 							// Obtain the child-Bpel-Activity
 							actflow = BpmnProctree2BpelModelPart(child);
@@ -513,7 +669,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							flowc.getActivities().add(actflow);
 							
 							// The Body of the condition is filled with the id of the corresponding BPMN condition (NOTE)
-							cond1.setBody(expr1.getId());
+							cond1.setBody(expr1.getMixed().getValue(0));
 							
 							// Create the corresponding source-SequenceFlow link 
 							link1.setName(sourceSeqF.getName());
@@ -565,7 +721,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						PickImpl pick1 = (PickImpl) mainfact.createPick();
 						
-						for(Object e : rpstg.getChildren(node)){
+						for(Object e : BondChildren){
 							
 							RPSTNode child = (RPSTNode) e;
 							SequenceFlow gateOut = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
@@ -584,7 +740,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									OnMessageImpl onMsg1 = (OnMessageImpl) mainfact.createOnMessage();
 									
 									// Momentarily the OnMessage element's operation is given the Event's name + "operation" (NOTE)
-									onMsg1.setOperationName(catchEvent.getName()+"-operation");
+									onMsg1.setOperationName(msgEvent.getOperationRef().getName());
 									
 									// Obtain the child-Bpel-Activity
 									a1 = BpmnProctree2BpelModelPart(child);
@@ -628,6 +784,20 @@ public class BPMNProcessTree extends DirectedGraph {
 									pick1.getAlarm().add(onalrm1);
 									
 								}
+								else if(catchEvent.getEventDefinitions().get(0) instanceof SignalEventDefinition){
+									
+									SignalEventDefinitionImpl sigEvent = (SignalEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
+									
+									OnMessageImpl onMsg1 = (OnMessageImpl) mainfact.createOnMessage();
+									
+									onMsg1.setOperationName(sigEvent.getSignalRef().getName());
+									
+									a1 = BpmnProctree2BpelModelPart(child);
+									
+									onMsg1.setActivity(a1);
+									
+									pick1.getMessages().add(onMsg1);
+								}
 								
 							}
 							else if(gateOut.getTargetRef() instanceof ReceiveTask){
@@ -662,25 +832,32 @@ public class BPMNProcessTree extends DirectedGraph {
 				}
 				//If the structure found is cyclic
 				else{
-					
 					//If the structure is that of Repeat
-					if(exit.numberOfEdgesTo((AbstractDirectedGraph) node.getFragment(), entry)==1 && exitNode instanceof ExclusiveGateway){
+					if(exit.numberOfPathsto(BondChildren, entry)==1 && exit.numberOfEdgesto(BondChildren, entry)==1 && exitNode instanceof ExclusiveGateway){
 						
 						RepeatUntil repeat = mainfact.createRepeatUntil();
 						org.eclipse.bpel.model.Activity a1 = mainfact.createActivity();
+						IfImpl if1 = (IfImpl) mainfact.createIf();
+						int EntryToExit = entry.numberOfPathsto(BondChildren, exit);
+						FormalExpressionImpl expr1 = null;
+						org.eclipse.bpel.model.Activity actif;
+						ElseIfImpl elseif1 = null;
+						ElseImpl else1 = null;
 						
-						for(Object e : rpstg.getChildren(node)){
+						for(Object e : BondChildren){
 							
 							RPSTNode child = (RPSTNode) e;
 					        WFNode centry = (WFNode) child.getEntry();
 					        WFNode cexit = (WFNode) child.getExit();
 							
+					        // If the entry node of the Polygon equals the entry node of the Bond, we have an activity of the repeat
 							if(centry.equals(entry)){
 								
 								a1 = BpmnProctree2BpelModelPart(child);
 								repeat.setActivity(a1);
 								
 							}
+							// Otherwise we have the returning edge that represents the evaluation of the repeat's condition
 							else if(centry.equals(exit)){
 								
 								SequenceFlow backRep = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
@@ -698,10 +875,180 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 					}					
 					//If the structure is that of While
-					else if(entry.numberOfEdgesTo((AbstractDirectedGraph) node.getFragment(), exit)==1){
+					else if(entry.numberOfPathsto(BondChildren, exit)==1 && entry.numberOfEdgesto(BondChildren, exit)==1 && exitNode instanceof ExclusiveGateway){
+						
+						While while1 = mainfact.createWhile();
+						org.eclipse.bpel.model.Activity a1 = mainfact.createActivity();
+						int polygons = BondChildren.size();
+						
+						if(polygons==2){
+							
+							for(Object e : BondChildren){
+							
+								RPSTNode child = (RPSTNode) e;
+								SequenceFlow whileCondFlow = exit.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
+								if(whileCondFlow!=null){
+									
+									Expression whileCond = whileCondFlow.getConditionExpression();
+									Condition BpelWhileCond = mainfact.createCondition();
+									
+									// the main activity of the While is created and the body of the condition set
+									BpelWhileCond.setBody(whileCond.getId());
+									a1 = BpmnProctree2BpelModelPart(child);
+									
+									//The Bpel-While structure is filled with the activity and condition
+									while1.setActivity(a1);
+									while1.setCondition(BpelWhileCond);
+									
+								}
+							}
+							return while1;
+						}
+						else if(polygons>2){
+							
+							// ***** Create the if ******
+							IfImpl if1 = (IfImpl) mainfact.createIf();
+							ElseIfImpl elseif1 = null;
+							org.eclipse.bpel.model.Activity actif;
+							ElseImpl else1 = null;
+							FormalExpressionImpl expr1 = null;
+							
+							// For every Polygon child of the Bond element 
+							for(Object e : BondChildren){
+								
+								
+								RPSTNode child = (RPSTNode) e;
+								WFNode centry = (WFNode) child.getEntry();
+						        WFNode cexit = (WFNode) child.getExit();
+								if(centry.equals(entry) && cexit.equals(exit)){
+									continue;									
+								}
+								SequenceFlow conditionFlow = exit.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
+								expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression() ;
+								Condition cond1 = mainfact.createCondition();
+								
+								// The Body of the condition is filled with the id of the corresponding BPMN condition (NOTE)
+								cond1.setBody(expr1.getMixed().getValue(0));
+								
+								if(elseif1==null){
+									
+									if1.setCondition(cond1);
+									actif = BpmnProctree2BpelModelPart(child);
+									if1.setActivity(actif);
+									
+								}
+								else{
+									
+									//If the expression is not null it's an elseif
+									if(expr1!=null){
+										elseif1.setCondition(cond1);
+										actif = BpmnProctree2BpelModelPart(child);
+										elseif1.setActivity(actif);
+									    if1.getElseIf().add(elseif1);	
+									}
+									//Otherwise is a default sequenceflow (the remaining else)
+									else{
+										else1.setActivity(BpmnProctree2BpelModelPart(child));
+										if1.setElse(else1);
+									}
+									
+								}
+								
+								elseif1 = (ElseIfImpl) mainfact.createElseIf();
+							}
+							// ***********************
+							
+							// Add the if to the while as an activity
+							while1.setActivity(if1);
+							
+							//Add the condition of the while
+							// cond1 or cond2 or .... condN
+							return while1;
+						}
 						
 						
+					}
+					// The Remaining structure is that of a Repeat + while 
+					else if((exit.numberOfPathsto(BondChildren, entry)>1 || (exit.numberOfPathsto(BondChildren, exit)==1 && exit.numberOfEdgesto(BondChildren, exit)==0)) 
+							&& entry.numberOfPathsto(BondChildren, exit)>1 && entry.numberOfEdgesto(BondChildren, exit)==0 && exitNode instanceof ExclusiveGateway)
+					{
+												
+						//The Structure must be rearranged
+						SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
+						SequenceImpl seq2 = (SequenceImpl) mainfact.createSequence();
+						SequenceImpl seq3 = (SequenceImpl) mainfact.createSequence();
+						IfImpl if1 = (IfImpl) mainfact.createIf();
+						org.eclipse.bpel.model.Activity if2 = null;
+						ElseIfImpl elseif1 = null;
+						org.eclipse.bpel.model.Activity actif;
+						ElseImpl else1 = null;
+						FormalExpressionImpl expr1 = null;
+						WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+						Condition whileCondition1 = mainfact.createCondition();
+						String WhileCondition = "";
+
 						
+					   for(Object e: BondChildren){
+							
+							RPSTNode child = (RPSTNode) e;
+							WFNode centry = (WFNode) child.getEntry();
+					        WFNode cexit = (WFNode) child.getExit();
+							
+					        if(centry.equals(exit) && cexit.equals(entry)){
+					        	
+					        	SequenceFlow conditionFlow = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
+								expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression() ;
+								Condition cond1 = mainfact.createCondition();
+					        	
+								cond1.setBody(expr1.getMixed().getValue(0));
+								// Get the text of the expression (value of the first entry of the Map)
+								WhileCondition += expr1.getMixed().getValue(0)+" or ";
+								
+								if(elseif1==null){
+									
+									if1.setCondition(cond1);
+									actif = BpmnProctree2BpelModelPart(child);
+									if1.setActivity(actif);
+									
+								}
+								else{
+									
+									//If the expression is not null it's an elseif
+									if(expr1!=null){
+										elseif1.setCondition(cond1);
+										actif = BpmnProctree2BpelModelPart(child);
+										elseif1.setActivity(actif);
+									    if1.getElseIf().add(elseif1);	
+									}
+									//Otherwise is a default sequenceflow, but it's not possible to have to default sequenceflows
+									else{
+										// The Model is not executable, some OPAQUE message should be added.
+									}
+									
+								}
+								elseif1 = (ElseIfImpl) mainfact.createElseIf();
+					        }
+					        else if(centry.equals(entry) && cexit.equals(exit)){
+					        	
+					        	seq1 = (SequenceImpl) mainfact.createSequence();
+					        	
+					        	if2 = BpmnProctree2BpelModelPart(child);
+					        	
+					        }
+							
+						}
+					    
+					    seq1.getActivities().add(if2);
+					    seq2.getActivities().add(if1);
+					    seq2.getActivities().add(if2);
+					    while1.setActivity(seq2);
+					    WhileCondition = WhileCondition.substring(0, WhileCondition.length()-4);
+					    whileCondition1.setBody(WhileCondition);
+					    while1.setCondition(whileCondition1);
+					    seq3.getActivities().add(if2);
+					    seq3.getActivities().add(while1);
+					    
+						return seq3;
 					}
 					
 				}
