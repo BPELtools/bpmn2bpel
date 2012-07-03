@@ -80,7 +80,9 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DataObjectImpl;
+import org.eclipse.bpmn2.impl.ExclusiveGatewayImpl;
 import org.eclipse.bpmn2.impl.ExpressionImpl;
 import org.eclipse.bpmn2.impl.FormalExpressionImpl;
 import org.eclipse.bpmn2.impl.GatewayImpl;
@@ -96,7 +98,9 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.jbpt.graph.DirectedEdge;
 import org.jbpt.graph.DirectedGraph;
+import org.jbpt.graph.abs.AbstractDirectedEdge;
 import org.jbpt.graph.abs.AbstractDirectedGraph;
+import org.jbpt.graph.abs.IDirectedGraph;
 import org.jbpt.graph.algo.rpst.RPST;
 import org.jbpt.graph.algo.rpst.RPSTNode;
 import org.jbpt.graph.algo.tctree.TCType;
@@ -357,8 +361,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	// Returns the Bpel Model asociated with this workflowgraph
 	public ProcessImpl BpmnProctree2BpelModel(RPSTNode rpstnode) {
 		// TODO Auto-generated method stub
-		
-		RPSTNode rpstgRoot;
+
 		BPELFactoryImpl mainfact = new BPELFactoryImpl();
 		mainproc = (ProcessImpl) mainfact.createProcess();
 
@@ -382,7 +385,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				//Call wftree2BpelModelPart
 
 				// The translation of the entry node of the "T" component is added to the BPEL Model
-				a1 = BpmnProctree2BpelModelPart(node);
+				a1 = BpmnProctree2BpelModelPart(node,rpstg);
 				
 				// A function that checks whether the task has DataInput and Output Associations is called.
 				
@@ -390,9 +393,36 @@ public class BPMNProcessTree extends DirectedGraph {
 				
 			}
 			else if(node.getType().equals(TCType.R)){
+				
+				WFNode entry = (WFNode) node.getEntry();
+				WFNode exit = (WFNode) node.getExit();
+				FlowNode entryNode = entry.getElement();
+				FlowNode exitNode = exit.getElement();
+				Collection<RPSTNode> RigidChildren = rpstg.getChildren(node);
+				IDirectedGraph rigidfragm;
+				RPST BondGen = null;
+				
+				for(Object e2 : RigidChildren){
+					
+					RPSTNode child = (RPSTNode) e2;
+					
+					if(child.getType().equals(TCType.T)){
+						
+						rigidfragm = node.getFragment();
+						AbstractDirectedEdge edge = (AbstractDirectedEdge) rigidfragm.getEdge(child.getEntry(),child.getExit());
+						rigidfragm.removeEdge(edge);
+						BondGen = new RPST(rigidfragm);
+						
+					}
+					
+				}
+				
+				if(BondGen!=null){
+					a1 = BpmnProctree2BpelModelPart(BondGen.getRoot(),BondGen);}
+				
 			}
 			else if(node.getType().equals(TCType.B)){
-				a1 = BpmnProctree2BpelModelPart(node);
+				a1 = BpmnProctree2BpelModelPart(node,rpstg);
 			}
 			else if(node.getType().equals(TCType.P)){
 				//this.wftree2BpelModel(node);
@@ -405,15 +435,16 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node) {
+	
+	private org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node, RPST rpstParent) {
 		// TODO Auto-generated method stub
 		// If the node is of trivial type
 		
 		BPELFactoryImpl mainfact = new BPELFactoryImpl();
+		RPSTNode nodeP = rpstParent.getParent(node);
 		
 			if(node.getType().equals(TCType.T)){
-				
+								
 				//Call wftree2BpelModelPart
 				WFNode nentry = (WFNode) node.getEntry();
 				
@@ -514,7 +545,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					
 				}
-				else if(nentry.getElement() instanceof ReceiveTask && rpstg.getParent(node).getDescription().equals("ignore_rcv")){
+				else if(nentry.getElement() instanceof ReceiveTask && rpstParent.getParent(node).getDescription().equals("ignore_rcv")){
 					
 					ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
 					ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
@@ -527,7 +558,6 @@ public class BPMNProcessTree extends DirectedGraph {
 				}
 				else if(nentry.getElement() instanceof SubProcess){
 					
-					SubProcessImpl subproc = (SubProcessImpl) nentry.getElement();
 					ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
 					BPMNProcessTree subprocT = nentry.getSubprocessTree();
 					
@@ -544,6 +574,11 @@ public class BPMNProcessTree extends DirectedGraph {
 					return scope1;
 					
 				}
+				else if(nentry.getElement() instanceof ParallelGateway && !nodeP.getEntry().equals(nentry)){
+					
+					return mainfact.createEmpty();
+					
+				}
 				else {
 					
                      // If the entry element is a Start event nothing is done (momentarily)
@@ -554,8 +589,28 @@ public class BPMNProcessTree extends DirectedGraph {
 				
 			}
 			else if(node.getType().equals(TCType.R)){
+			
+				Collection<RPSTNode> RigidChildren = rpstg.getChildren(node);
+				IDirectedGraph rigidfragm;
+				RPST BondGen = null;				
 				
-				return null;
+				for(Object e2 : RigidChildren){
+					
+					RPSTNode child = (RPSTNode) e2;
+					
+					if(child.getType().equals(TCType.T)){
+						
+						rigidfragm = node.getFragment();
+						AbstractDirectedEdge edge = (AbstractDirectedEdge) rigidfragm.getEdge(child.getEntry(),child.getExit());
+						rigidfragm.removeEdge(edge);
+						BondGen = new RPST(rigidfragm);
+						
+					}
+					
+				}
+				
+				if(BondGen!=null){
+					return BpmnProctree2BpelModelPart(BondGen.getRoot(),BondGen);}
 			}
 			else if(node.getType().equals(TCType.B)){
 				
@@ -565,7 +620,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				Collection fragEdges = node.getFragmentEdges();
 				FlowNode entryNode = entry.getElement();
 				FlowNode exitNode = exit.getElement();
-				Collection<RPSTNode> BondChildren = rpstg.getChildren(node);
+				Collection<RPSTNode> BondChildren = rpstParent.getChildren(node);
 				
 				// If the B Component is Acyclic
 				if(!entry.isCyclic(BondChildren,exit)){
@@ -587,29 +642,48 @@ public class BPMNProcessTree extends DirectedGraph {
 							expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression() ;
 							ConditionImpl cond1 = (ConditionImpl) mainfact.createCondition();
 							
-							// The Body of the condition is filled with the id of the corresponding BPMN condition (NOTE)
-							cond1.setBody(expr1.getMixed().getValue(0));
-							
 							if(elseif1==null){
 								
-								if1.setCondition(cond1);
-								actif = BpmnProctree2BpelModelPart(child);
-								if1.setActivity(actif);
+								if(expr1 != null){
+									cond1.setBody(expr1.getMixed().getValue(0));
+									if1.setCondition(cond1);
+									actif = BpmnProctree2BpelModelPart(child,rpstParent);
+									if1.setActivity(actif);
+								}
+								else{
+									// if it doesn't already exist an else
+									if(else1 == null){
+										else1 = (ElseImpl) mainfact.createElse();
+										else1.setActivity(BpmnProctree2BpelModelPart(child,rpstParent));
+										if1.setElse(else1);
+									}
+									else{
+										// IF STRUCTURE ERROR! (more than one conditionless branch)
+									}
+								}
 								
 							}
 							else{
-								
 								//If the expression is not null it's an elseif
 								if(expr1!=null){
+									cond1.setBody(expr1.getMixed().getValue(0));
 									elseif1.setCondition(cond1);
-									actif = BpmnProctree2BpelModelPart(child);
+									actif = BpmnProctree2BpelModelPart(child,rpstParent);
 									elseif1.setActivity(actif);
 								    if1.getElseIf().add(elseif1);	
 								}
 								//Otherwise is a default sequenceflow (the remaining else)
 								else{
-									else1.setActivity(BpmnProctree2BpelModelPart(child));
-									if1.setElse(else1);
+									// If it doesn't already exist an else
+									if(else1 == null){
+									    else1 = (ElseImpl) mainfact.createElse();
+										else1.setActivity(BpmnProctree2BpelModelPart(child,rpstParent));
+										if1.setElse(else1);
+									}
+									// If there is already an else
+									else{
+										// IF STRUCTURE ERROR! (more than one conditionless branch)
+									}
 								}
 								
 							}
@@ -630,7 +704,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							RPSTNode child = (RPSTNode) e;
 							
-							actflow = BpmnProctree2BpelModelPart(child);
+							actflow = BpmnProctree2BpelModelPart(child,rpstParent);
 							flow1.getActivities().add(actflow);
 						}
 						return flow1;
@@ -663,7 +737,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							expr1 = (FormalExpressionImpl) sourceSeqF.getConditionExpression();
 							
 							// Obtain the child-Bpel-Activity
-							actflow = BpmnProctree2BpelModelPart(child);
+							actflow = BpmnProctree2BpelModelPart(child,rpstParent);
 							
 							//Add the activity to the flow child
 							flowc.getActivities().add(actflow);
@@ -743,7 +817,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									onMsg1.setOperationName(msgEvent.getOperationRef().getName());
 									
 									// Obtain the child-Bpel-Activity
-									a1 = BpmnProctree2BpelModelPart(child);
+									a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 									
 									//Add the activity to the flow child
 									onMsg1.setActivity(a1);
@@ -776,7 +850,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									}
 									
 									// Obtain the child-Bpel-Activity
-									a1 = BpmnProctree2BpelModelPart(child);
+									a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 									
 									//Add the activity to the flow child
 									onalrm1.setActivity(a1);
@@ -792,7 +866,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									
 									onMsg1.setOperationName(sigEvent.getSignalRef().getName());
 									
-									a1 = BpmnProctree2BpelModelPart(child);
+									a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 									
 									onMsg1.setActivity(a1);
 									
@@ -813,7 +887,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								onMsg1.setOperationName(rt1.getName()+"-operation");
 								
 								// Obtain the child-Bpel-Activity
-								a1 = BpmnProctree2BpelModelPart(child);
+								a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 								
 								//Add the activity to the flow child
 								onMsg1.setActivity(a1);
@@ -853,7 +927,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					        // If the entry node of the Polygon equals the entry node of the Bond, we have an activity of the repeat
 							if(centry.equals(entry)){
 								
-								a1 = BpmnProctree2BpelModelPart(child);
+								a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 								repeat.setActivity(a1);
 								
 							}
@@ -894,7 +968,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									
 									// the main activity of the While is created and the body of the condition set
 									BpelWhileCond.setBody(whileCond.getId());
-									a1 = BpmnProctree2BpelModelPart(child);
+									a1 = BpmnProctree2BpelModelPart(child,rpstParent);
 									
 									//The Bpel-While structure is filled with the activity and condition
 									while1.setActivity(a1);
@@ -933,7 +1007,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								if(elseif1==null){
 									
 									if1.setCondition(cond1);
-									actif = BpmnProctree2BpelModelPart(child);
+									actif = BpmnProctree2BpelModelPart(child,rpstParent);
 									if1.setActivity(actif);
 									
 								}
@@ -942,13 +1016,13 @@ public class BPMNProcessTree extends DirectedGraph {
 									//If the expression is not null it's an elseif
 									if(expr1!=null){
 										elseif1.setCondition(cond1);
-										actif = BpmnProctree2BpelModelPart(child);
+										actif = BpmnProctree2BpelModelPart(child,rpstParent);
 										elseif1.setActivity(actif);
 									    if1.getElseIf().add(elseif1);	
 									}
 									//Otherwise is a default sequenceflow (the remaining else)
 									else{
-										else1.setActivity(BpmnProctree2BpelModelPart(child));
+										else1.setActivity(BpmnProctree2BpelModelPart(child,rpstParent));
 										if1.setElse(else1);
 									}
 									
@@ -1007,7 +1081,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								if(elseif1==null){
 									
 									if1.setCondition(cond1);
-									actif = BpmnProctree2BpelModelPart(child);
+									actif = BpmnProctree2BpelModelPart(child,rpstParent);
 									if1.setActivity(actif);
 									
 								}
@@ -1016,7 +1090,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									//If the expression is not null it's an elseif
 									if(expr1!=null){
 										elseif1.setCondition(cond1);
-										actif = BpmnProctree2BpelModelPart(child);
+										actif = BpmnProctree2BpelModelPart(child,rpstParent);
 										elseif1.setActivity(actif);
 									    if1.getElseIf().add(elseif1);	
 									}
@@ -1032,7 +1106,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					        	
 					        	seq1 = (SequenceImpl) mainfact.createSequence();
 					        	
-					        	if2 = BpmnProctree2BpelModelPart(child);
+					        	if2 = BpmnProctree2BpelModelPart(child,rpstParent);
 					        	
 					        }
 							
@@ -1056,7 +1130,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			}
 			else if(node.getType().equals(TCType.P)){
 				
-				Collection<RPSTNode> childrenP = organizeRPST(node,rpstg.getChildren(node));
+				Collection<RPSTNode> childrenP = organizeRPST(node,rpstParent.getChildren(node));
 				int childrenPsize = childrenP.size();
 				SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
 				
@@ -1068,10 +1142,10 @@ public class BPMNProcessTree extends DirectedGraph {
 				}
 				else{
 				    
-					for(Object e : organizeRPST(node,rpstg.getChildren(node))){
+					for(Object e : organizeRPST(node,rpstParent.getChildren(node))){
 						
 						RPSTNode childP = (RPSTNode) e;
-						org.eclipse.bpel.model.Activity act1 = BpmnProctree2BpelModelPart(childP);
+						org.eclipse.bpel.model.Activity act1 = BpmnProctree2BpelModelPart(childP,rpstParent);
 						if(act1!=null && childrenPsize == 2){
 							
 							return act1;
@@ -1113,6 +1187,195 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 		WFEdge e = new WFEdge(this, sf, s, t);
 		return e;
+	}
+
+	public void restructureQuasi(RPST rpstG, RPSTNode rpstnode, WFNode BondExit, WFNode BondEntry, boolean hasBondParent) {
+		
+		// The whole RPST is searched in order to find quasi components
+		for(Object e: organizeRPST(rpstnode,rpstG.getChildren(rpstnode))){
+			
+			RPSTNode node = (RPSTNode) e;
+			RPST rpstaux = null;
+			IDirectedGraph newfrag = null;
+			
+            if(node.getType().equals(TCType.R)){
+				
+            	// Analize this case
+            	
+			}
+			else if(node.getType().equals(TCType.B)){
+				
+				if(BondExit!=null && BondEntry!=null && hasBondParent == true){
+					
+					// If the bond component has the same exit as its containing Bond then restructure
+					if(BondExit.equals(node.getExit())){
+						
+						WFNode Newgateway = null;
+						
+						//Add new gateway and redirect edges.
+						if(BondExit.getElement() instanceof ExclusiveGateway){
+							
+							Bpmn2FactoryImpl bpmnFact = new Bpmn2FactoryImpl();
+							ExclusiveGateway ex1 = bpmnFact.createExclusiveGateway();
+							ex1.setName(BondExit.getName()+"'");
+							Newgateway = new WFNode(ex1);
+							
+						}
+						else if(BondExit.getElement() instanceof ParallelGateway){
+							
+							Bpmn2FactoryImpl bpmnFact = new Bpmn2FactoryImpl();
+							ParallelGateway parg = bpmnFact.createParallelGateway();
+							parg.setName(BondExit.getName()+"'");
+							Newgateway = new WFNode(parg);
+						}
+						
+						//For all children of the childBond that end in the common gateway redirect them to the new one
+						 newfrag = redirectEdges(node.getFragment(),Newgateway,BondExit,false);
+						 rpstaux = new RPST(newfrag);
+						 node = rpstaux.getRoot();
+						 
+						 for(Object child : rpstaux.getChildren(node)){
+							 
+							 RPSTNode auxnode = (RPSTNode) child;
+							 if(auxnode.getType().equals(TCType.B)){
+								 node = auxnode;
+							 }
+							 
+						 }
+						
+						
+					}
+					// If the bond component has the same entry as its containing Bond then restructure
+					else if(BondEntry.equals(node.getEntry())){
+						
+						WFNode Newgateway = null;
+						
+						if(BondEntry.getElement() instanceof ParallelGateway){
+							
+							Bpmn2FactoryImpl bpmnFact = new Bpmn2FactoryImpl();
+							ParallelGateway parg = bpmnFact.createParallelGateway();
+							parg.setName(BondEntry.getName()+"'");
+							Newgateway = new WFNode(parg);
+						}
+						
+						//For all children of the childBond that start in the common gateway redirect them to the new one
+						 newfrag = redirectEdges(node.getFragment(),Newgateway,BondEntry,true);
+						 rpstaux = new RPST(newfrag);
+						 node = rpstaux.getRoot();
+						 
+						 for(Object child : rpstaux.getChildren(node)){
+							 
+							 RPSTNode auxnode = (RPSTNode) child;
+							 if(auxnode.getType().equals(TCType.B)){
+								 node = auxnode;
+							 }
+							 
+						 }
+						
+					}
+					
+				}
+				WFNode bondExit = (WFNode) node.getExit();
+				WFNode bondEntry = (WFNode) node.getEntry();
+				hasBondParent = true;
+				// If a Bond component is found, this is traversed in order to find out if it forms a quasi component.
+				if(rpstaux!=null){
+					restructureQuasi(rpstaux, node,bondExit, bondEntry, hasBondParent);}
+				else{
+					restructureQuasi(rpstG, node, bondExit, bondEntry, hasBondParent);
+				}
+				
+			}
+			else if(node.getType().equals(TCType.P)){
+				restructureQuasi(rpstG,node,BondExit,BondEntry,hasBondParent);
+			}
+		}
+		
+	}
+
+	private IDirectedGraph redirectEdges(IDirectedGraph fragment, WFNode newgateway, WFNode bondGateway, boolean isEntry) {
+		// TODO Auto-generated method stub
+		
+		this.addVertex(newgateway);
+		fragment.addVertex(newgateway);
+		
+		// If the bond Gateway received as parameter is the Entry node
+		// then new edges are created to come out of the new gateway and
+		// be directed to the branches of the child bond.
+		if(isEntry){
+			
+			WFNode bondEntry = bondGateway;
+			this.addEdge(bondEntry,newgateway);
+			
+			// All the edges that come out of the old gateway are selected
+			// in order to be deleted.
+			for(Object e: fragment.getEdgesWithSource(bondEntry)){
+				
+				AbstractDirectedEdge edge = (AbstractDirectedEdge) e;
+				WFNode target = (WFNode) edge.getTarget();
+				
+				for(Object e2: this.getEdgesWithSource(bondEntry)){
+					
+					DirectedEdge edge2 = (DirectedEdge) e2;
+					WFNode target2 = (WFNode) edge2.getTarget();
+					if(target.equals(target2)){
+						// edge is removed from the main graph
+						this.removeEdge(edge2);
+						// edge is removed from the fragment of the rpst component
+						fragment.removeEdge(edge);
+						// new edge is added to the main graph from the new gateway to the branch target
+						this.addEdge(newgateway, target);
+						// same new edge is added to the fragment of the rpst component
+						fragment.addEdge(newgateway, target);
+						break;
+					}
+					
+				}
+				
+			}
+			
+			// finally a new edge is added (old gateway -> new gateway)
+			fragment.addEdge(bondEntry, newgateway);
+			
+		}
+		// If the bond Gateway received as parameter is the Exit node
+		// then the Edges of the bond (child) are redirected to the new exit gateway
+		else{
+			
+			WFNode bondExit = bondGateway;
+			this.addEdge(newgateway, bondExit);
+			
+			// All the edges that end in the old gateway are selected in order to "redirect" them
+			// to the new gateway
+			for(Object e: fragment.getEdgesWithTarget(bondExit)){
+				
+				AbstractDirectedEdge edge = (AbstractDirectedEdge) e;
+				WFNode source = (WFNode) edge.getSource();
+				
+				for(Object e2: this.getEdgesWithTarget(bondExit)){
+					
+					DirectedEdge edge2 = (DirectedEdge) e2;
+					WFNode source2 = (WFNode) edge2.getSource();
+					if(source.equals(source2)){
+						// The Edge is removed from the main graph and the fragment
+						this.removeEdge(edge2);
+						fragment.removeEdge(edge);
+						// The new edge is added to the main graph (source branch -> new gateway)
+						this.addEdge(source, newgateway);
+						// same edge is added to the fragment
+						fragment.addEdge(source, newgateway);
+						break;
+					}
+					
+				}
+				
+			}
+			
+			// finally a new edge is added (new gateway -> old gateway)
+			fragment.addEdge(newgateway, bondExit);
+		}
+		
+		return fragment;
 	}
 
 }

@@ -127,7 +127,7 @@ public class WFNode extends Vertex {
 			WFNode nodeT = (WFNode) e.getTarget();
 			for(SequenceFlow flow : nodeT.getElement().getIncoming()){
 				
-				if(flow.getSourceRef().equals(this.getElement()) && !flow.equals(gate.getDefault())){
+				if(flow.getSourceRef().equals(this.getElement())){
 					return flow;
 				}
 			}

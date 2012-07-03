@@ -33,7 +33,7 @@ public class ApplicationStarter implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/Gen-Flow2.xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Gen-Flow1.1.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;
@@ -62,7 +62,15 @@ public class ApplicationStarter implements IApplication {
 		wt.setRPST(rpstgraph);
 		RPSTNode rpstRoot = rpstgraph.getRoot(); 
 		//System.out.println(rpstgraph.getRoot().getFragment());
+		System.out.println(rpstgraph.toString());
 		System.out.println(rpstgraph.countVertices());
+		
+		//Restructure any quasicomponents this graph may have
+		wt.restructureQuasi(rpstgraph,rpstRoot,null,null,false);
+		rpstgraph = new RPST(wt);
+		wt.setRPST(rpstgraph);
+	    rpstRoot = rpstgraph.getRoot();
+		//System.out.println(wt.toString());
 		System.out.println(rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
@@ -77,7 +85,7 @@ public class ApplicationStarter implements IApplication {
 		Map<?,?> p = new HashMap();
 		
 		// The path of the translated bpel is selected
-		File fstream = new File("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/bpel.xml");
+		File fstream = new File("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/Result-bpel.xml");
 		FileOutputStream fout = new FileOutputStream(fstream);
 		writer.write(resbpel, fout, p);
 		fout.close();
