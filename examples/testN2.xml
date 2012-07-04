@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" id="_dECpgZXLEeGzS-0bcbokjw">
+  <bpmn2:process id="_gLoskJXLEeGzS-0bcbokjw">
+    <bpmn2:startEvent id="_gLpToJXLEeGzS-0bcbokjw" name="start">
+      <bpmn2:outgoing>_BhjIYJXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="_gLpToZXLEeGzS-0bcbokjw" name="end">
+      <bpmn2:incoming>idunique</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:task id="_5LA7QZXLEeG0qu6ZbM3Vag" name="task1">
+      <bpmn2:incoming>_BhjIYJXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIYZXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:task id="_5LBiUJXLEeG0qu6ZbM3Vag" name="task2">
+      <bpmn2:incoming>_BhjIYpXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIY5XMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:task id="_5LBiUZXLEeG0qu6ZbM3Vag" name="task3">
+      <bpmn2:incoming>_BhjIY5XMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIZJXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:task id="_5LBiUpXLEeG0qu6ZbM3Vag" name="task4">
+      <bpmn2:incoming>_BhjIZZXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIZpXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:exclusiveGateway id="_5LBiU5XLEeG0qu6ZbM3Vag" name="split1">
+      <bpmn2:incoming>_BhjIYZXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIYpXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+      <bpmn2:outgoing>_BhjIZZXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:exclusiveGateway id="_5LBiVJXLEeG0qu6ZbM3Vag" name="join1">
+      <bpmn2:incoming>_BhjIZJXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:incoming>_BhjIZpXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>idunique</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="_BhjIYJXMEeG0qu6ZbM3Vag" name="flow1" sourceRef="_gLpToJXLEeGzS-0bcbokjw" targetRef="_5LA7QZXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_BhjIYZXMEeG0qu6ZbM3Vag" name="flow2" sourceRef="_5LA7QZXLEeG0qu6ZbM3Vag" targetRef="_5LBiU5XLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_BhjIYpXMEeG0qu6ZbM3Vag" name="flow2.1L" sourceRef="_5LBiU5XLEeG0qu6ZbM3Vag" targetRef="_5LBiUJXLEeG0qu6ZbM3Vag">
+<bpmn2:conditionExpression id="aCondition" xsi:type="bpmn2:tExpression">
+  <![CDATA[${order.isStandardOrder()}]]>
+</bpmn2:conditionExpression>
+	</bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_BhjIY5XMEeG0qu6ZbM3Vag" name="flow2.2L" sourceRef="_5LBiUJXLEeG0qu6ZbM3Vag" targetRef="_5LBiUZXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_BhjIZJXMEeG0qu6ZbM3Vag" name="flow2.3L" sourceRef="_5LBiUZXLEeG0qu6ZbM3Vag" targetRef="_5LBiVJXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_BhjIZZXMEeG0qu6ZbM3Vag" name="flow2.1R" sourceRef="_5LBiU5XLEeG0qu6ZbM3Vag" targetRef="_5LBiUpXLEeG0qu6ZbM3Vag">
+		<bpmn2:conditionExpression id="condicionR">
+			x>0
+		</bpmn2:conditionExpression>
+	</bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_BhjIZpXMEeG0qu6ZbM3Vag" name="flow2.2R" sourceRef="_5LBiUpXLEeG0qu6ZbM3Vag" targetRef="_5LBiVJXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="idunique" name="flow3" sourceRef="_5LBiVJXLEeG0qu6ZbM3Vag" targetRef="_gLpToZXLEeGzS-0bcbokjw"/>
+  </bpmn2:process>
+</bpmn2:definitions>
