@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" id="_Qn0noY0_EeGAI_PUf2FP6g">
+  <bpmn2:process id="_ADiOkI1CEeGAI_PUf2FP6g">
+    <bpmn2:startEvent id="_ADi1oI1CEeGAI_PUf2FP6g" name="inicio">
+      <bpmn2:outgoing>_ADi1oY1CEeGAI_PUf2FP6g</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="_ADi1oo1CEeGAI_PUf2FP6g" name="fin">
+      <bpmn2:incoming>_ADi1o41CEeGAI_PUf2FP6g</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:task id="_ADi1pI1CEeGAI_PUf2FP6g" name="actividad">
+      <bpmn2:incoming>_ADi1oY1CEeGAI_PUf2FP6g</bpmn2:incoming>
+      <bpmn2:outgoing>_ADi1pY1CEeGAI_PUf2FP6g</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:exclusiveGateway id="_ADi1po1CEeGAI_PUf2FP6g" name="exsource">
+      <bpmn2:incoming>_ADi1pY1CEeGAI_PUf2FP6g</bpmn2:incoming>
+      <bpmn2:outgoing>_ADi1p41CEeGAI_PUf2FP6g</bpmn2:outgoing>
+      <bpmn2:outgoing>_ADi1qI1CEeGAI_PUf2FP6g</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:exclusiveGateway id="_ADi1qY1CEeGAI_PUf2FP6g" name="extarget">
+      <bpmn2:incoming>_ADi1p41CEeGAI_PUf2FP6g</bpmn2:incoming>
+      <bpmn2:incoming>_ADi1qI1CEeGAI_PUf2FP6g</bpmn2:incoming>
+      <bpmn2:outgoing>_ADi1o41CEeGAI_PUf2FP6g</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="_ADi1oY1CEeGAI_PUf2FP6g" name="flow1" sourceRef="_ADi1oI1CEeGAI_PUf2FP6g" targetRef="_ADi1pI1CEeGAI_PUf2FP6g"/>
+    <bpmn2:sequenceFlow id="_ADi1pY1CEeGAI_PUf2FP6g" name="flow2" sourceRef="_ADi1pI1CEeGAI_PUf2FP6g" targetRef="_ADi1po1CEeGAI_PUf2FP6g"/>
+    <bpmn2:sequenceFlow id="_ADi1p41CEeGAI_PUf2FP6g" name="flow3" sourceRef="_ADi1po1CEeGAI_PUf2FP6g" targetRef="_ADi1qY1CEeGAI_PUf2FP6g"/>
+    <bpmn2:sequenceFlow id="_ADi1qI1CEeGAI_PUf2FP6g" name="flow4" sourceRef="_ADi1po1CEeGAI_PUf2FP6g" targetRef="_ADi1qY1CEeGAI_PUf2FP6g"/>
+    <bpmn2:sequenceFlow id="_ADi1o41CEeGAI_PUf2FP6g" name="flow5" sourceRef="_ADi1qY1CEeGAI_PUf2FP6g" targetRef="_ADi1oo1CEeGAI_PUf2FP6g"/>
+  </bpmn2:process>
+</bpmn2:definitions>

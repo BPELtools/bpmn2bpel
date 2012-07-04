@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" id="_5rwAkYrlEeGz-6mLh-0iWg">
+  <bpmn2:process id="_mPcMUYr6EeGaQruA-bKIMQ">
+    <bpmn2:startEvent id="_mPczYIr6EeGaQruA-bKIMQ" name="inicio">
+      <bpmn2:outgoing>_mPczYYr6EeGaQruA-bKIMQ</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:task id="_mPczYor6EeGaQruA-bKIMQ">
+      <bpmn2:incoming>_mPczYYr6EeGaQruA-bKIMQ</bpmn2:incoming>
+      <bpmn2:outgoing>_mPczY4r6EeGaQruA-bKIMQ</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:endEvent id="_mPdacIr6EeGaQruA-bKIMQ" name="fin">
+      <bpmn2:incoming>_mPczY4r6EeGaQruA-bKIMQ</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:sequenceFlow id="_mPczYYr6EeGaQruA-bKIMQ" name="flow1" sourceRef="_mPczYIr6EeGaQruA-bKIMQ" targetRef="_mPczYor6EeGaQruA-bKIMQ"/>
+    <bpmn2:sequenceFlow id="_mPczY4r6EeGaQruA-bKIMQ" name="flow2" sourceRef="_mPczYor6EeGaQruA-bKIMQ" targetRef="_mPdacIr6EeGaQruA-bKIMQ"/>
+  </bpmn2:process>
+</bpmn2:definitions>
