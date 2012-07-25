@@ -1,53 +1,54 @@
 package bpmn2_importer;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.SequenceFlow;
 import org.jbpt.graph.DirectedEdge;
 import org.jbpt.graph.DirectedGraph;
-import org.jbpt.graph.abs.AbstractMultiDirectedGraph;
-import org.jbpt.hypergraph.abs.Vertex;
-
-import java.util.List;
 
 public class WFEdge extends DirectedEdge {
 	
 	private SequenceFlow edge;
+	
+	
 	// What is this graph for?
 	
-	
-	public WFEdge(DirectedGraph g,SequenceFlow edge,WFNode sourcev,WFNode targetv){
+	public WFEdge(DirectedGraph g, SequenceFlow edge, WFNode sourcev, WFNode targetv) {
 		
 		super(g, sourcev, targetv);
 		this.edge = edge;
 		
 	}
 	
-	public String getName(){
-	
-		return edge.getName();
-	}
-	
-	public String getId(){
+	@Override
+	public String getName() {
 		
-		return edge.getId();
+		return this.edge.getName();
 	}
 	
-	public SequenceFlow getElement(){
+	@Override
+	public String getId() {
 		
-		return edge;
+		return this.edge.getId();
 	}
 	
-	public void setElement(SequenceFlow edge){
+	public SequenceFlow getElement() {
+		
+		return this.edge;
+	}
+	
+	public void setElement(SequenceFlow edge) {
 		
 		this.edge = edge;
 	}
 	
-	public boolean iscontainedInto(List<SequenceFlow> edges){
+	public boolean iscontainedInto(List<SequenceFlow> edges) {
 		
 		boolean iscontained = false;
 		
-		for(SequenceFlow e: edges){
+		for (SequenceFlow e : edges) {
 			
-			if(this.getElement().equals(e)){
+			if (this.getElement().equals(e)) {
 				iscontained = true;
 				break;
 			}
@@ -57,5 +58,5 @@ public class WFEdge extends DirectedEdge {
 		return iscontained;
 		
 	}
-
+	
 }

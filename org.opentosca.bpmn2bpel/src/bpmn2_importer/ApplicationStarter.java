@@ -1,17 +1,11 @@
 package bpmn2_importer;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.bpel.model.impl.ActivityImpl;
 import org.eclipse.bpel.model.impl.ProcessImpl;
-import org.eclipse.bpel.model.resource.BPELResource;
 import org.eclipse.bpel.model.resource.BPELResourceImpl;
 import org.eclipse.bpel.model.resource.BPELWriter;
 import org.eclipse.bpmn2.Definitions;
@@ -27,50 +21,52 @@ import org.jbpt.graph.algo.rpst.RPST;
 import org.jbpt.graph.algo.rpst.RPSTNode;
 
 public class ApplicationStarter implements IApplication {
-
-	@SuppressWarnings({ "rawtypes", "unchecked"})
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Gen-Flow1.1.xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Test-compensation.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;
 		WFNode wftreeRoot;
 		
-		
-		for (EObject content: root.eContents()) {
+		for (EObject content : root.eContents()) {
 			if (content instanceof Definitions) {
 				Definitions def = (Definitions) content;
-				System.out.println("id: "+def.getId());
-				System.out.println("class: "+def.getClass());
+				System.out.println("id: " + def.getId());
+				System.out.println("class: " + def.getClass());
 				
 				wt.FillTree(content);
 				System.out.println(wt.toString());
 				wt.AssignImports(def.getImports());
-			}
-			else {
+			} else {
 				
 				System.out.println(content.getClass());
-				System.out.println("class: "+content.getClass());
-								
+				System.out.println("class: " + content.getClass());
+				
 			}
 		}
 		
+		// Transform the BPMN Process Tree into a single entry Single Exit
+		// process tree
+		wt.transfrom2SESE();
+		
 		RPST rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);
-		RPSTNode rpstRoot = rpstgraph.getRoot(); 
-		//System.out.println(rpstgraph.getRoot().getFragment());
+		RPSTNode rpstRoot = rpstgraph.getRoot();
+		// System.out.println(rpstgraph.getRoot().getFragment());
 		System.out.println(rpstgraph.toString());
 		System.out.println(rpstgraph.countVertices());
 		
-		//Restructure any quasicomponents this graph may have
-		wt.restructureQuasi(rpstgraph,rpstRoot,null,null,false);
+		// Restructure any quasicomponents this graph may have
+		wt.restructureQuasi(rpstgraph, rpstRoot, null, null, false);
 		rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);
-	    rpstRoot = rpstgraph.getRoot();
-		//System.out.println(wt.toString());
+		rpstRoot = rpstgraph.getRoot();
+		// System.out.println(wt.toString());
 		System.out.println(rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
@@ -82,7 +78,7 @@ public class ApplicationStarter implements IApplication {
 		
 		// The BPELWriter is created
 		BPELWriter writer = new BPELWriter();
-		Map<?,?> p = new HashMap();
+		Map<?, ?> p = new HashMap();
 		
 		// The path of the translated bpel is selected
 		File fstream = new File("C:/Users/admin/Documents/Tesis/Projekt/Workspaces/Bpmn2Bpel/Result-bpel.xml");
@@ -90,14 +86,13 @@ public class ApplicationStarter implements IApplication {
 		writer.write(resbpel, fout, p);
 		fout.close();
 		
-		
 		return null;
 	}
-
+	
 	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
-
+		
 	}
-
+	
 }
