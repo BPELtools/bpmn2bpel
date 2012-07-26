@@ -223,80 +223,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		}
 		// BoundaryEvents are searched within the Elements of the BPMN File in
 		// order to find the exception flows.
-		for (EObject son : eobj.eContents()) {
-			
-			if (son != null) {
-				
-				BPMNProcessTree ExcepFlowTree = new BPMNProcessTree();
-				boolean interrupting = false;
-				
-				if (son instanceof BoundaryEvent) {
-					
-					BoundaryEvent boundEvent = (BoundaryEvent) son;
-					String taskRef = boundEvent.getAttachedToRef().getId();
-					WFNode task1 = this.containsVertex(taskRef);
-					WFNode boundEventRoot = new WFNode(boundEvent);
-					interrupting = boundEvent.isCancelActivity();
-					
-					// It's checked if the BoundaryEvent is of compensation type
-					// or not
-					// compensation types have associations instead of normal
-					// sequence flows.
-					if (boundEvent.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
-						
-						System.out.println("associations: " + boundEvent.getOutgoing());
-						
-					} else {
-						
-						ExcepFlowTree = this.GenerateBoundGraph(boundEventRoot, ExcepFlowTree, interrupting);
-						task1.addBoundaryEvent(ExcepFlowTree);
-						
-					}
-					
-				} else if (son instanceof StartEvent) {
-					
-					// If the start event found has an event definition then
-					// this one is
-					// added to the Boundary event flows list because they have
-					// the same behaviour.
-					if (((StartEvent) son).getEventDefinitions().size() != 0) {
-						
-						StartEvent startEv = (StartEvent) son;
-						SubProcess subp = (SubProcess) son;
-						// If its parent is a Subprocess
-						if (son.eContainer().eContainer() instanceof SubProcess) { // NOTE:
-																					// Processes
-																					// can
-																					// also
-																					// have
-																					// handlers
-																					// or
-																					// subprocesses
-																					// triggered
-																					// by
-																					// events
-						
-							interrupting = startEv.isIsInterrupting();
-							SubProcess psubp = (SubProcess) son.eContainer().eContainer();
-							WFNode startHandler = this.containsVertex(startEv.getId());
-							
-							if (startHandler != null) {
-								
-								ExcepFlowTree = this.GenerateBoundGraph(startHandler, ExcepFlowTree, interrupting);
-								startHandler.addBoundaryEvent(ExcepFlowTree);
-								
-							}
-							
-						}
-						
-					}
-					
-				}
-				
-			}
-			
-		}
-		// After the
+		this.searchBoundaryEvents(eobj);
 		
 		// System.out.println("vertices: "+this.countVertices());
 		System.out.println("edges: " + this.countEdges());
@@ -315,10 +242,9 @@ public class BPMNProcessTree extends DirectedGraph {
 			// If the element found is a subprocess, it's intern graph should be
 			// filled
 			if (ExFlowElem instanceof SubProcess) {
-				/*
-				 * subTree.FillTree(ExFlowElem); n1.setSubProcessTree(subTree);
-				 */
-				// TODO!!!!
+				
+				subTree.FillTree(ExFlowElem);
+				ExFlowNode.setSubProcessTree(subTree);
 				
 			}
 			if (excepFlowTree.addVertex(ExFlowNode) != null) {
@@ -1109,6 +1035,31 @@ public class BPMNProcessTree extends DirectedGraph {
 					return pick1;
 					
 				}
+				// If the entry and exit elements of the Bound are activities
+				else if ((entryNode instanceof Task) && (exitNode instanceof Task)) {
+					
+					Flow f1 = mainfact.createFlow();
+					org.eclipse.bpel.model.Activity actflow;
+					
+					for (Object e : BondChildren) {
+						
+						RPSTNode child = (RPSTNode) e;
+						
+						actflow = this.BpmnProctree2BpelModelPart(child, rpstParent);
+						f1.getActivities().add(actflow);
+						
+					}
+					
+					// Some Documentation is added to the flow element stating
+					// that the following activities should be parallel executed
+					// till the end of the process
+					Documentation doc = mainfact.createDocumentation();
+					doc.setValue("FlowtillEnd");
+					f1.setDocumentation(doc);
+					
+					return f1;
+					
+				}
 				
 			}
 			// If the structure found is cyclic
@@ -1341,6 +1292,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			int childrenPsize = childrenP.size();
 			SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
 			Flow flow1 = null;
+			Flow flow2 = null;
 			// Hashtable with the activity where a boundary event ends and the
 			// corresponding link to be added to it.
 			Map<String, Set<Link>> boundaryLinks = new Hashtable<String, Set<Link>>();
@@ -1364,7 +1316,11 @@ public class BPMNProcessTree extends DirectedGraph {
 					RPSTNode childP = (RPSTNode) e;
 					act1 = this.BpmnProctree2BpelModelPart(childP, rpstParent);
 					ChildPentry = (WFNode) childP.getEntry();
-					actId = ChildPentry.getElement().getId();
+					if (act1 != null) {
+						actId = ChildPentry.getElement().getId();
+					} else {
+						actId = "";
+					}
 					
 					if ((act1 != null) && (childrenPsize == 2)) {
 						
@@ -1612,13 +1568,24 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 							} else {
 								
-								seq1.getActivities().add(act1);
+								// If the activity returned is a flow that has
+								// the Documentation "FlowtillEnd" we have a
+								// parallel execution till the end of the
+								// Process
+								if ((flow2 != null) && flow2.getDocumentation().getValue().equals("FlowtillEnd")) {
+									flow2.getActivities().add(act1);
+								} else {
+									seq1.getActivities().add(act1);
+								}
 								
 							}
 							
 						}
 						
-						Set<Link> linksact = boundaryLinks.get(actId);
+						Set<Link> linksact = null;
+						if (actId != null) {
+							linksact = boundaryLinks.get(actId);
+						}
 						
 						if (linksact != null) {
 							
@@ -1636,14 +1603,20 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If the flow corresponding to the sequence of activities with
 				// interrupting boundary events is not null
 				if (flow1 != null) {
-					seq1.getActivities().add(flow1);
+					
+					if (flow2 != null) {
+						
+					} else {
+						seq1.getActivities().add(flow1);
+					}
+					
 				}
 				// Otherwise the activity or the scope is added to the normal
 				// sequence
 				else {
 					if (act1scope != null) {
 						seq1.getActivities().add(act1scope);
-					} else {
+					} else if (act1 != null) {
 						seq1.getActivities().add(act1);
 					}
 				}
@@ -2140,6 +2113,79 @@ public class BPMNProcessTree extends DirectedGraph {
 		}
 		
 		return actScope;
+	}
+	
+	private void searchBoundaryEvents(EObject eobj) {
+		// TODO Auto-generated method stub
+		
+		for (EObject son : eobj.eContents()) {
+			
+			if (son != null) {
+				
+				BPMNProcessTree ExcepFlowTree = new BPMNProcessTree();
+				boolean interrupting = false;
+				
+				if (son instanceof BoundaryEvent) {
+					
+					BoundaryEvent boundEvent = (BoundaryEvent) son;
+					String taskRef = boundEvent.getAttachedToRef().getId();
+					WFNode task1 = this.containsVertex(taskRef);
+					WFNode boundEventRoot = new WFNode(boundEvent);
+					interrupting = boundEvent.isCancelActivity();
+					
+					// It's checked if the BoundaryEvent is of compensation type
+					// or not
+					// compensation types have associations instead of normal
+					// sequence flows.
+					if (boundEvent.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
+						
+						System.out.println("associations: " + boundEvent.getOutgoing());
+						
+					} else {
+						
+						ExcepFlowTree = this.GenerateBoundGraph(boundEventRoot, ExcepFlowTree, interrupting);
+						task1.addBoundaryEvent(ExcepFlowTree);
+						
+					}
+					
+				} else if (son instanceof StartEvent) {
+					
+					// If the start event found has an event definition then
+					// this one is
+					// added to the Boundary event flows list because they have
+					// the same behaviour.
+					if (((StartEvent) son).getEventDefinitions().size() != 0) {
+						
+						StartEvent startEv = (StartEvent) son;
+						// If its grandparent is a Subprocess and also its
+						// parent
+						if ((son.eContainer().eContainer() instanceof SubProcess) && (son.eContainer() instanceof SubProcess)) {
+							
+							interrupting = startEv.isIsInterrupting();
+							SubProcess psubp = (SubProcess) son.eContainer().eContainer();
+							WFNode startHandler = this.containsVertex(startEv.getId());
+							WFNode subprocGrandP = this.containsVertex(psubp.getId());
+							
+							if ((startHandler != null) && (subprocGrandP != null)) {
+								
+								ExcepFlowTree = this.GenerateBoundGraph(startHandler, ExcepFlowTree, interrupting);
+								subprocGrandP.addBoundaryEvent(ExcepFlowTree);
+								
+							}
+							
+						}
+						
+					}
+					
+				} else if (son instanceof Process) {
+					
+					this.searchBoundaryEvents(son); // segunda funcion
+				}
+				
+			}
+			
+		}
+		
 	}
 	
 }
