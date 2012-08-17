@@ -27,7 +27,7 @@ public class ApplicationStarter implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Test-Bonds-wo-Gateways.xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/GeneralisedFlow2.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;
@@ -60,6 +60,14 @@ public class ApplicationStarter implements IApplication {
 		// System.out.println(rpstgraph.getRoot().getFragment());
 		System.out.println(rpstgraph.toString());
 		System.out.println(rpstgraph.countVertices());
+		
+		// Transform any Rigid components (Generalised Flows( this graph may
+		// have
+		wt.TransformGenFlows(rpstgraph, rpstRoot);
+		rpstgraph = new RPST(wt);
+		wt.setRPST(rpstgraph);
+		rpstRoot = rpstgraph.getRoot();
+		System.out.println(rpstgraph.toString());
 		
 		// Restructure any quasicomponents this graph may have
 		wt.restructureQuasi(rpstgraph, rpstRoot, null, null, false);

@@ -17,11 +17,14 @@ import org.eclipse.bpel.model.CompensationHandler;
 import org.eclipse.bpel.model.Condition;
 import org.eclipse.bpel.model.Documentation;
 import org.eclipse.bpel.model.Empty;
+import org.eclipse.bpel.model.Exit;
 import org.eclipse.bpel.model.FaultHandler;
 import org.eclipse.bpel.model.Flow;
+import org.eclipse.bpel.model.Invoke;
 import org.eclipse.bpel.model.Link;
 import org.eclipse.bpel.model.Links;
 import org.eclipse.bpel.model.OnAlarm;
+import org.eclipse.bpel.model.Receive;
 import org.eclipse.bpel.model.RepeatUntil;
 import org.eclipse.bpel.model.Scope;
 import org.eclipse.bpel.model.Sequence;
@@ -29,6 +32,7 @@ import org.eclipse.bpel.model.Source;
 import org.eclipse.bpel.model.Sources;
 import org.eclipse.bpel.model.Target;
 import org.eclipse.bpel.model.Targets;
+import org.eclipse.bpel.model.Wait;
 import org.eclipse.bpel.model.While;
 import org.eclipse.bpel.model.impl.ActivityImpl;
 import org.eclipse.bpel.model.impl.BPELFactoryImpl;
@@ -54,7 +58,9 @@ import org.eclipse.bpel.model.impl.TargetImpl;
 import org.eclipse.bpel.model.impl.TargetsImpl;
 import org.eclipse.bpel.model.impl.WhileImpl;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.EscalationEventDefinition;
@@ -62,9 +68,12 @@ import org.eclipse.bpmn2.EventBasedGateway;
 import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.GatewayDirection;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ParallelGateway;
@@ -77,6 +86,7 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.ExpressionImpl;
@@ -211,7 +221,6 @@ public class BPMNProcessTree extends DirectedGraph {
 						break;
 					}
 				}
-				System.out.println("verticess: " + this.countVertices());
 				// System.out.println("clase: "+son.getClass());
 				if (son instanceof Process) {
 					this.setName(((Process) son).getName());
@@ -226,7 +235,6 @@ public class BPMNProcessTree extends DirectedGraph {
 		this.searchBoundaryEvents(eobj);
 		
 		// System.out.println("vertices: "+this.countVertices());
-		System.out.println("edges: " + this.countEdges());
 		
 	}
 	
@@ -536,42 +544,115 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 		if (node.getType().equals(TCType.T)) {
 			
-			// Call wftree2BpelModelPart
-			WFNode nentry = (WFNode) node.getEntry();
-			
-			// If instance of normal Task
-			if (nentry.getElement() instanceof Task) {
-				
-				if ((nentry.getElement() instanceof ServiceTask) || (nentry.getElement() instanceof SendTask)) {
+			if (!node.getDescription().equals("Last-Trivial")) {
+				// Call wftree2BpelModelPart
+				WFNode nentry = (WFNode) node.getEntry();
+				// If instance of normal Task
+				if (nentry.getElement() instanceof Task) {
 					
-					Task t1 = (Task) nentry.getElement();
-					InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
-					
-					// Set name of the Invoke
-					i1.setName(nentry.getName());
-					
-					// Check if the task has a Loop definition
-					if (t1.getLoopCharacteristics() != null) {
+					if ((nentry.getElement() instanceof ServiceTask) || (nentry.getElement() instanceof SendTask)) {
 						
-						if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
+						Task t1 = (Task) nentry.getElement();
+						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						
+						// Set name of the Invoke
+						i1.setName(nentry.getName());
+						
+						// Check if the task has a Loop definition
+						if (t1.getLoopCharacteristics() != null) {
 							
-							MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
-							ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
-							org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
-							org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
-							ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
-							exprS.setBody("1");
-							exprF.setBody(exp.getId());
-							ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
-							scope1.setActivity(i1);
-							fe1.setStartCounterValue(exprS);
-							fe1.setFinalCounterValue(exprF);
-							fe1.setParallel(!mloopchar.isIsSequential());
-							fe1.setActivity(scope1);
+							if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
+								
+								MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
+								ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
+								exprS.setBody("1");
+								exprF.setBody(exp.getId());
+								ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+								scope1.setActivity(i1);
+								fe1.setStartCounterValue(exprS);
+								fe1.setFinalCounterValue(exprF);
+								fe1.setParallel(!mloopchar.isIsSequential());
+								fe1.setActivity(scope1);
+								
+								return fe1;
+								
+							} else {
+								LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
+								ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+								WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+								
+								Condition BpelWhileCond = mainfact.createCondition();
+								
+								// The body of the condition set to the id.
+								// (NOTE)
+								BpelWhileCond.setBody(loopCond.getId());
+								
+								// The Bpel-While structure is filled with the
+								// activity (in this case invoke) and condition
+								while1.setActivity(i1);
+								while1.setCondition(BpelWhileCond);
+								
+								return while1;
+							}
 							
-							return fe1;
+						}
+						
+						// If DataInputAssociations
+						/*
+						 * if(t1.getDataInputAssociations()!=null){
+						 * 
+						 * // For every DataInputAssociation the Dataobjects are
+						 * obtained for(DataInputAssociation datai:
+						 * t1.getDataInputAssociations()){
+						 * 
+						 * 
+						 * } }
+						 */
+						
+						return i1;
+					} else if (nentry.getElement() instanceof ReceiveTask) {
+						
+						Task t1 = (Task) nentry.getElement();
+						ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+						
+						// Set name of the Receive
+						r1.setName(nentry.getName());
+						
+						// Obtain the boundary event flows
+						List<BPMNProcessTree> eventFlows = nentry.getBoundaryEventFlows();
+						
+						// the scope is declared in case it's needed to store
+						// the
+						// Handlers in it
+						Scope actScope = null;
+						
+						// Bpel-Flow is declared belonging to the Activity (it's
+						// scope, and handlers)
+						Flow excpFlowFlow = mainfact.createFlow();
+						
+						// BOUNDARY EVENTS
+						if (eventFlows.size() != 0) {
 							
-						} else {
+							hasBoundary = true;
+							
+							// Assuming to begin that the possible exception
+							// flows
+							// can be just 1
+							for (int i = 0; i < eventFlows.size(); i++) {
+								
+								actScope = this.AddHandlertoScope(eventFlows.get(i), actScope);
+								
+							}
+							
+						}
+						
+						// ****** BOUNDARY EVENTS
+						
+						if (t1.getLoopCharacteristics() != null) {
+							
 							LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
 							ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
 							WhileImpl while1 = (WhileImpl) mainfact.createWhile();
@@ -582,167 +663,201 @@ public class BPMNProcessTree extends DirectedGraph {
 							BpelWhileCond.setBody(loopCond.getId());
 							
 							// The Bpel-While structure is filled with the
-							// activity (in this case invoke) and condition
-							while1.setActivity(i1);
+							// activity
+							// (in this case invoke) and condition
+							while1.setActivity(r1);
 							while1.setCondition(BpelWhileCond);
 							
-							return while1;
-						}
-						
-					}
-					
-					// If DataInputAssociations
-					/*
-					 * if(t1.getDataInputAssociations()!=null){
-					 * 
-					 * // For every DataInputAssociation the Dataobjects are
-					 * obtained for(DataInputAssociation datai:
-					 * t1.getDataInputAssociations()){
-					 * 
-					 * 
-					 * } }
-					 */
-					
-					return i1;
-				} else if (nentry.getElement() instanceof ReceiveTask) {
-					
-					Task t1 = (Task) nentry.getElement();
-					ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
-					
-					// Set name of the Receive
-					r1.setName(nentry.getName());
-					
-					// Obtain the boundary event flows
-					List<BPMNProcessTree> eventFlows = nentry.getBoundaryEventFlows();
-					
-					// the scope is declared in case it's needed to store the
-					// Handlers in it
-					Scope actScope = null;
-					
-					// Bpel-Flow is declared belonging to the Activity (it's
-					// scope, and handlers)
-					Flow excpFlowFlow = mainfact.createFlow();
-					
-					// BOUNDARY EVENTS
-					if (eventFlows.size() != 0) {
-						
-						hasBoundary = true;
-						
-						// Assuming to begin that the possible exception flows
-						// can be just 1
-						for (int i = 0; i < eventFlows.size(); i++) {
-							
-							actScope = this.AddHandlertoScope(eventFlows.get(i), actScope);
+							// If the activity has boundaries
+							if (hasBoundary) {
+								actScope.setActivity(while1);
+								return actScope;
+							} else {
+								return while1;
+							}
 							
 						}
 						
-					}
-					
-					// ****** BOUNDARY EVENTS
-					
-					if (t1.getLoopCharacteristics() != null) {
-						
-						LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
-						ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-						WhileImpl while1 = (WhileImpl) mainfact.createWhile();
-						
-						Condition BpelWhileCond = mainfact.createCondition();
-						
-						// The body of the condition set to the id. (NOTE)
-						BpelWhileCond.setBody(loopCond.getId());
-						
-						// The Bpel-While structure is filled with the activity
-						// (in this case invoke) and condition
-						while1.setActivity(r1);
-						while1.setCondition(BpelWhileCond);
-						
-						// If the activity has boundaries
 						if (hasBoundary) {
-							actScope.setActivity(while1);
+							actScope.setActivity(r1);
 							return actScope;
 						} else {
-							return while1;
+							return r1;
+						}
+						
+					} else {
+						
+						Empty e1 = mainfact.createEmpty();
+						e1.setName(nentry.getName());
+						return e1;
+						
+					}
+					
+				} else if ((nentry.getElement() instanceof ReceiveTask) && rpstParent.getParent(node).getDescription().equals("ignore_rcv")) {
+					
+					ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
+					ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+					
+					// Set name of the receive
+					r1.setName(nentry.getName());
+					
+					return r1;
+					
+				} else if (nentry.getElement() instanceof SubProcess) {
+					
+					ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+					BPMNProcessTree subprocT = nentry.getSubprocessTree();
+					
+					RPST rpstgraph = new RPST(subprocT);
+					RPSTNode subProcRoot = rpstgraph.getRoot();
+					subprocT.setRPST(rpstgraph);
+					nentry.setSubProcessTree(subprocT);
+					ProcessImpl p1 = subprocT.BpmnProctree2BpelModel(subProcRoot);
+					ActivityImpl a1 = (ActivityImpl) p1.getActivity();
+					
+					scope1.setName(nentry.getName());
+					scope1.setActivity(a1);
+					
+					return scope1;
+					
+				} else if ((nentry.getElement() instanceof ParallelGateway) && !nodeP.getEntry().equals(nentry)) {
+					
+					return mainfact.createEmpty();
+					
+					// If the entry element of the Trivial component is an
+					// intermediate catch event its definition is checked to
+					// find
+					// what type
+				} else if (nentry.getElement() instanceof IntermediateCatchEvent) {
+					
+					IntermediateCatchEvent inEv = (IntermediateCatchEvent) nentry.getElement();
+					
+					if (inEv.getEventDefinitions().size() != 0) {
+						
+						if (inEv.getEventDefinitions().get(0) instanceof MessageEventDefinition) {
+							
+							MessageEventDefinition messageDef = (MessageEventDefinition) inEv.getEventDefinitions().get(0);
+							
+							Receive r1 = mainfact.createReceive();
+							r1.setCreateInstance(false);
+							
+							if (!inEv.getName().equals("")) {
+								
+								r1.setName(inEv.getName());
+							}
+							
+							return r1;
+							
+						} else if (inEv.getEventDefinitions().get(0) instanceof TimerEventDefinition) {
+							
+							TimerEventDefinition timerDef = (TimerEventDefinition) inEv.getEventDefinitions().get(0);
+							Wait wait1 = mainfact.createWait();
+							FormalExpression timedur = (FormalExpression) timerDef.getTimeDuration();
+							FormalExpression timeDate = (FormalExpression) timerDef.getTimeDate();
+							org.eclipse.bpel.model.Expression waitExp = mainfact.createExpression();
+							
+							if (timedur != null) {
+								waitExp.setBody(timedur.getMixed().getValue(0));
+								wait1.setFor(waitExp);
+							} else if (timeDate != null) {
+								waitExp.setBody(timeDate.getMixed().getValue(0));
+								wait1.setUntil(waitExp);
+								
+							}
+							
+							if (!inEv.getName().equals("")) {
+								
+								wait1.setName(inEv.getName());
+							}
+							
+							return wait1;
+						} else if (inEv.getEventDefinitions().get(0) instanceof ConditionalEventDefinition) {
+							
+							ConditionalEventDefinition condDef = (ConditionalEventDefinition) inEv.getEventDefinitions().get(0);
+							RepeatUntil repeat1 = mainfact.createRepeatUntil();
+							Empty empty1 = mainfact.createEmpty();
+							FormalExpression condition = (FormalExpression) condDef.getCondition();
+							Condition repeatExp = mainfact.createCondition();
+							
+							if (condition != null) {
+								repeatExp.setBody(condition.getMixed().getValue(0));
+							}
+							
+							repeat1.setCondition(repeatExp);
+							repeat1.setActivity(empty1);
+							
+							return repeat1;
+							
 						}
 						
 					}
 					
-					if (hasBoundary) {
-						actScope.setActivity(r1);
-						return actScope;
-					} else {
-						return r1;
+				}
+				// If the event found at the beginning of the Trivial component
+				// is
+				// an intermediate Throw Event checks are made to obtain the
+				// type
+				else if (nentry.getElement() instanceof IntermediateThrowEvent) {
+					
+					IntermediateThrowEvent inEv = (IntermediateThrowEvent) nentry.getElement();
+					
+					if (inEv.getEventDefinitions().size() != 0) {
+						
+						if (inEv.getEventDefinitions().get(0) instanceof MessageEventDefinition) {
+							
+							MessageEventDefinition messageDef = (MessageEventDefinition) inEv.getEventDefinitions().get(0);
+							
+							Invoke i1 = mainfact.createInvoke();
+							
+							if (!inEv.getName().equals("")) {
+								
+								i1.setName(inEv.getName());
+							}
+							
+							return i1;
+							
+						}
+						
 					}
 					
 				} else {
 					
-					Empty e1 = mainfact.createEmpty();
-					e1.setName(nentry.getName());
-					return e1;
+					// If the entry element is a Start event or another event
+					// nothing is done (momentarily)
+					return null;
 					
 				}
-				
-			} else if ((nentry.getElement() instanceof ReceiveTask) && rpstParent.getParent(node).getDescription().equals("ignore_rcv")) {
-				
-				ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
-				ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
-				
-				// Set name of the receive
-				r1.setName(nentry.getName());
-				
-				return r1;
-				
-			} else if (nentry.getElement() instanceof SubProcess) {
-				
-				ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
-				BPMNProcessTree subprocT = nentry.getSubprocessTree();
-				
-				RPST rpstgraph = new RPST(subprocT);
-				RPSTNode subProcRoot = rpstgraph.getRoot();
-				subprocT.setRPST(rpstgraph);
-				nentry.setSubProcessTree(subprocT);
-				ProcessImpl p1 = subprocT.BpmnProctree2BpelModel(subProcRoot);
-				ActivityImpl a1 = (ActivityImpl) p1.getActivity();
-				
-				scope1.setName(nentry.getName());
-				scope1.setActivity(a1);
-				
-				return scope1;
-				
-			} else if ((nentry.getElement() instanceof ParallelGateway) && !nodeP.getEntry().equals(nentry)) {
-				
-				return mainfact.createEmpty();
-				
-			} else {
-				
-				// If the entry element is a Start event or another event
-				// nothing is done (momentarily)
-				return null;
-				
 			}
-			
-		} else if (node.getType().equals(TCType.R)) {
-			
-			Collection<RPSTNode> RigidChildren = this.rpstg.getChildren(node);
-			IDirectedGraph rigidfragm;
-			RPST BondGen = null;
-			
-			for (Object e2 : RigidChildren) {
-				
-				RPSTNode child = (RPSTNode) e2;
-				
-				if (child.getType().equals(TCType.T)) {
+			// If the Node is the last one in a sequence (Polygon)
+			else {
+				WFNode nexit = (WFNode) node.getExit();
+				if (nexit.getElement() instanceof EndEvent) {
 					
-					rigidfragm = node.getFragment();
-					AbstractDirectedEdge edge = (AbstractDirectedEdge) rigidfragm.getEdge(child.getEntry(), child.getExit());
-					rigidfragm.removeEdge(edge);
-					BondGen = new RPST(rigidfragm);
+					EndEvent endEv = (EndEvent) nexit.getElement();
+					
+					if (endEv.getEventDefinitions().size() != 0) {
+						
+						if ((endEv.getEventDefinitions().get(0) instanceof TerminateEventDefinition) || (endEv.getEventDefinitions().get(0) instanceof CancelEventDefinition)) {
+							
+							Exit exit1 = mainfact.createExit();
+							return exit1;
+							
+						}
+						
+					} else {
+						
+						Empty e1 = mainfact.createEmpty();
+						if (!endEv.getName().equals("")) {
+							
+							e1.setName(endEv.getName());
+							
+						}
+						
+						return e1;
+						
+					}
 					
 				}
-				
-			}
-			
-			if (BondGen != null) {
-				return this.BpmnProctree2BpelModelPart(BondGen.getRoot(), BondGen);
 			}
 			
 		} else if (node.getType().equals(TCType.B)) {
@@ -1036,6 +1151,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				}
 				// If the entry and exit elements of the Bound are activities
+				// (NOT YET COMPLETELY SUPPORTED)
 				else if ((entryNode instanceof Task) && (exitNode instanceof Task)) {
 					
 					Flow f1 = mainfact.createFlow();
@@ -1288,7 +1404,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			
 		} else if (node.getType().equals(TCType.P)) {
 			
-			Collection<RPSTNode> childrenP = this.organizeRPST(node, rpstParent.getChildren(node));
+			ArrayList<RPSTNode> childrenP = (ArrayList<RPSTNode>) this.organizeRPST(node, rpstParent.getChildren(node));
 			int childrenPsize = childrenP.size();
 			SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
 			Flow flow1 = null;
@@ -1299,8 +1415,10 @@ public class BPMNProcessTree extends DirectedGraph {
 			Links flowLinks = mainfact.createLinks();
 			Scope act1scope = null;
 			org.eclipse.bpel.model.Activity act1 = null;
+			org.eclipse.bpel.model.Activity lastAct = null;
 			WFNode ChildPentry = null;
 			Link nextActlink = null;
+			RPSTNode lastChild = null;
 			String actId;
 			
 			// There's only one component as a son and it's the Trivial (split
@@ -1314,6 +1432,13 @@ public class BPMNProcessTree extends DirectedGraph {
 				for (Object e : childrenP) {
 					
 					RPSTNode childP = (RPSTNode) e;
+					
+					// If the obtained child of the polygon is the last element
+					// of the sequence a description is added
+					if (childrenP.indexOf(e) == (childrenP.size() - 1)) {
+						lastChild = (RPSTNode) e;
+					}
+					
 					act1 = this.BpmnProctree2BpelModelPart(childP, rpstParent);
 					ChildPentry = (WFNode) childP.getEntry();
 					if (act1 != null) {
@@ -1600,6 +1725,8 @@ public class BPMNProcessTree extends DirectedGraph {
 					}
 					
 				}
+				lastChild.setDescription("Last-Trivial");
+				lastAct = this.BpmnProctree2BpelModelPart(lastChild, rpstParent);
 				// If the flow corresponding to the sequence of activities with
 				// interrupting boundary events is not null
 				if (flow1 != null) {
@@ -1619,6 +1746,9 @@ public class BPMNProcessTree extends DirectedGraph {
 					} else if (act1 != null) {
 						seq1.getActivities().add(act1);
 					}
+				}
+				if (lastAct != null) {
+					seq1.getActivities().add(lastAct);
 				}
 				return seq1;
 			}
@@ -1662,11 +1792,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			RPST rpstaux = null;
 			IDirectedGraph newfrag = null;
 			
-			if (node.getType().equals(TCType.R)) {
-				
-				// Analize this case
-				
-			} else if (node.getType().equals(TCType.B)) {
+			if (node.getType().equals(TCType.B)) {
 				
 				if ((BondExit != null) && (BondEntry != null) && (hasBondParent == true)) {
 					
@@ -1754,6 +1880,135 @@ public class BPMNProcessTree extends DirectedGraph {
 			} else if (node.getType().equals(TCType.P)) {
 				this.restructureQuasi(rpstG, node, BondExit, BondEntry, hasBondParent);
 			}
+		}
+		
+	}
+	
+	public void TransformGenFlows(RPST rpstG, RPSTNode rpstnode) {
+		
+		// The whole RPST is searched in order to find quasi components
+		for (Object e : this.organizeRPST(rpstnode, rpstG.getChildren(rpstnode))) {
+			
+			RPSTNode node = (RPSTNode) e;
+			RPST newRpstg;
+			
+			if (node.getType().equals(TCType.R)) {
+				
+				Collection<RPSTNode> RigidChildren = this.rpstg.getChildren(node);
+				IDirectedGraph rigidfragm;
+				rigidfragm = node.getFragment();
+				WFNode childEntry = null;
+				WFNode childExit = null;
+				
+				for (Object e2 : RigidChildren) {
+					
+					RPSTNode child = (RPSTNode) e2;
+					childEntry = (WFNode) child.getEntry();
+					childExit = (WFNode) child.getExit();
+					
+					if (child.getType().equals(TCType.T)) {
+						
+						if ((childEntry.getElement() instanceof ParallelGateway) && (childExit.getElement() instanceof ParallelGateway)) {
+							
+							ParallelGateway spar = (ParallelGateway) childEntry.getElement();
+							ParallelGateway tpar = (ParallelGateway) childExit.getElement();
+							
+							if ((spar.getGatewayDirection().equals(GatewayDirection.DIVERGING) && tpar.getGatewayDirection().equals(GatewayDirection.CONVERGING)) || (spar.getGatewayDirection().equals(GatewayDirection.DIVERGING) && tpar.getGatewayDirection().equals(GatewayDirection.MIXED)) || (spar.getGatewayDirection().equals(GatewayDirection.MIXED) && tpar.getGatewayDirection().equals(GatewayDirection.MIXED)) || (spar.getGatewayDirection().equals(GatewayDirection.MIXED) && tpar.getGatewayDirection().equals(GatewayDirection.CONVERGING))) {
+								
+								AbstractDirectedEdge edge = (AbstractDirectedEdge) rigidfragm.getEdge(child.getEntry(), child.getExit());
+								DirectedEdge edgep = this.getEdge((WFNode) child.getEntry(), (WFNode) child.getExit());
+								rigidfragm.removeEdge(edge);
+								this.removeEdge(edgep);
+								
+							} else if (spar.getGatewayDirection().equals(GatewayDirection.DIVERGING) && tpar.getGatewayDirection().equals(GatewayDirection.DIVERGING)) {
+								
+								AbstractDirectedEdge edge = (AbstractDirectedEdge) rigidfragm.getEdge(child.getEntry(), child.getExit());
+								DirectedEdge edgep = this.getEdge((WFNode) child.getEntry(), (WFNode) child.getExit());
+								rigidfragm.removeEdge(edge);
+								this.removeEdge(edgep);
+								Collection<AbstractDirectedEdge> outEdgestpar = rigidfragm.getOutgoingEdges(child.getExit());
+								Collection<DirectedEdge> outEdgesrparp = this.getOutgoingEdges((WFNode) child.getExit());
+								
+								// for every outgoing Edge of the target
+								// parallel
+								// Gateway tpar the Edge is deleted and a new
+								// edge
+								// is added from the source Gateway
+								for (AbstractDirectedEdge dirE : outEdgestpar) {
+									
+									rigidfragm.addEdge(child.getEntry(), dirE.getTarget());
+									this.addEdge((WFNode) child.getEntry(), (WFNode) dirE.getTarget());
+									this.removeEdge(this.getEdge((WFNode) child.getExit(), (WFNode) dirE.getTarget()));
+									rigidfragm.removeEdge(dirE);
+									
+								}
+								
+								rigidfragm.removeVertex(child.getExit());
+								this.removeVertex((WFNode) child.getExit());
+								
+							}
+							
+						}
+						
+					}
+				}
+				for (Object e2 : RigidChildren) {
+					
+					RPSTNode child = (RPSTNode) e2;
+					
+					if (child.getType().equals(TCType.P)) {
+						
+						WFNode cEntry = (WFNode) child.getEntry();
+						Collection<DirectedEdge> cEntryinc = rigidfragm.getIncomingEdges(cEntry);
+						
+						// For every gateway with more than one incoming edges
+						if ((cEntry.getElement() instanceof ParallelGateway) && (cEntryinc.size() > 1)) {
+							
+							ArrayList<AbstractDirectedEdge> inEdgesPar = (ArrayList<AbstractDirectedEdge>) rigidfragm.getIncomingEdges(child.getEntry());
+							ArrayList<AbstractDirectedEdge> outEdgesPar = (ArrayList<AbstractDirectedEdge>) rigidfragm.getOutgoingEdges(child.getEntry());
+							
+							// The first incoming edge of the gateway is deleted
+							// and
+							// redirected to the node: next(gateway)
+							rigidfragm.addEdge(inEdgesPar.get(0).getSource(), outEdgesPar.get(0).getTarget());
+							this.addEdge((WFNode) inEdgesPar.get(0).getSource(), (WFNode) outEdgesPar.get(0).getTarget());
+							rigidfragm.removeEdge(inEdgesPar.get(0));
+							this.removeEdge(this.getEdge((WFNode) inEdgesPar.get(0).getSource(), (WFNode) inEdgesPar.get(0).getTarget()));
+							
+							// for the rest, the edges are redirected to the
+							// next nearest Gateway after the current one
+							for (AbstractDirectedEdge inE : inEdgesPar) {
+								
+								if (inEdgesPar.indexOf(inE) != 0) {
+									
+									rigidfragm.addEdge(inE.getSource(), child.getExit());
+									this.addEdge((WFNode) inE.getSource(), (WFNode) child.getExit());
+									rigidfragm.removeEdge(inE);
+									this.removeEdge(this.getEdge((WFNode) inE.getSource(), (WFNode) inE.getTarget()));
+									
+								}
+								
+							}
+							
+							rigidfragm.removeEdge(outEdgesPar.get(0));
+							this.removeEdge(this.getEdge((WFNode) outEdgesPar.get(0).getSource(), (WFNode) outEdgesPar.get(0).getTarget()));
+							rigidfragm.removeVertex(child.getEntry());
+							this.removeVertex((WFNode) child.getEntry());
+							
+						}
+						
+					}
+					
+				}
+				
+				newRpstg = new RPST(rigidfragm);
+				node = newRpstg.getRoot();
+				this.TransformGenFlows(newRpstg, node);
+				
+			} else if (node.getType().equals(TCType.P) || node.getType().equals(TCType.B)) {
+				this.TransformGenFlows(rpstG, node);
+			}
+			
 		}
 		
 	}
