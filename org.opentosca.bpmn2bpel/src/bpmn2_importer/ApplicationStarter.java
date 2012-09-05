@@ -27,7 +27,7 @@ public class ApplicationStarter implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Quasi3(flow).xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Process-SubProcess2.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;

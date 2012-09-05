@@ -24,6 +24,7 @@ import org.eclipse.bpel.model.Invoke;
 import org.eclipse.bpel.model.Link;
 import org.eclipse.bpel.model.Links;
 import org.eclipse.bpel.model.OnAlarm;
+import org.eclipse.bpel.model.OnEvent;
 import org.eclipse.bpel.model.Receive;
 import org.eclipse.bpel.model.RepeatUntil;
 import org.eclipse.bpel.model.Scope;
@@ -57,7 +58,9 @@ import org.eclipse.bpel.model.impl.SourcesImpl;
 import org.eclipse.bpel.model.impl.TargetImpl;
 import org.eclipse.bpel.model.impl.TargetsImpl;
 import org.eclipse.bpel.model.impl.WhileImpl;
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
@@ -99,6 +102,8 @@ import org.eclipse.bpmn2.impl.SignalEventDefinitionImpl;
 import org.eclipse.bpmn2.impl.TimerEventDefinitionImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.wsdl.Operation;
+import org.eclipse.wst.wsdl.WSDLFactory;
 import org.jbpt.graph.DirectedEdge;
 import org.jbpt.graph.DirectedGraph;
 import org.jbpt.graph.abs.AbstractDirectedEdge;
@@ -117,6 +122,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	private List<Import> BpmnImports;
 	private ProcessImpl mainproc;
 	private String name;
+	private Map<String, Set<Link>> boundaryLinks;
 	
 	
 	public BPMNProcessTree(Bpmn2Resource res) {
@@ -232,7 +238,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		}
 		// BoundaryEvents are searched within the Elements of the BPMN File in
 		// order to find the exception flows.
-		this.searchBoundaryEvents(eobj);
+		this.searchBoundaryEvents(eobj, this, null);
 		
 		// System.out.println("vertices: "+this.countVertices());
 		
@@ -638,9 +644,6 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							hasBoundary = true;
 							
-							// Assuming to begin that the possible exception
-							// flows
-							// can be just 1
 							for (int i = 0; i < eventFlows.size(); i++) {
 								
 								actScope = this.AddHandlertoScope(eventFlows.get(i), actScope);
@@ -683,6 +686,70 @@ public class BPMNProcessTree extends DirectedGraph {
 							return actScope;
 						} else {
 							return r1;
+						}
+						
+					} else if (nentry.getElement() instanceof CallActivity) {
+						
+						System.out.println("callactivity");
+						
+						Activity a1 = (Activity) nentry.getElement();
+						Invoke i1 = mainfact.createInvoke();
+						
+						// Set name of the Receive
+						i1.setName(nentry.getName());
+						
+						// Obtain the boundary event flows
+						List<BPMNProcessTree> eventFlows = nentry.getBoundaryEventFlows();
+						
+						// the scope is declared in case it's needed to store
+						// the
+						// Handlers in it
+						Scope actScope = null;
+						
+						if (eventFlows.size() != 0) {
+							
+							hasBoundary = true;
+							
+							for (int i = 0; i < eventFlows.size(); i++) {
+								
+								actScope = this.AddHandlertoScope(eventFlows.get(i), actScope);
+								
+							}
+							
+						}
+						
+						if (a1.getLoopCharacteristics() != null) {
+							
+							LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) a1.getLoopCharacteristics();
+							ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+							WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+							
+							Condition BpelWhileCond = mainfact.createCondition();
+							
+							// The body of the condition set to the id. (NOTE)
+							BpelWhileCond.setBody(loopCond.getId());
+							
+							// The Bpel-While structure is filled with the
+							// activity
+							// (in this case invoke) and condition
+							while1.setActivity(i1);
+							while1.setCondition(BpelWhileCond);
+							
+							// If the activity has boundaries
+							if (hasBoundary) {
+								actScope.setActivity(while1);
+								return actScope;
+							} else {
+								return while1;
+							}
+							
+						}
+						
+						if (hasBoundary) {
+							actScope.setActivity(i1);
+							return actScope;
+						} else {
+							return i1;
 						}
 						
 					} else {
@@ -1959,10 +2026,11 @@ public class BPMNProcessTree extends DirectedGraph {
 					if (child.getType().equals(TCType.P)) {
 						
 						WFNode cEntry = (WFNode) child.getEntry();
+						WFNode cExit = (WFNode) child.getExit();
 						Collection<DirectedEdge> cEntryinc = rigidfragm.getIncomingEdges(cEntry);
 						
-						// For every gateway with more than one incoming edges
-						if ((cEntry.getElement() instanceof ParallelGateway) && (cEntryinc.size() > 1)) {
+						// For every gateway with more than one incoming edge
+						if ((cEntry.getElement() instanceof ParallelGateway) && (cExit.getElement() instanceof ParallelGateway) && (cEntryinc.size() > 1)) {
 							
 							ArrayList<AbstractDirectedEdge> inEdgesPar = (ArrayList<AbstractDirectedEdge>) rigidfragm.getIncomingEdges(child.getEntry());
 							ArrayList<AbstractDirectedEdge> outEdgesPar = (ArrayList<AbstractDirectedEdge>) rigidfragm.getOutgoingEdges(child.getEntry());
@@ -2263,7 +2331,13 @@ public class BPMNProcessTree extends DirectedGraph {
 				// is created linking to a Fault Handler
 				else if (event.getEventDefinitions().get(0) instanceof TimerEventDefinition) {
 					
-					org.eclipse.bpel.model.EventHandler EvHandler = mainfact.createEventHandler();
+					TimerEventDefinition timevdef = (TimerEventDefinition) event.getEventDefinitions().get(0);
+					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
+					
+					if (EvHandler == null) {
+						EvHandler = mainfact.createEventHandler();
+					}
+					
 					OnAlarm alarmEv = mainfact.createOnAlarm();
 					Empty alarmScope = mainfact.createEmpty();
 					
@@ -2286,6 +2360,25 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					// The Activity of the alarm scope is set (in this case an
 					// empty with a source to the Fault Handler)
+					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
+					org.eclipse.bpel.model.Expression timeexp = mainfact.createExpression();
+					
+					// Set the date, duration or repeat cycle.
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setRepeatEvery(timeexp);
+					}
+					timeCyc = (FormalExpression) timevdef.getTimeDate();
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setUntil(timeexp);
+					}
+					timeCyc = (FormalExpression) timevdef.getTimeDuration();
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setFor(timeexp);
+					}
+					
 					alarmEv.setActivity(alarmScope);
 					EvHandler.getAlarm().add(alarmEv);
 					
@@ -2294,10 +2387,54 @@ public class BPMNProcessTree extends DirectedGraph {
 					faultCatch.setActivity(ActHandler);
 					faultH.getCatch().add(faultCatch);
 					actScope.setFaultHandlers(faultH);
+					actScope.setEventHandlers(EvHandler);
 					
 				} else if (event.getEventDefinitions().get(0) instanceof MessageEventDefinition) {
 					
-					// TODO
+					MessageEventDefinition msgevdef = (MessageEventDefinition) event.getEventDefinitions().get(0);
+					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
+					
+					if (EvHandler == null) {
+						EvHandler = mainfact.createEventHandler();
+					}
+					
+					OnEvent eventEv = mainfact.createOnEvent();
+					Empty eventScope = mainfact.createEmpty();
+					
+					Link link2Fault = mainfact.createLink();
+					Target target2Fault = mainfact.createTarget();
+					Targets targetCont = mainfact.createTargets();
+					Source faultFromTarget = mainfact.createSource();
+					Sources sourceCont = mainfact.createSources();
+					
+					link2Fault.setName(event.getName() + " to Fault");
+					
+					// The Target and target container are assigned and filled
+					target2Fault.setLink(link2Fault);
+					targetCont.getChildren().add(target2Fault);
+					
+					// The Link, sources and source are assigned and filled
+					faultFromTarget.setLink(link2Fault);
+					sourceCont.getChildren().add(faultFromTarget);
+					eventScope.setSources(sourceCont);
+					
+					// The Activity of the alarm scope is set (in this case an
+					// empty with a source to the Fault Handler)
+					String opname = msgevdef.getOperationRef().getName();
+					WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+					Operation op = wsdlfact.createOperation();
+					op.setName(opname);
+					
+					eventEv.setOperation(op);
+					eventEv.setActivity(eventScope);
+					EvHandler.getEvents().add(eventEv);
+					
+					ActHandler.setTargets(targetCont);
+					faultCatch.setFaultName(new QName(event.getName()));
+					faultCatch.setActivity(ActHandler);
+					faultH.getCatch().add(faultCatch);
+					actScope.setFaultHandlers(faultH);
+					actScope.setEventHandlers(EvHandler);
 					
 				} else if (event.getEventDefinitions().get(0) instanceof EscalationEventDefinition) {
 					
@@ -2356,6 +2493,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				} else if (event.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
 					
 					// TODO
+					System.out.println("compensación! :D");
 					
 				}
 				
@@ -2370,8 +2508,11 @@ public class BPMNProcessTree extends DirectedGraph {
 		return actScope;
 	}
 	
-	private void searchBoundaryEvents(EObject eobj) {
+	private void searchBoundaryEvents(EObject eobj, BPMNProcessTree parent, BPMNProcessTree gparent) {
 		// TODO Auto-generated method stub
+		
+		WFNode subprocGrandP = null;
+		WFNode startHandler = null;
 		
 		for (EObject son : eobj.eContents()) {
 			
@@ -2409,7 +2550,9 @@ public class BPMNProcessTree extends DirectedGraph {
 					// this one is
 					// added to the Boundary event flows list because they have
 					// the same behaviour.
-					if (((StartEvent) son).getEventDefinitions().size() != 0) {
+					StartEvent StartAux = (StartEvent) son;
+					
+					if (StartAux.getEventDefinitions().size() != 0) {
 						
 						StartEvent startEv = (StartEvent) son;
 						// If its grandparent is a Subprocess and also its
@@ -2418,8 +2561,12 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							interrupting = startEv.isIsInterrupting();
 							SubProcess psubp = (SubProcess) son.eContainer().eContainer();
-							WFNode startHandler = this.containsVertex(startEv.getId());
-							WFNode subprocGrandP = this.containsVertex(psubp.getId());
+							
+							startHandler = this.containsVertex(startEv.getId());
+							
+							if (gparent != null) {
+								subprocGrandP = gparent.containsVertex(psubp.getId());
+							}
 							
 							if ((startHandler != null) && (subprocGrandP != null)) {
 								
@@ -2432,9 +2579,19 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 					}
 					
-				} else if (son instanceof Process) {
+				} else if (son instanceof SubProcess) {
 					
-					this.searchBoundaryEvents(son); // segunda funcion
+					if (((SubProcess) son).isTriggeredByEvent()) {
+						
+						this.searchBoundaryEvents(son, this, parent);
+						
+					} else {
+						
+						this.searchBoundaryEvents(son, this, parent); // segunda
+																		// funcion
+						
+					}
+					
 				}
 				
 			}
@@ -2442,5 +2599,4 @@ public class BPMNProcessTree extends DirectedGraph {
 		}
 		
 	}
-	
 }
