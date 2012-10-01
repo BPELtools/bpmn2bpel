@@ -1,0 +1,14 @@
+apply plugin: 'java'
+group = 'bpmn2bpel'
+version = '2012-10-01'
+
+// with gradle 1.1, Sonar 3.2 is not working. One needs Sonar 3.1.1
+apply plugin: 'sonar'
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/'
+		}
+	}
+}
