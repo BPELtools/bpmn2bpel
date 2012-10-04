@@ -33,6 +33,7 @@ import org.eclipse.bpel.model.Source;
 import org.eclipse.bpel.model.Sources;
 import org.eclipse.bpel.model.Target;
 import org.eclipse.bpel.model.Targets;
+import org.eclipse.bpel.model.Throw;
 import org.eclipse.bpel.model.Wait;
 import org.eclipse.bpel.model.While;
 import org.eclipse.bpel.model.impl.ActivityImpl;
@@ -62,6 +63,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CancelEventDefinition;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.EndEvent;
@@ -123,6 +125,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	private ProcessImpl mainproc;
 	private String name;
 	private Map<String, Set<Link>> boundaryLinks;
+	private boolean interruptsflow = false;
 	
 	
 	public BPMNProcessTree(Bpmn2Resource res) {
@@ -145,6 +148,14 @@ public class BPMNProcessTree extends DirectedGraph {
 	public void setName(String procname) {
 		
 		this.name = procname;
+	}
+	
+	public void setInterrupting() {
+		this.interruptsflow = true;
+	}
+	
+	public boolean isInterrupting() {
+		return this.interruptsflow;
 	}
 	
 	// NOTE: Here it could be factorized the function by returning the vertex or
@@ -236,11 +247,6 @@ public class BPMNProcessTree extends DirectedGraph {
 			}
 			
 		}
-		// BoundaryEvents are searched within the Elements of the BPMN File in
-		// order to find the exception flows.
-		this.searchBoundaryEvents(eobj, this, null);
-		
-		// System.out.println("vertices: "+this.countVertices());
 		
 	}
 	
@@ -301,6 +307,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						excepFlowTree.addVertex(ntargetmain);
 						excepFlowTree.addEdge(s, ExFlowNode, ntargetmain);
+						excepFlowTree.setInterrupting();
 						
 					}
 					
@@ -556,10 +563,17 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If instance of normal Task
 				if (nentry.getElement() instanceof Task) {
 					
-					if ((nentry.getElement() instanceof ServiceTask) || (nentry.getElement() instanceof SendTask)) {
+					if ((nentry.getElement() instanceof ServiceTask)) {
 						
 						Task t1 = (Task) nentry.getElement();
+						ServiceTask st1 = (ServiceTask) nentry.getElement();
 						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						org.eclipse.bpmn2.Operation st1Op = st1.getOperationRef();
+						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+						Operation i1Op = wsdlfact.createOperation();
+						
+						i1Op.setName(st1Op.getName());
+						i1.setOperation(i1Op);
 						
 						// Set name of the Invoke
 						i1.setName(nentry.getName());
@@ -606,23 +620,78 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 						}
 						
-						// If DataInputAssociations
-						/*
-						 * if(t1.getDataInputAssociations()!=null){
-						 * 
-						 * // For every DataInputAssociation the Dataobjects are
-						 * obtained for(DataInputAssociation datai:
-						 * t1.getDataInputAssociations()){
-						 * 
-						 * 
-						 * } }
-						 */
+						return i1;
+					} else if (nentry.getElement() instanceof SendTask) {
+						
+						Task t1 = (Task) nentry.getElement();
+						SendTask st1 = (SendTask) nentry.getElement();
+						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						org.eclipse.bpmn2.Operation st1Op = st1.getOperationRef();
+						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+						Operation i1Op = wsdlfact.createOperation();
+						
+						i1Op.setName(st1Op.getName());
+						i1.setOperation(i1Op);
+						
+						// Set name of the Invoke
+						i1.setName(nentry.getName());
+						
+						// Check if the task has a Loop definition
+						if (t1.getLoopCharacteristics() != null) {
+							
+							if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
+								
+								MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
+								ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
+								exprS.setBody("1");
+								exprF.setBody(exp.getId());
+								ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+								scope1.setActivity(i1);
+								fe1.setStartCounterValue(exprS);
+								fe1.setFinalCounterValue(exprF);
+								fe1.setParallel(!mloopchar.isIsSequential());
+								fe1.setActivity(scope1);
+								
+								return fe1;
+								
+							} else {
+								LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
+								ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+								WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+								
+								Condition BpelWhileCond = mainfact.createCondition();
+								
+								// The body of the condition set to the id.
+								// (NOTE)
+								BpelWhileCond.setBody(loopCond.getId());
+								
+								// The Bpel-While structure is filled with the
+								// activity (in this case invoke) and condition
+								while1.setActivity(i1);
+								while1.setCondition(BpelWhileCond);
+								
+								return while1;
+							}
+							
+						}
 						
 						return i1;
+						
 					} else if (nentry.getElement() instanceof ReceiveTask) {
 						
 						Task t1 = (Task) nentry.getElement();
+						ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
 						ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+						
+						org.eclipse.bpmn2.Operation rt1Op = rt1.getOperationRef();
+						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+						Operation i1Op = wsdlfact.createOperation();
+						
+						i1Op.setName(rt1Op.getName());
+						r1.setOperation(i1Op);
 						
 						// Set name of the Receive
 						r1.setName(nentry.getName());
@@ -688,9 +757,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							return r1;
 						}
 						
-					} else if (nentry.getElement() instanceof CallActivity) {
-						
-						System.out.println("callactivity");
+					} else if ((nentry.getElement() instanceof CallActivity) || (nentry.getElement() instanceof ServiceTask)) {
 						
 						Activity a1 = (Activity) nentry.getElement();
 						Invoke i1 = mainfact.createInvoke();
@@ -772,8 +839,9 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (nentry.getElement() instanceof SubProcess) {
 					
-					ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+					Scope scope1 = mainfact.createScope();
 					BPMNProcessTree subprocT = nentry.getSubprocessTree();
+					SubProcess s1 = (SubProcess) nentry.getElement();
 					
 					RPST rpstgraph = new RPST(subprocT);
 					RPSTNode subProcRoot = rpstgraph.getRoot();
@@ -784,6 +852,43 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					scope1.setName(nentry.getName());
 					scope1.setActivity(a1);
+					
+					// Obtain the boundary event flows
+					List<BPMNProcessTree> eventFlows = nentry.getBoundaryEventFlows();
+					
+					// All the Event flows are added to the scope
+					if (eventFlows.size() != 0) {
+						
+						hasBoundary = true;
+						
+						for (int i = 0; i < eventFlows.size(); i++) {
+							
+							scope1 = this.AddHandlertoScope(eventFlows.get(i), scope1);
+							
+						}
+						
+					}
+					
+					if (s1.getLoopCharacteristics() != null) {
+						
+						LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) s1.getLoopCharacteristics();
+						ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+						WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+						
+						Condition BpelWhileCond = mainfact.createCondition();
+						
+						// The body of the condition set to the id. (NOTE)
+						BpelWhileCond.setBody(loopCond.getId());
+						
+						// The Bpel-While structure is filled with the
+						// activity
+						// (in this case invoke) and condition
+						while1.setActivity(a1);
+						while1.setCondition(BpelWhileCond);
+						
+						scope1.setActivity(while1);
+						
+					}
 					
 					return scope1;
 					
@@ -819,15 +924,15 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							TimerEventDefinition timerDef = (TimerEventDefinition) inEv.getEventDefinitions().get(0);
 							Wait wait1 = mainfact.createWait();
-							FormalExpression timedur = (FormalExpression) timerDef.getTimeDuration();
-							FormalExpression timeDate = (FormalExpression) timerDef.getTimeDate();
+							Expression timedur = timerDef.getTimeDuration();
+							Expression timeDate = timerDef.getTimeDate();
 							org.eclipse.bpel.model.Expression waitExp = mainfact.createExpression();
 							
 							if (timedur != null) {
-								waitExp.setBody(timedur.getMixed().getValue(0));
+								waitExp.setBody(timedur.getAnyAttribute());
 								wait1.setFor(waitExp);
 							} else if (timeDate != null) {
-								waitExp.setBody(timeDate.getMixed().getValue(0));
+								waitExp.setBody(timeDate.getAnyAttribute());
 								wait1.setUntil(waitExp);
 								
 							}
@@ -2280,23 +2385,25 @@ public class BPMNProcessTree extends DirectedGraph {
 			faultH = mainfact.createFaultHandler();
 		} else {
 			faultH = actScope.getFaultHandlers();
+			
+			if (faultH == null) {
+				faultH = mainfact.createFaultHandler();
+			}
 		}
 		
 		RPSTNode EvHandlerRoot = EvHandlerRPST.getRoot();
 		WFNode HandlerEntry = (WFNode) EvHandlerRoot.getEntry();
 		WFNode HandlerExit = (WFNode) EvHandlerRoot.getExit();
 		
-		BoundaryEvent bound = (BoundaryEvent) HandlerEntry.getElement();
-		
 		// If the ending node of the boundary event handler is in the main flow
 		if (HandlerExit.isMainFlow()) {
 			
 			// Check if the Event Definition is interruptive
-			if (bound.isCancelActivity()) {
+			if (eventHandler.isInterrupting()) {
 				
 				org.eclipse.bpel.model.Activity ActHandler = this.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
-				BoundaryEvent event = (BoundaryEvent) HandlerEntry.getElement();
+				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
 				Catch faultCatch = mainfact.createCatch();
 				Documentation handlerInfo = mainfact.createDocumentation();
 				
@@ -2440,7 +2547,18 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					// TODO
 					
+				} else if (event.getEventDefinitions().get(0) instanceof SignalEventDefinition) {
+					
+					// TODO
+					
+				} else if (event.getEventDefinitions().get(0) instanceof ConditionalEventDefinition) {
+					
+					// TODO
 				}
+				
+			}
+			// If the Boundary-Flow isn't interrupting
+			else {
 				
 			}
 			
@@ -2450,11 +2568,11 @@ public class BPMNProcessTree extends DirectedGraph {
 		else {
 			
 			// Check if the Event Definition is interruptive
-			if (bound.isCancelActivity()) {
+			if (eventHandler.isInterrupting()) {
 				
 				org.eclipse.bpel.model.Activity ActHandler = this.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
-				BoundaryEvent event = (BoundaryEvent) HandlerEntry.getElement();
+				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
 				Documentation handlerInfo = mainfact.createDocumentation();
 				Catch faultCatch = mainfact.createCatch();
 				
@@ -2468,23 +2586,79 @@ public class BPMNProcessTree extends DirectedGraph {
 				if (event.getEventDefinitions().get(0) instanceof ErrorEventDefinition) {
 					
 					faultCatch.setFaultName(new QName(event.getName()));
+					faultCatch.setActivity(ActHandler);
 					faultH.getCatch().add(faultCatch);
 					actScope.setFaultHandlers(faultH);
-					
-					faultCatch.setActivity(ActHandler);
 					
 				}
 				// If the Boundary Event is of type Message or Time an OnAlarm
 				// is created linking to a Fault Handler
 				else if (event.getEventDefinitions().get(0) instanceof TimerEventDefinition) {
 					
-					CompensationHandler compH = mainfact.createCompensationHandler();
-					compH.setActivity(ActHandler);
-					actScope.setCompensationHandler(compH);
+					// TODO
+					TimerEventDefinition timevdef = (TimerEventDefinition) event.getEventDefinitions().get(0);
+					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
+					Throw throwEv = mainfact.createThrow();
+					
+					if (EvHandler == null) {
+						EvHandler = mainfact.createEventHandler();
+					}
+					OnAlarm alarmEv = mainfact.createOnAlarm();
+					
+					faultCatch.setFaultName(new QName(event.getName() + "fault"));
+					throwEv.setFaultName(new QName(event.getName() + "fault"));
+					
+					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
+					org.eclipse.bpel.model.Expression timeexp = mainfact.createExpression();
+					
+					// Set the date, duration or repeat cycle.
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setRepeatEvery(timeexp);
+					}
+					timeCyc = (FormalExpression) timevdef.getTimeDate();
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setUntil(timeexp);
+					}
+					timeCyc = (FormalExpression) timevdef.getTimeDuration();
+					if (timeCyc != null) {
+						timeexp.setBody(timeCyc.getMixed().getValue(0));
+						alarmEv.setFor(timeexp);
+					}
+					alarmEv.setActivity(throwEv);
+					EvHandler.getAlarm().add(alarmEv);
+					faultCatch.setActivity(ActHandler);
+					faultH.getCatch().add(faultCatch);
+					actScope.setFaultHandlers(faultH);
 					
 				} else if (event.getEventDefinitions().get(0) instanceof MessageEventDefinition) {
 					
-					// TODO
+					MessageEventDefinition msgdef = (MessageEventDefinition) event.getEventDefinitions().get(0);
+					org.eclipse.bpmn2.Operation msgOp = msgdef.getOperationRef();
+					WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+					
+					// Create new WSDL Operation to be added to the BPEL
+					Operation onMsgOperation = wsdlfact.createOperation();
+					onMsgOperation.setName(msgOp.getName());
+					
+					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
+					Throw throwEv = mainfact.createThrow();
+					
+					if (EvHandler == null) {
+						EvHandler = mainfact.createEventHandler();
+					}
+					OnEvent msgEv = mainfact.createOnEvent();
+					msgEv.setOperation(onMsgOperation);
+					
+					faultCatch.setFaultName(new QName(event.getName() + "fault"));
+					throwEv.setFaultName(new QName(event.getName() + "fault"));
+					
+					msgEv.setActivity(throwEv);
+					EvHandler.getEvents().add(msgEv);
+					faultCatch.setActivity(ActHandler);
+					faultH.getCatch().add(faultCatch);
+					actScope.setFaultHandlers(faultH);
 					
 				} else if (event.getEventDefinitions().get(0) instanceof EscalationEventDefinition) {
 					
@@ -2492,15 +2666,32 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (event.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
 					
-					// TODO
-					System.out.println("compensación! :D");
+					CompensationHandler compH = mainfact.createCompensationHandler();
+					compH.setActivity(ActHandler);
+					actScope.setCompensationHandler(compH);
 					
 				}
 				
 			}
-			// If the Event Definition is not interruptive
+			// If the Boundary Event isn't interrupting
 			else {
-				
+				/*
+				 * org.eclipse.bpel.model.Activity ActHandler =
+				 * this.BpmnProctree2BpelModelPart(EvHandlerRoot,
+				 * EvHandlerRPST); CatchEvent event = (CatchEvent)
+				 * HandlerEntry.getElement();
+				 * 
+				 * if (event.getEventDefinitions().get(0) instanceof
+				 * MessageEventDefinition) {
+				 * 
+				 * faultCatch.setFaultName(new QName(event.getName()));
+				 * faultH.getCatch().add(faultCatch);
+				 * actScope.setFaultHandlers(faultH);
+				 * 
+				 * faultCatch.setActivity(ActHandler);
+				 * 
+				 * }
+				 */
 			}
 			
 		}
@@ -2508,7 +2699,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		return actScope;
 	}
 	
-	private void searchBoundaryEvents(EObject eobj, BPMNProcessTree parent, BPMNProcessTree gparent) {
+	void searchBoundaryEvents(EObject eobj, BPMNProcessTree parent, BPMNProcessTree gparent) {
 		// TODO Auto-generated method stub
 		
 		WFNode subprocGrandP = null;
@@ -2562,7 +2753,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							interrupting = startEv.isIsInterrupting();
 							SubProcess psubp = (SubProcess) son.eContainer().eContainer();
 							
-							startHandler = this.containsVertex(startEv.getId());
+							startHandler = new WFNode(startEv);
 							
 							if (gparent != null) {
 								subprocGrandP = gparent.containsVertex(psubp.getId());
@@ -2581,17 +2772,25 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (son instanceof SubProcess) {
 					
+					BPMNProcessTree subpTree = null;
+					WFNode subpnode = this.containsVertex(((SubProcess) son).getId());
+					if (subpnode != null) {
+						subpTree = subpnode.getSubprocessTree();
+					}
+					
 					if (((SubProcess) son).isTriggeredByEvent()) {
 						
-						this.searchBoundaryEvents(son, this, parent);
+						this.searchBoundaryEvents(son, this, gparent);
 						
 					} else {
 						
-						this.searchBoundaryEvents(son, this, parent); // segunda
-																		// funcion
-						
+						subpTree.searchBoundaryEvents(son, subpTree, this); // segunda
+																			// funcion
 					}
 					
+				} else if (son instanceof Process) {
+					this.setName(((Process) son).getName());
+					this.searchBoundaryEvents(son, parent, gparent);
 				}
 				
 			}

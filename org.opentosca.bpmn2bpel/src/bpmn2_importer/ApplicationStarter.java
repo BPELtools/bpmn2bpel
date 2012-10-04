@@ -27,7 +27,7 @@ public class ApplicationStarter implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		
 		ResourceSet resourceSet = new ResourceSetImpl();
-		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/Process-SubProcess2.xml"), true);
+		Bpmn2Resource res = (Bpmn2Resource) resourceSet.getResource(URI.createFileURI("C:/git-repositories/BPMN2BPEL/examples/sugarCRMBuildPlan2.xml"), true);
 		DocumentRoot root = (DocumentRoot) res.getContents().get(0);
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		BPMNProcessTree rpstWt;
@@ -40,6 +40,7 @@ public class ApplicationStarter implements IApplication {
 				System.out.println("class: " + def.getClass());
 				
 				wt.FillTree(content);
+				wt.searchBoundaryEvents(content, wt, null);
 				System.out.println(wt.toString());
 				wt.AssignImports(def.getImports());
 			} else {
