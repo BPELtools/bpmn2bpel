@@ -1,0 +1,9 @@
+Private-Package: org.opentosca.bpmn2bpel.service.rest
+JAX-RS-Alias: /example
+JAX-RS-Classes: org.opentosca.bpmn2bpel.service.rest.HelloWorldResource
+-runee: JavaSE-1.7
+-runfw: org.apache.felix.framework;version='[4.0.1,4.0.1]'
+-buildpath: osgi.core,\
+	osgi.cmpn,\
+	javax.servleterver
+Bundle-Version: 0.0.1

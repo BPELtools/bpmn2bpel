@@ -1,0 +1,34 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+//apply plugin: 'sonar'
+
+group = 'bpmn2bpel'
+//version = '2012-10-01'
+
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/'
+		}
+	}
+}
+
+repositories {
+	maven {
+		url "http://repo1.maven.org/maven2/"
+	}
+}
+
+dependencies {
+	compile group: 'com.sun.jersey', name: 'jersey-core', version: '1.14', transitive: true
+	compile group: 'com.sun.jersey', name: 'jersey-server', version: '1.14', transitive: true
+	compile group: 'org.apache.felix', name: 'org.apache.felix.http.jetty', version: '2.2.0', transitive: true
+}
+
+eclipse {
+	pathVariables GRADLE_HOME: gradle.gradleUserHomeDir
+}
