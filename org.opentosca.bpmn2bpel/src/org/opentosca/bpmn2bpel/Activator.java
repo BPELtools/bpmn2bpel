@@ -1,4 +1,4 @@
-package bpmn2_importer;
+package org.opentosca.bpmn2bpel;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

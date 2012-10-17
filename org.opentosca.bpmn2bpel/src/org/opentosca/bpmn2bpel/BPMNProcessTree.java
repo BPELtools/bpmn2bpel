@@ -1,4 +1,4 @@
-package bpmn2_importer;
+package org.opentosca.bpmn2bpel;
 
 import java.util.ArrayList;
 import java.util.Collection;

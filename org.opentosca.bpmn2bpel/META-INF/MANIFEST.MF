@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: BPMN2-importer
 Bundle-SymbolicName: org.opentosca.bpmn2bpel;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: bpmn2_importer.Activator
+Bundle-Activator: org.opentosca.bpmn2bpel.Activator
 Require-Bundle: org.eclipse.ui;resolution:=optional,
  org.eclipse.core.runtime;resolution:=optional,
  org.eclipse.bpmn2;bundle-version="0.7.0";resolution:=optional,
