@@ -1,4 +1,4 @@
-package org.opentosca.bpmn2bpel;
+package org.opentosca.bpmn2bpel.converter;
 
 import java.util.Collection;
 import java.util.Iterator;
