@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Rest
+Bundle-SymbolicName: org.opentosca.bpmn2bpel.service.rest
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.opentosca.bpmn2bpel.service.rest.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.opentosca.bpmn2bpel.converter;bundle-version="1.0.0",
+ com.eclipsesource.jaxrs.connector;bundle-version="2.0.0",
+ com.sun.jersey.core;bundle-version="1.13.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
