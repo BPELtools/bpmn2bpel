@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.EquinoxLauncher">
+<booleanAttribute key="append.args" value="true"/>
+<booleanAttribute key="automaticAdd" value="false"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/BPMN2BPEL REST Service"/>
+<booleanAttribute key="default" value="true"/>
+<booleanAttribute key="default_auto_start" value="true"/>
+<intAttribute key="default_start_level" value="4"/>
+<booleanAttribute key="includeOptional" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcom.sun.jersey.config.feature.CanonicalizeURIPath=true -Dcom.sun.jersey.config.feature.NormalizeURI=true -Dcom.sun.jersey.config.feature.Redirect=true -Dorg.eclipse.update.reconcile=false -Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -Xms40m -Xmx512m -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=9091"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<stringAttribute key="target_bundles" value="ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,com.ibm.icu@default:default,com.sun.jersey.core@default:default,com.sun.jersey.jersey-server@default:default,com.sun.jersey.servlet@default:default,javax.wsdl@default:default,javax.xml@default:default,org.apache.felix.http.jetty@default:default,org.apache.xerces@default:default,org.apache.xml.resolver@default:default,org.apache.xml.serializer@default:default,org.eclipse.core.commands@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.expressions@default:default,org.eclipse.core.filebuffers@default:default,org.eclipse.core.filesystem.win32.x86@default:false,org.eclipse.core.filesystem@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.resources@default:default,org.eclipse.core.runtime@default:true,org.eclipse.emf.common@default:default,org.eclipse.emf.ecore.xmi@default:default,org.eclipse.emf.ecore@default:default,org.eclipse.equinox.app@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.registry@default:default,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.eclipse.text@default:default,org.eclipse.wst.common.core@default:default,org.eclipse.wst.common.environment@default:default,org.eclipse.wst.common.frameworks@default:default,org.eclipse.wst.common.project.facet.core@default:default,org.eclipse.wst.common.uriresolver@default:default,org.eclipse.wst.sse.core@default:default,org.eclipse.wst.validation@default:default,org.eclipse.wst.wsdl@default:default,org.eclipse.wst.xml.core@default:default,org.eclipse.wst.xsd.core@default:default,org.eclipse.xsd@default:default,org.slf4j.api@default:default"/>
+<stringAttribute key="timestamp" value="1350571703653"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+<stringAttribute key="workspace_bundles" value="org.eclipse.bpel.common.model@default:default,org.eclipse.bpel.model@default:default,org.eclipse.bpmn2@default:default,org.opentosca.bpmn2bpel.converter@default:default,org.opentosca.bpmn2bpel.service.rest@default:default"/>
+</launchConfiguration>

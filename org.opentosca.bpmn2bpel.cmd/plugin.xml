@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="bpmn2bpel_cmd_application"
+         name="BPMN2BPEL Command Line Application"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.opentosca.bpmn2bpel.cmd.BPMN2BPELCommandLineApplication">
+         </run>
+      </application>
+   </extension>
+
+</plugin>

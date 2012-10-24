@@ -1,0 +1,12 @@
+   <servlet>
+        <servlet-name>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.opentosca.bpmn2bpel.rest.</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>

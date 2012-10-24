@@ -1,0 +1,36 @@
+apply plugin: 'java'
+//apply plugin: 'eclipse'
+//apply plugin: 'sonar'
+
+group = 'bpmn2bpel'
+//version = '2012-10-01'
+
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/'
+		}
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url "http://repo1.maven.org/maven2/"  }
+	maven { url "http://download.java.net/maven/2/" }
+	// Gradle currently does not consider any repositories declared in the pom of dependencies: http://jira.codehaus.org/browse/GRADLE-611
+	maven { url "http://download.java.net/maven/glassfish/" }
+}
+
+// all dependencies are provided by the target platform
+dependencies {
+	compile group: 'com.sun.jersey', name: 'jersey-core', version: '1.14', transitive: true
+	compile group: 'com.sun.jersey', name: 'jersey-server', version: '1.14', transitive: true
+	compile group: 'com.sun.jersey', name: 'jersey-servlet', version: '1.14', transitive: true
+	compile group: 'com.sun.jersey.contribs', name: 'jersey-multipart', version: '1.14', transitive: true
+	// org.apache.felix.http alone does not work, we need org.apache.felix.http.jetty
+	compile group: 'org.apache.felix', name: 'org.apache.felix.http.jetty', version: '2.2.0', transitive: true
+}
