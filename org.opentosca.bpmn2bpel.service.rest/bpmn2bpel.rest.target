@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="32">
+<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="33">
 <locations>
 <location path="${eclipse_home}" type="Profile"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-core\1.14\jar\693061de8b9b352b11e997b1dd4052677778852d" type="Directory"/>
@@ -7,6 +7,7 @@
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey.contribs\jersey-multipart\1.14\jar\7282dd3c2168d6eba9e5a8fdf7b591a3103c7d4b" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-servlet\1.14\jar\4b87041a59ee152757b62e47a21d5b63fde20ffe" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-server\1.14\jar\b1a21724c9b708ed54d42d41bb19ff45ae1d49d9" type="Directory"/>
+<location path="${gradle_home}\caches\artifacts-14\filestore\org.jvnet.mimepull\mimepull\1.8\jar\e0b2ed6e9ccaafe3e96294a181c09e3aae18aa90" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="org.eclipse.emf.common"/>
