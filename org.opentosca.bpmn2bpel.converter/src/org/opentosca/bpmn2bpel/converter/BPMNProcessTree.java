@@ -593,8 +593,10 @@ public class BPMNProcessTree extends DirectedGraph {
 						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
 						Operation i1Op = wsdlfact.createOperation();
 						
-						i1Op.setName(st1Op.getName());
-						i1.setOperation(i1Op);
+						if (st1Op != null) {
+							i1Op.setName(st1Op.getName());
+							i1.setOperation(i1Op);
+						}
 						
 						// Set name of the Invoke
 						i1.setName(nentry.getName());
@@ -651,8 +653,10 @@ public class BPMNProcessTree extends DirectedGraph {
 						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
 						Operation i1Op = wsdlfact.createOperation();
 						
-						i1Op.setName(st1Op.getName());
-						i1.setOperation(i1Op);
+						if (st1Op != null) {
+							i1Op.setName(st1Op.getName());
+							i1.setOperation(i1Op);
+						}
 						
 						// Set name of the Invoke
 						i1.setName(nentry.getName());
@@ -708,11 +712,16 @@ public class BPMNProcessTree extends DirectedGraph {
 						ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
 						
 						org.eclipse.bpmn2.Operation rt1Op = rt1.getOperationRef();
-						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
-						Operation i1Op = wsdlfact.createOperation();
-						
-						i1Op.setName(rt1Op.getName());
-						r1.setOperation(i1Op);
+						if (rt1Op != null) {
+							WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+							Operation i1Op = wsdlfact.createOperation();
+							
+							String opName = rt1Op.getName();
+							if (opName != null) {
+								i1Op.setName(opName);
+								r1.setOperation(i1Op);
+							}
+						}
 						
 						// Set name of the Receive
 						r1.setName(nentry.getName());
