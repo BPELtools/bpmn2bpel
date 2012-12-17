@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="org.opentosca.sugarcrm" xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop" xmlns:wsdl="http://ec2vm.aws.ia.opentosca.org" xmlns:wsdl1="http://ec2linux.aws.ia.opentosca.org" name="SugarCRMBuildPlan" targetNamespace="org.opentosca.sugarcrm">
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     TYPE DEFINITION - List of services participating in this BPEL process 
+     The default output of the BPEL designer uses strings as input and 
+     output to the BPEL Process. But you can define or import any XML 
+     Schema type and us them as part of the message types.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <plnk:partnerLinkType name="EC2VMIAServicePLT">
+    <plnk:role name="Requestor" portType="wsdl:EC2VMIAService"/>
+    <plnk:role name="Provider" portType="wsdl:EC2VMIAService"/>
+  </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="EC2LinuxIAPLT">
+    <plnk:role name="Requestor" portType="wsdl1:EC2LinuxIAService"/>
+    <plnk:role name="Provider" portType="wsdl1:EC2LinuxIAService"/>
+  </plnk:partnerLinkType>
+    <import location="EC2VMIAService.wsdl" namespace="http://ec2vm.aws.ia.opentosca.org"/>
+    <import location="EC2LinuxIAService.wsdl" namespace="http://ec2linux.aws.ia.opentosca.org"/>
+    <types>  
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="org.opentosca.sugarcrm">
+                
+            <element name="SugarCRMBuildPlanRequest">
+                <complexType>
+                    <sequence>
+                        <element name="input" type="string"/>
+                    </sequence>
+                </complexType>
+            </element>
+                  
+            <element name="SugarCRMBuildPlanResponse">
+                <complexType>
+                    <sequence>
+                    	<element name="result" type="string"/>
+                    	<element name="ec2InstanceId" type="string"/>
+                    	<element name="publicDNS" type="string"/>
+                    	<element name="TestScriptResult_0_0" type="string"/>
+                    	<element name="Preperation_Copy_Scripts_Result_1_1" type="string"/>
+                    	<element name="Preperation_Update_Redhat_Result_1_2" type="string"/>
+                    	<element name="Poll_For_Update_Done_Result_1_3" type="string"/>
+                    	<element name="MySQL_Install_DAs_2_1_Result" type="string"/>
+                    	<element name="MySQL_Install_2_2_Result" type="string"/>
+                    	<element name="MySQL_Configure_2_3_Result" type="string"/>
+                    	<element name="MySQL_Start_2_4_Result" type="string"/>
+                    	<element name="Apache_Install_DAs_3_1_Result" type="string"/>
+                    	<element name="Apache_Install_3_2_Result" type="string"/>
+                    	<element name="Apache_Configure_3_3_Result" type="string"/>
+                    	<element name="PHP_Install_DAs_4_1_Result" type="string"/>
+                    	<element name="PHP_Create_Dummy_Test_File_4_2_Result" type="string"/>
+                    	<element name="PHP_Start_4_3_Result" type="string"/>
+                    	<element name="MySQL_Configure_Root_Access_5_1_Result" type="string"/>
+                    	<element name="SugarCRMDB_Create_5_2_Result" type="string"/>
+                    	<element name="SugarCRM_Install_DAs_6_1_Result" type="string"/>
+                    	<element name="SugarCRM_Install_6_2_Result" type="string"/>
+                    	<element name="SugarCRM_Configure_6_3_Result" type="string"/>
+                    	<element name="SugarCRM_Set_File_Access_Rights_6_4_Result" type="string"/>
+                    	<element name="SugarCRM_Patch_Config_Si_6_5_Result" type="string"/>
+                    	<element name="SugarCRM_Start_6_7_Result" type="string"/>
+                    	<element name="SugarCRM_Start_Silent_Install_6_8_Result" type="string"/>
+                    </sequence>
+                </complexType>
+            </element>
+            
+        </schema>
+    </types>
+  
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     MESSAGE TYPE DEFINITION - Definition of the message types used as 
+     part of the port type defintions
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <message name="SugarCRMBuildPlanRequestMessage">
+        <part element="tns:SugarCRMBuildPlanRequest" name="payload"/>
+    </message>
+    
+    <message name="SugarCRMBuildPlanResponseMessage">
+        <part element="tns:SugarCRMBuildPlanResponse" name="payload"/>
+    </message>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     PORT TYPE DEFINITION - A port type groups a set of operations into
+     a logical service unit.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- portType implemented by the SugarCRMBuildPlan BPEL process -->
+    <portType name="SugarCRMBuildPlan">
+        <operation name="initiate">
+            <input message="tns:SugarCRMBuildPlanRequestMessage"/>
+        </operation>
+    </portType>
+
+    <!-- portType implemented by the requester of SugarCRMBuildPlan BPEL process 
+         for asynchronous callback purposes
+         -->
+    <portType name="SugarCRMBuildPlanCallback">
+        <operation name="onResult">
+            <input message="tns:SugarCRMBuildPlanResponseMessage"/>
+        </operation>
+    </portType>
+
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     PARTNER LINK TYPE DEFINITION
+         the SugarCRMBuildPlan partnerLinkType binds the provider and
+         requester portType into an asynchronous conversation.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
+    <plnk:partnerLinkType name="SugarCRMBuildPlan">
+        <plnk:role name="SugarCRMBuildPlanProvider" portType="tns:SugarCRMBuildPlan"/>
+        <plnk:role name="SugarCRMBuildPlanRequester" portType="tns:SugarCRMBuildPlanCallback"/>
+    </plnk:partnerLinkType>   
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     BINDING DEFINITION - Defines the message format and protocol details
+     for a web service.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <binding name="SugarCRMBuildPlanBinding" type="tns:SugarCRMBuildPlan">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="initiate">
+            <soap:operation soapAction="org.opentosca.sugarcrm/initiate"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+        </operation>
+    </binding>
+
+    <binding name="SugarCRMBuildPlanCallbackBinding" type="tns:SugarCRMBuildPlanCallback">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="onResult">
+            <soap:operation soapAction="org.opentosca.sugarcrm/onResult"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+        </operation>
+    </binding>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SERVICE DEFINITION - A service groups a set of ports into
+     a service unit.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <service name="SugarCRMBuildPlanService">
+        <port binding="tns:SugarCRMBuildPlanBinding" name="SugarCRMBuildPlanPort">
+    		<soap:address location="http://localhost:8080/SugarCRMBuildPlan"/>
+        </port>
+    </service>
+
+    <service name="SugarCRMBuildPlanServiceCallback">
+        <port binding="tns:SugarCRMBuildPlanCallbackBinding" name="SugarCRMBuildPlanPortCallbackPort">
+    		<soap:address location="http://localhost:8088/mockSugarCRMBuildPlanCallbackBinding"/>
+        </port>
+    </service>
+</definitions>

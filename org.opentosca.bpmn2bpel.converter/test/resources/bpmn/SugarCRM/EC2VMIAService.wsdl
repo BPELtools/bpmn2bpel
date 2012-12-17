@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://ec2vm.aws.ia.opentosca.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://ec2vm.aws.ia.opentosca.org" xmlns:intf="http://ec2vm.aws.ia.opentosca.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://ec2vm.aws.ia.opentosca.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="getPublicDNS">
+    <complexType>
+     <sequence>
+      <element name="instanceId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getPublicDNSResponse">
+    <complexType>
+     <sequence>
+      <element name="getPublicDNSReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="terminateByPublicDNS">
+    <complexType>
+     <sequence>
+      <element name="hostname" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="terminateByPublicDNSResponse">
+    <complexType>
+     <sequence>
+      <element name="terminateByPublicDNSReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="terminateByID">
+    <complexType>
+     <sequence>
+      <element name="instanceID" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="terminateByIDResponse">
+    <complexType>
+     <sequence>
+      <element name="terminateByIDReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createDefaultEC2Instance">
+    <complexType/>
+   </element>
+   <element name="createDefaultEC2InstanceResponse">
+    <complexType>
+     <sequence>
+      <element name="createDefaultEC2InstanceReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createEC2Instance">
+    <complexType>
+     <sequence>
+      <element name="instanceType" type="xsd:string"/>
+      <element name="amiId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createEC2InstanceResponse">
+    <complexType>
+     <sequence>
+      <element name="createEC2InstanceReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="blockingWaitForPublicDNS">
+    <complexType>
+     <sequence>
+      <element name="instanceId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="blockingWaitForPublicDNSResponse">
+    <complexType>
+     <sequence>
+      <element name="blockingWaitForPublicDNSReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="blockingWaitForPublicDNSResponse">
+
+      <wsdl:part element="impl:blockingWaitForPublicDNSResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="blockingWaitForPublicDNSRequest">
+
+      <wsdl:part element="impl:blockingWaitForPublicDNS" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEC2InstanceResponse">
+
+      <wsdl:part element="impl:createEC2InstanceResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="terminateByIDResponse">
+
+      <wsdl:part element="impl:terminateByIDResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="terminateByPublicDNSResponse">
+
+      <wsdl:part element="impl:terminateByPublicDNSResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="terminateByIDRequest">
+
+      <wsdl:part element="impl:terminateByID" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="terminateByPublicDNSRequest">
+
+      <wsdl:part element="impl:terminateByPublicDNS" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPublicDNSRequest">
+
+      <wsdl:part element="impl:getPublicDNS" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createDefaultEC2InstanceRequest">
+
+      <wsdl:part element="impl:createDefaultEC2Instance" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPublicDNSResponse">
+
+      <wsdl:part element="impl:getPublicDNSResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createDefaultEC2InstanceResponse">
+
+      <wsdl:part element="impl:createDefaultEC2InstanceResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEC2InstanceRequest">
+
+      <wsdl:part element="impl:createEC2Instance" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="EC2VMIAService">
+
+      <wsdl:operation name="getPublicDNS">
+
+         <wsdl:input message="impl:getPublicDNSRequest" name="getPublicDNSRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getPublicDNSResponse" name="getPublicDNSResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="terminateByPublicDNS">
+
+         <wsdl:input message="impl:terminateByPublicDNSRequest" name="terminateByPublicDNSRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:terminateByPublicDNSResponse" name="terminateByPublicDNSResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="terminateByID">
+
+         <wsdl:input message="impl:terminateByIDRequest" name="terminateByIDRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:terminateByIDResponse" name="terminateByIDResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createDefaultEC2Instance">
+
+         <wsdl:input message="impl:createDefaultEC2InstanceRequest" name="createDefaultEC2InstanceRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:createDefaultEC2InstanceResponse" name="createDefaultEC2InstanceResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEC2Instance">
+
+         <wsdl:input message="impl:createEC2InstanceRequest" name="createEC2InstanceRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:createEC2InstanceResponse" name="createEC2InstanceResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="blockingWaitForPublicDNS">
+
+         <wsdl:input message="impl:blockingWaitForPublicDNSRequest" name="blockingWaitForPublicDNSRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:blockingWaitForPublicDNSResponse" name="blockingWaitForPublicDNSResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="EC2VMIAServiceSoapBinding" type="impl:EC2VMIAService">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getPublicDNS">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getPublicDNSRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getPublicDNSResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="terminateByPublicDNS">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="terminateByPublicDNSRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="terminateByPublicDNSResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="terminateByID">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="terminateByIDRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="terminateByIDResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createDefaultEC2Instance">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="createDefaultEC2InstanceRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="createDefaultEC2InstanceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEC2Instance">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="createEC2InstanceRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="createEC2InstanceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="blockingWaitForPublicDNS">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="blockingWaitForPublicDNSRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="blockingWaitForPublicDNSResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="EC2VMIAServiceService">
+
+      <wsdl:port binding="impl:EC2VMIAServiceSoapBinding" name="EC2VMIAService">
+
+         <wsdlsoap:address location="http://example.com:8080/EC2-VM-Service/services/EC2VMIAService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

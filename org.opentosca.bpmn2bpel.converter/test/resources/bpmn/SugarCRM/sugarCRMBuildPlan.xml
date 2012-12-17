@@ -1,0 +1,1366 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ns1="http://ec2linux.aws.ia.opentosca.org" xmlns:ns2="http://ec2vm.aws.ia.opentosca.org" xmlns:ns3="org.opentosca.sugarcrm" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1346261518506" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Yaoqiang BPMN Editor" exporterVersion="2.0.123" expressionLanguage="http://www.w3.org/1999/XPath" id="_1346261518506" name="Test" targetNamespace="http://sourceforge.net/bpmn/definitions/_1346261518506" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="EC2LinuxIAService.wsdl" namespace="http://ec2linux.aws.ia.opentosca.org"/>
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="EC2VMIAService.wsdl" namespace="http://ec2vm.aws.ia.opentosca.org"/>
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="SugarCRMBuildPlanArtifacts.wsdl" namespace="org.opentosca.sugarcrm"/>
+  <itemDefinition id="ID_1" isCollection="false" itemKind="Information" structureRef="ns1:runScriptResponse"/>
+  <itemDefinition id="ID_2" isCollection="false" itemKind="Information" structureRef="ns1:installPackageResponse"/>
+  <itemDefinition id="ID_3" isCollection="false" itemKind="Information" structureRef="ns1:runScriptRequest"/>
+  <itemDefinition id="ID_4" isCollection="false" itemKind="Information" structureRef="ns1:installPackageRequest"/>
+  <itemDefinition id="ID_5" isCollection="false" itemKind="Information" structureRef="ns2:blockingWaitForPublicDNSResponse"/>
+  <itemDefinition id="ID_6" isCollection="false" itemKind="Information" structureRef="ns2:blockingWaitForPublicDNSRequest"/>
+  <itemDefinition id="ID_7" isCollection="false" itemKind="Information" structureRef="ns2:createEC2InstanceResponse"/>
+  <itemDefinition id="ID_8" isCollection="false" itemKind="Information" structureRef="ns2:terminateByIDResponse"/>
+  <itemDefinition id="ID_9" isCollection="false" itemKind="Information" structureRef="ns2:terminateByPublicDNSResponse"/>
+  <itemDefinition id="ID_10" isCollection="false" itemKind="Information" structureRef="ns2:terminateByIDRequest"/>
+  <itemDefinition id="ID_11" isCollection="false" itemKind="Information" structureRef="ns2:terminateByPublicDNSRequest"/>
+  <itemDefinition id="ID_12" isCollection="false" itemKind="Information" structureRef="ns2:getPublicDNSRequest"/>
+  <itemDefinition id="ID_13" isCollection="false" itemKind="Information" structureRef="ns2:createDefaultEC2InstanceRequest"/>
+  <itemDefinition id="ID_14" isCollection="false" itemKind="Information" structureRef="ns2:getPublicDNSResponse"/>
+  <itemDefinition id="ID_15" isCollection="false" itemKind="Information" structureRef="ns2:createDefaultEC2InstanceResponse"/>
+  <itemDefinition id="ID_16" isCollection="false" itemKind="Information" structureRef="ns2:createEC2InstanceRequest"/>
+  <itemDefinition id="ID_17" isCollection="false" itemKind="Information" structureRef="ns3:SugarCRMBuildPlanRequestMessage"/>
+  <itemDefinition id="ID_18" isCollection="false" itemKind="Information" structureRef="ns3:SugarCRMBuildPlanResponseMessage"/>
+  <message id="MSG_1" itemRef="ID_1" name="runScriptMsg"/>
+  <message id="MSG_2" itemRef="ID_2" name="installPackageMsg"/>
+  <message id="MSG_3" itemRef="ID_3" name="runScriptRequestMsg"/>
+  <message id="MSG_4" itemRef="ID_4" name="installPackageRequestMsg"/>
+  <message id="MSG_5" itemRef="ID_5" name="blockingWaitForPublicDNSResponseMsg"/>
+  <message id="MSG_6" itemRef="ID_6" name="blockingWaitForPublicDNSRequestMsg"/>
+  <message id="MSG_7" itemRef="ID_7" name="Message 7"/>
+  <message id="MSG_8" itemRef="ID_8" name="Message 8"/>
+  <message id="MSG_9" itemRef="ID_9" name="Message 9"/>
+  <message id="MSG_10" itemRef="ID_10" name="Message 10"/>
+  <message id="MSG_11" itemRef="ID_11" name="Message 11"/>
+  <message id="MSG_12" itemRef="ID_12" name="Message 12"/>
+  <message id="MSG_13" itemRef="ID_13" name="Message 13"/>
+  <message id="MSG_14" itemRef="ID_14" name="Message 14"/>
+  <message id="MSG_15" itemRef="ID_15" name="Message 15"/>
+  <message id="MSG_16" itemRef="ID_16" name="Message 16"/>
+  <message id="MSG_17" itemRef="ID_17" name="SugarCRMBuildPlanRequestMsg"/>
+  <message id="MSG_18" itemRef="ID_18" name="SugarCRMBuildPlanResponseMsg"/>
+  <interface id="IF_1" implementationRef="ns1:EC2LinuxIAService" name="EC2LinuxIAService">
+    <operation id="IF_1_O_1" implementationRef="ns1:runScript" name="runScript">
+      <inMessageRef>MSG_3</inMessageRef>
+      <outMessageRef>MSG_1</outMessageRef>
+    </operation>
+    <operation id="IF_1_O_2" implementationRef="ns1:installPackage" name="installPackage">
+      <inMessageRef>MSG_4</inMessageRef>
+      <outMessageRef>MSG_2</outMessageRef>
+    </operation>
+  </interface>
+  <interface id="IF_2" implementationRef="ns2:EC2VMIAService" name="EC2VMIAService">
+    <operation id="IF_2_O_1" implementationRef="ns2:getPublicDNS" name="getPublicDNS">
+      <inMessageRef>MSG_12</inMessageRef>
+      <outMessageRef>MSG_14</outMessageRef>
+    </operation>
+    <operation id="IF_2_O_2" implementationRef="ns2:terminateByPublicDNS" name="terminateByPublicDNS">
+      <inMessageRef>MSG_11</inMessageRef>
+      <outMessageRef>MSG_9</outMessageRef>
+    </operation>
+    <operation id="IF_2_O_3" implementationRef="ns2:terminateByID" name="terminateByID">
+      <inMessageRef>MSG_10</inMessageRef>
+      <outMessageRef>MSG_8</outMessageRef>
+    </operation>
+    <operation id="IF_2_O_4" implementationRef="ns2:createDefaultEC2Instance" name="createDefaultEC2Instance">
+      <inMessageRef>MSG_13</inMessageRef>
+      <outMessageRef>MSG_15</outMessageRef>
+    </operation>
+    <operation id="IF_2_O_5" implementationRef="ns2:createEC2Instance" name="createEC2Instance">
+      <inMessageRef>MSG_16</inMessageRef>
+      <outMessageRef>MSG_7</outMessageRef>
+    </operation>
+    <operation id="IF_2_O_6" implementationRef="ns2:blockingWaitForPublicDNS" name="blockingWaitForPublicDNS">
+      <inMessageRef>MSG_6</inMessageRef>
+      <outMessageRef>MSG_5</outMessageRef>
+    </operation>
+  </interface>
+  <interface id="IF_3" implementationRef="ns3:SugarCRMBuildPlan" name="SugarCRMBuildPlan">
+    <operation id="IF_3_O_1" implementationRef="ns3:initiate" name="initiate">
+      <inMessageRef>MSG_17</inMessageRef>
+    </operation>
+  </interface>
+  <interface id="IF_4" implementationRef="ns3:SugarCRMBuildPlanCallback" name="SugarCRMBuildPlanCallback">
+    <operation id="IF_4_O_1" implementationRef="ns3:onResult" name="onResult">
+      <inMessageRef>MSG_18</inMessageRef>
+    </operation>
+  </interface>
+  <process id="_1" isClosed="false" isExecutable="true" processType="None">
+    <property id="_1_P_1" itemSubjectRef="xsd:string" name="testProperty"/>
+    <dataObject id="DO_1_1" isCollection="false" name="Data Object"/>
+    <intermediateCatchEvent id="_11" name="OneMinuteWait" parallelMultiple="false">
+      <incoming>_12</incoming>
+      <outgoing>_59</outgoing>
+      <timerEventDefinition id="_11_ED_1">
+        <timeDuration><![CDATA[PT1S]]></timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="_12" sourceRef="_10" targetRef="_11"/>
+    <scriptTask completionQuantity="1" id="_14" isForCompensation="false" name="Execute Test Script On VM" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_60</incoming>
+      <outgoing>_54</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_14_1" isCollection="false" itemSubjectRef="ID_3" name="ExecuteTestScriptOnVMDataInput"/>
+        <dataOutput id="Dout_14_1" isCollection="false" itemSubjectRef="ID_1" name="ExecuteTestScriptOnVMDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_14_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_14_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_14_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_14_1</targetRef>
+        <assignment id="DIA_14_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_14_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_14_1">
+        <sourceRef>Dout_14_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_14_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_14_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:TestScriptResult_0_0]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[pwd]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_15" isForCompensation="false" name="1.1&#10;Preparation Copy&#10;Scripts" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_54</incoming>
+      <outgoing>_55</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_15_1" isCollection="false" itemSubjectRef="ID_3" name="PreparationCopyScriptsDataInput"/>
+        <dataOutput id="Dout_15_1" isCollection="false" itemSubjectRef="ID_1" name="PreparationCopyScriptsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_15_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_15_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_15_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_15_1</targetRef>
+        <assignment id="DIA_15_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_15_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_15_1">
+        <sourceRef>Dout_15_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_15_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_15_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Preperation_Copy_Scripts_Result_1_1]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[mkdir SugarCRM; cd SugarCRM && wget http://www.iaas.uni-stuttgart.de/institut/mitarbeiter/binz/scripts.zip &&  unzip -q scripts.zip]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_16" isForCompensation="false" name="1.2&#10;Preparation &#10;Update Redhat" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_55</incoming>
+      <outgoing>_56</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_16_1" isCollection="false" itemSubjectRef="ID_3" name="PreparationUpdataRedhatDataInput"/>
+        <dataOutput id="Dout_16_1" isCollection="false" itemSubjectRef="ID_1" name="PreparationUpdataRedhatDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_16_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_16_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_16_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_16_1</targetRef>
+        <assignment id="DIA_16_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_16_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_16_1">
+        <sourceRef>Dout_16_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_16_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_16_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Preperation_Update_Redhat_Result_1_2]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[echo "sudo nohup yum -y update &" > /tmp/yum-update.sh && sh -x /tmp/yum-update.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_17" isForCompensation="false" name="1.3 &#10;Preparation &#10;Poll for Update Done" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_56</incoming>
+      <outgoing>_61</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_17_1" isCollection="false" itemSubjectRef="ID_3" name="PreparationPollForUpdateDoneDataInput"/>
+        <dataOutput id="Dout_17_1" isCollection="false" itemSubjectRef="ID_1" name="PreparationPollForUpdateDoneDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_17_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_17_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_17_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_17_1</targetRef>
+        <assignment id="DIA_17_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_17_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_17_1">
+        <sourceRef>Dout_17_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_17_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_17_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Poll_For_Update_Done_Result_1_3]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo ps aux|grep "yum -y update"]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_19" isForCompensation="false" name="2.3 &#10;MySQL &#10;Configure" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_77</incoming>
+      <outgoing>_50</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_19_1" isCollection="false" itemSubjectRef="ID_3" name="MySQLConfigureDataInput"/>
+        <dataOutput id="Dout_19_1" isCollection="false" itemSubjectRef="ID_1" name="MySQLConfigureDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_19_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_19_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_19_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_19_1</targetRef>
+        <assignment id="DIA_19_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_19_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_19_1">
+        <sourceRef>Dout_19_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_19_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_19_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:MySQL_Configure_2_3_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo RootPassword=password sh ~/SugarCRM/scripts/MySql/configure.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_21" isForCompensation="false" name="2.4 &#10;MySQL &#10;Start" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_50</incoming>
+      <outgoing>_51</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_21_1" isCollection="false" itemSubjectRef="ID_3" name="MySQLStartDataInput"/>
+        <dataOutput id="Dout_21_1" isCollection="false" itemSubjectRef="ID_1" name="MySQLStartDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_21_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_21_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_21_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_21_1</targetRef>
+        <assignment id="DIA_21_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_21_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_21_1">
+        <sourceRef>Dout_21_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_21_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_21_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:bpmn:getDataObject('DO_1_3')/ns3:TestScriptResult_0_0]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo sh ~/SugarCRM/scripts/MySql/start.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_22" isForCompensation="false" name="4.2 &#10;PHP &#10;Create Dummy &#10;Test File" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_45</incoming>
+      <outgoing>_46</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_22_1" isCollection="false" itemSubjectRef="ID_3" name="PHPCreateDummyTestFileDataInput"/>
+        <dataOutput id="Dout_22_1" isCollection="false" itemSubjectRef="ID_1" name="PHPCreateDummyTestFileDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_22_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_22_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_22_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_22_1</targetRef>
+        <assignment id="DIA_22_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_22_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_22_1">
+        <sourceRef>Dout_22_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_22_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_22_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:PHP_Create_Dummy_Test_File_4_2_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[echo  "echo PHP > /var/www/html/test.php" > /tmp/x.sh && sudo sh /tmp/x.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_23" isForCompensation="false" name="3.3 &#10;Apache &#10;Configure" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_53</incoming>
+      <outgoing>_62</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_23_1" isCollection="false" itemSubjectRef="ID_3" name="ApacheInstallDataInput"/>
+        <dataOutput id="Dout_23_1" isCollection="false" itemSubjectRef="ID_1" name="ApacheInstallDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_23_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_23_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_23_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_23_1</targetRef>
+        <assignment id="DIA_23_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_23_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_23_1">
+        <sourceRef>Dout_23_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_23_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_23_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Apache_Configure_3_3_Result>]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo httpdport=80 sh ~/SugarCRM/scripts/ApacheWebServer/configure.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_24" isForCompensation="false" name="3.2 &#10;Apache &#10;Install" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_52</incoming>
+      <outgoing>_53</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_24_1" isCollection="false" itemSubjectRef="ID_3" name="ApacheInstallDataInput"/>
+        <dataOutput id="Dout_24_1" isCollection="false" itemSubjectRef="ID_3" name="ApacheInstallDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_24_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_24_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_24_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_24_1</targetRef>
+        <assignment id="DIA_24_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_24_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_24_1">
+        <sourceRef>Dout_24_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_24_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_24_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Apache_Install_DAs_3_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo sh ~/SugarCRM/scripts/ApacheWebServer/install.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_28" isForCompensation="false" name="4.3 &#10;PHP &#10;Start" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_46</incoming>
+      <outgoing>_47</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_28_1" isCollection="false" itemSubjectRef="ID_3" name="PHPStartDataInput"/>
+        <dataOutput id="Dout_28_1" isCollection="false" itemSubjectRef="ID_1" name="PHPStartDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_28_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_28_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_28_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_28_1</targetRef>
+        <assignment id="DIA_28_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_28_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_28_1">
+        <sourceRef>Dout_28_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_28_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_28_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:PHP_Start_4_3_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo sh ~/SugarCRM/scripts/PhpModule/start.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_29" isForCompensation="false" name="5.1 &#10;Mysql &#10;Configure Root &#10;Access" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_47</incoming>
+      <outgoing>_48</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_29_1" isCollection="false" itemSubjectRef="ID_3" name="MySQLConfigureRootAccessDataInput"/>
+        <dataOutput id="Dout_29_1" isCollection="false" itemSubjectRef="ID_1" name="MySQLConfigureRootAccessDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_29_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_29_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_29_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_29_1</targetRef>
+        <assignment id="DIA_29_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_29_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_29_1">
+        <sourceRef>Dout_29_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_29_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_29_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:MySQL_Configure_Root_Access_5_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[echo "echo -e '[client]\nuser=root\npassword=password' > /root/.my.cnf && chmod 600 /root/.my.cnf" > /tmp/x.sh && sudo sh /tmp/x.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_30" isForCompensation="false" name="5.2 &#10;Sugar CRM&#10;DB create" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_48</incoming>
+      <outgoing>_58</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_30_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMDBCreateDataInput"/>
+        <dataOutput id="Dout_30_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMDBCreateDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_30_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_30_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_30_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_30_1</targetRef>
+        <assignment id="DIA_30_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_30_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_30_1">
+        <sourceRef>Dout_30_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_30_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_30_1')/ns0:SugarCRMDB_Create_5_2_Result]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRMDB_Create_5_2_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[echo "create database SugarCRM;" |  sudo mysql -h localhost; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_31" isForCompensation="false" name="6.1&#10;Sugar CRM &#10;Install DAs" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_58</incoming>
+      <outgoing>_38</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_31_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMInstallDAsDataInput"/>
+        <dataOutput id="Dout_31_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMInstallDAsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_31_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_31_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_31_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_31_1</targetRef>
+        <assignment id="DIA_31_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_31_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_31_1">
+        <sourceRef>Dout_31_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_31_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_31_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Install_DAs_6_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[wget http://www.iaas.uni-stuttgart.de/institut/mitarbeiter/binz/THOR/DEPL-ARTIFACTS/files/SugarCE-6.4.2.zip && cd /var/www/html && sudo unzip -q -o ~/SugarCE-6.4.2.zip;echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_32" isForCompensation="false" name="6.2&#10;Sugar CRM&#10;Install" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_38</incoming>
+      <outgoing>_39</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_32_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMInstallDataInput"/>
+        <dataOutput id="Dout_32_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMInstallDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_32_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_32_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_32_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_32_1</targetRef>
+        <assignment id="DIA_32_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_32_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_32_1">
+        <sourceRef>Dout_32_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_32_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_32_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Install_6_2_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[cd ~/SugarCRM/scripts/SugarCrmApplication/ && sudo sh ./install.sh; echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_33" isForCompensation="false" name="6.3&#10;Sugar CRM &#10;Configure" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_39</incoming>
+      <outgoing>_40</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_33_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMConfigureDataInput"/>
+        <dataOutput id="Dout_33_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMConfigureDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_33_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_33_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_33_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_33_1</targetRef>
+        <assignment id="DIA_33_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_33_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_33_1">
+        <sourceRef>Dout_33_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_33_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_33_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Configure_6_3_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo SugarCRMKey=dummy AdminUser=admin AdminPassword=admin DemoData=false sh ~/SugarCRM/scripts/SugarCrmApplication/configure.sh ;  echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_34" isForCompensation="false" name="6.4&#10;Sugar CRM&#10;Set File Access &#10;Rights" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_40</incoming>
+      <outgoing>_41</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_34_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMSetFileAccessRightsDataInput"/>
+        <dataOutput id="Dout_34_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMSetFileAccessRightsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_34_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_34_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_34_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_34_1</targetRef>
+        <assignment id="DIA_34_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_34_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_34_1">
+        <sourceRef>Dout_34_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_34_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_34_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Set_File_Access_Rights_6_4_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo touch /var/www/html/SugarCE-Full-6.4.2/sugarcrm.log && sudo chmod a+w /var/www/html/SugarCE-Full-6.4.2/sugarcrm.log;  echo $? && sudo touch /var/www/html/SugarCE-Full-6.4.2/install.log && sudo chmod a+w /var/www/html/SugarCE-Full-6.4.2/install.log;  echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_35" isForCompensation="false" name="6.5&#10;Sugar CRM &#10;Patch config_si" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_41</incoming>
+      <outgoing>_42</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_35_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMPatchDataInput"/>
+        <dataOutput id="Dout_35_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMPatchDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_35_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_35_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_35_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_35_1</targetRef>
+        <assignment id="DIA_35_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_35_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_35_1">
+        <sourceRef>Dout_35_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_35_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_35_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Patch_Config_Si_6_5_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo sed -i 's/YOURWEBPORT/80/'  /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $? && sudo sed -i 's/YOURDBUSER/root/' /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $? && sudo sed -i 's/YOURDBPASSWORD/password/'  /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $? && sudo sed -i 's/YOURDBHOST/localhost/'  /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $? && sudo sed -i 's/DBPORT/3306/'  /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $? && sudo sed -i 's/YOURDBNAME/SugarCRM/'  /var/www/html/SugarCE-Full-6.4.2/config_si.php;  echo $? && sudo sed -i "s/'setup_db_create_database' => 0/'setup_db_create_database' => 1/"  /var/www/html/SugarCE-Full-6.4.2/config_si.php ;  echo $?]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_36" isForCompensation="false" name="6.7&#10;Sugar CRM&#10;Start" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_42</incoming>
+      <outgoing>_43</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_36_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMStartDataInput"/>
+        <dataOutput id="Dout_36_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMStartDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_36_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_36_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_36_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_36_1</targetRef>
+        <assignment id="DIA_36_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_36_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_36_1">
+        <sourceRef>Dout_36_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_36_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_36_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Start_6_7_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[sudo sh ~/SugarCRM/scripts/SugarCrmApplication/start.sh]]></script>
+    </scriptTask>
+    <scriptTask completionQuantity="1" id="_37" isForCompensation="false" name="6.8&#10;Sugar CRM&#10;Start Silent &#10;Install" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_43</incoming>
+      <outgoing>_67</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_37_1" isCollection="false" itemSubjectRef="ID_3" name="SugarCRMStartSilentInstallDataInput"/>
+        <dataOutput id="Dout_37_1" isCollection="false" itemSubjectRef="ID_1" name="SugarCRMStartSilentInstallDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_37_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_37_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_37_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_37_1</targetRef>
+        <assignment id="DIA_37_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_37_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_37_1">
+        <sourceRef>Dout_37_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_37_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_37_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:SugarCRM_Start_Silent_Install_6_8_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[wget "http://localhost:80/SugarCE-Full-6.4.2/install.php?goto=SilentInstall&cli=true"; echo $?]]></script>
+    </scriptTask>
+    <sequenceFlow id="_38" sourceRef="_31" targetRef="_32"/>
+    <sequenceFlow id="_39" sourceRef="_32" targetRef="_33"/>
+    <sequenceFlow id="_40" sourceRef="_33" targetRef="_34"/>
+    <sequenceFlow id="_41" sourceRef="_34" targetRef="_35"/>
+    <sequenceFlow id="_42" sourceRef="_35" targetRef="_36"/>
+    <sequenceFlow id="_43" sourceRef="_36" targetRef="_37"/>
+    <sequenceFlow id="_45" sourceRef="_27" targetRef="_22"/>
+    <sequenceFlow id="_46" sourceRef="_22" targetRef="_28"/>
+    <sequenceFlow id="_47" sourceRef="_28" targetRef="_29"/>
+    <sequenceFlow id="_48" sourceRef="_29" targetRef="_30"/>
+    <sequenceFlow id="_50" sourceRef="_19" targetRef="_21"/>
+    <sequenceFlow id="_51" sourceRef="_21" targetRef="_26"/>
+    <sequenceFlow id="_52" sourceRef="_26" targetRef="_24"/>
+    <sequenceFlow id="_53" sourceRef="_24" targetRef="_23"/>
+    <sequenceFlow id="_54" sourceRef="_14" targetRef="_15"/>
+    <sequenceFlow id="_55" sourceRef="_15" targetRef="_16"/>
+    <sequenceFlow id="_56" sourceRef="_16" targetRef="_17"/>
+    <sequenceFlow id="_58" sourceRef="_30" targetRef="_31"/>
+    <sequenceFlow id="_59" sourceRef="_11" targetRef="_13"/>
+    <sequenceFlow id="_60" sourceRef="_13" targetRef="_14"/>
+    <sequenceFlow id="_61" sourceRef="_17" targetRef="_25"/>
+    <sequenceFlow id="_62" sourceRef="_23" targetRef="_27"/>
+    <endEvent id="_63" name="End Event">
+      <incoming>_67</incoming>
+      <dataInput id="Din_63_69" isCollection="false"/>
+      <dataInputAssociation id="_78">
+        <sourceRef>_69</sourceRef>
+        <targetRef>Din_63_69</targetRef>
+      </dataInputAssociation>
+      <inputSet>
+        <dataInputRefs>Din_63_69</dataInputRefs>
+      </inputSet>
+      <messageEventDefinition id="_63_ED_1">
+        <operationRef>IF_4_O_1</operationRef>
+      </messageEventDefinition>
+    </endEvent>
+    <sequenceFlow id="_65" sourceRef="_64" targetRef="_10"/>
+    <sequenceFlow id="_67" sourceRef="_37" targetRef="_63"/>
+    <startEvent id="_64" isInterrupting="true" name="Start Event" parallelMultiple="false">
+      <outgoing>_65</outgoing>
+      <property id="_64_P_1" itemSubjectRef="ID_17" name="RqstMsg"/>
+      <dataOutput id="Dout_64_69" isCollection="false"/>
+      <dataOutputAssociation id="_3">
+        <sourceRef>Dout_64_69</sourceRef>
+        <targetRef>_69</targetRef>
+        <assignment id="_3_A_1">
+          <from><![CDATA[string('<tns:SugarCRMBuildPlanResponse xmlns:tns="org.opentosca.sugarcrm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <tns:result>tns:result</tns:result>
+  <tns:ec2InstanceId>tns:ec2InstanceId</tns:ec2InstanceId>
+  <tns:publicDNS>tns:publicDNS</tns:publicDNS>
+  <tns:TestScriptResult_0_0>tns:TestScriptResult_0_0</tns:TestScriptResult_0_0>
+  <tns:Preperation_Copy_Scripts_Result_1_1>tns:Preperation_Copy_Scripts_Result_1_1</tns:Preperation_Copy_Scripts_Result_1_1>
+  <tns:Preperation_Update_Redhat_Result_1_2>tns:Preperation_Update_Redhat_Result_1_2</tns:Preperation_Update_Redhat_Result_1_2>
+  <tns:Poll_For_Update_Done_Result_1_3>tns:Poll_For_Update_Done_Result_1_3</tns:Poll_For_Update_Done_Result_1_3>
+  <tns:MySQL_Install_DAs_2_1_Result>tns:MySQL_Install_DAs_2_1_Result</tns:MySQL_Install_DAs_2_1_Result>
+  <tns:MySQL_Install_2_2_Result>tns:MySQL_Install_2_2_Result</tns:MySQL_Install_2_2_Result>
+  <tns:MySQL_Configure_2_3_Result>tns:MySQL_Configure_2_3_Result</tns:MySQL_Configure_2_3_Result>
+  <tns:MySQL_Start_2_4_Result>tns:MySQL_Start_2_4_Result</tns:MySQL_Start_2_4_Result>
+  <tns:Apache_Install_DAs_3_1_Result>tns:Apache_Install_DAs_3_1_Result</tns:Apache_Install_DAs_3_1_Result>
+  <tns:Apache_Install_3_2_Result>tns:Apache_Install_3_2_Result</tns:Apache_Install_3_2_Result>
+  <tns:Apache_Configure_3_3_Result>tns:Apache_Configure_3_3_Result</tns:Apache_Configure_3_3_Result>
+  <tns:PHP_Install_DAs_4_1_Result>tns:PHP_Install_DAs_4_1_Result</tns:PHP_Install_DAs_4_1_Result>
+  <tns:PHP_Create_Dummy_Test_File_4_2_Result>tns:PHP_Create_Dummy_Test_File_4_2_Result</tns:PHP_Create_Dummy_Test_File_4_2_Result>
+  <tns:PHP_Start_4_3_Result>tns:PHP_Start_4_3_Result</tns:PHP_Start_4_3_Result>
+  <tns:MySQL_Configure_Root_Access_5_1_Result>tns:MySQL_Configure_Root_Access_5_1_Result</tns:MySQL_Configure_Root_Access_5_1_Result>
+  <tns:SugarCRMDB_Create_5_2_Result>tns:SugarCRMDB_Create_5_2_Result</tns:SugarCRMDB_Create_5_2_Result>
+  <tns:SugarCRM_Install_DAs_6_1_Result>tns:SugarCRM_Install_DAs_6_1_Result</tns:SugarCRM_Install_DAs_6_1_Result>
+  <tns:SugarCRM_Install_6_2_Result>tns:SugarCRM_Install_6_2_Result</tns:SugarCRM_Install_6_2_Result>
+  <tns:SugarCRM_Configure_6_3_Result>tns:SugarCRM_Configure_6_3_Result</tns:SugarCRM_Configure_6_3_Result>
+  <tns:SugarCRM_Set_File_Access_Rights_6_4_Result>tns:SugarCRM_Set_File_Access_Rights_6_4_Result</tns:SugarCRM_Set_File_Access_Rights_6_4_Result>
+  <tns:SugarCRM_Patch_Config_Si_6_5_Result>tns:SugarCRM_Patch_Config_Si_6_5_Result</tns:SugarCRM_Patch_Config_Si_6_5_Result>
+  <tns:SugarCRM_Start_6_7_Result>tns:SugarCRM_Start_6_7_Result</tns:SugarCRM_Start_6_7_Result>
+  <tns:SugarCRM_Start_Silent_Install_6_8_Result>tns:SugarCRM_Start_Silent_Install_6_8_Result</tns:SugarCRM_Start_Silent_Install_6_8_Result>
+</tns:SugarCRMBuildPlanResponse>')]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <outputSet>
+        <dataOutputRefs>Dout_64_69</dataOutputRefs>
+      </outputSet>
+      <messageEventDefinition id="_64_ED_1" messageRef="MSG_17">
+        <operationRef>IF_3_O_1</operationRef>
+      </messageEventDefinition>
+    </startEvent>
+    <dataObject id="DO_1_2" isCollection="false" itemSubjectRef="ID_16" name="EC2 Instance Request"/>
+    <dataObject id="DO_1_3" isCollection="false" itemSubjectRef="ID_18" name="SugarCRMBuildPlanExecutionState"/>
+    <dataObjectReference dataObjectRef="DO_1_3" id="_69"/>
+    <dataObject id="DO_1_4" isCollection="false" itemSubjectRef="ID_12" name="DNS Request"/>
+    <scriptTask completionQuantity="1" id="_75" isForCompensation="false" name="2.2 &#10;MySQL&#10;Install" scriptFormat="text/bash" startQuantity="1">
+      <incoming>_76</incoming>
+      <outgoing>_77</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_75_1" isCollection="false" itemSubjectRef="ID_3" name="MySQLInstallDataInput"/>
+        <dataOutput id="Dout_75_1" isCollection="false" itemSubjectRef="ID_1" name="MySQLInstallDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_75_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_75_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_75_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_75_1</targetRef>
+        <assignment id="DIA_75_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_75_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_75_1">
+        <sourceRef>Dout_75_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_75_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_75_1')/ns1:parameters/ns1:runScriptReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:MySQL_Install_2_2_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+      <script><![CDATA[cd ~/SugarCRM/scripts/MySql && sudo sh ~/SugarCRM/scripts/MySql/install.sh && sudo chown -R mysql:mysql /var/lib/mysql; echo $?]]></script>
+    </scriptTask>
+    <sequenceFlow id="_76" sourceRef="_25" targetRef="_75"/>
+    <sequenceFlow id="_77" sourceRef="_75" targetRef="_19"/>
+    <serviceTask completionQuantity="1" id="_10" implementation="##WebService" isForCompensation="false" name="createEC2Instance" operationRef="IF_2_O_5" startQuantity="1">
+      <incoming>_65</incoming>
+      <outgoing>_12</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_10_1" isCollection="false" itemSubjectRef="ID_16" name="CreateEC2InstanceDataInput"/>
+        <dataOutput id="Dout_10_69" isCollection="false" itemSubjectRef="ID_7" name="CreateEC2InstanceDataOuptut"/>
+        <inputSet>
+          <dataInputRefs>Din_10_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_10_69</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_10_1">
+        <targetRef>Din_10_1</targetRef>
+        <transformation><![CDATA[string('<impl:createEC2Instance xmlns:impl="http://ec2vm.aws.ia.opentosca.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <impl:instanceType>T1Micro</impl:instanceType>
+  <impl:amiId>ami-6d555119</impl:amiId>
+</impl:createEC2Instance>')]]></transformation>
+      </dataInputAssociation>
+      <dataOutputAssociation id="_4">
+        <sourceRef>Dout_10_69</sourceRef>
+        <targetRef>_69</targetRef>
+      </dataOutputAssociation>
+      <dataOutputAssociation id="DOA_10_1">
+        <sourceRef>Dout_10_69</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_10_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_10_69')/ns:parameters/ns:createEC2InstanceReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:ec2InstanceId]]></to>
+        </assignment>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask completionQuantity="1" id="_13" implementation="##WebService" isForCompensation="false" name="getPublicDNS" operationRef="IF_2_O_5" startQuantity="1">
+      <incoming>_59</incoming>
+      <outgoing>_60</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_13_1" isCollection="false" itemSubjectRef="ID_12" name="getPublicDNSDataInput"/>
+        <dataOutput id="Dout_13_1" isCollection="false" itemSubjectRef="ID_14" name="getPublicDNSDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_13_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_13_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_13_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_13_1</targetRef>
+        <transformation><![CDATA[concat(string('<impl:instanceId>'),bpmn:getDataObject('DO_1_3')/ns3:SugarCRMBuildPlanResponse/tns:ec2InstanceId, string('</impl:instanceId>'))]]></transformation>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_13_1">
+        <sourceRef>Dout_13_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_13_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_13_1')/ns:parameters/ns:getPublicDNSReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></to>
+        </assignment>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask completionQuantity="1" id="_25" implementation="##WebService" isForCompensation="false" name="2.1 &#10;MySQL&#10;Install&#10;DAs" operationRef="IF_1_O_2" startQuantity="1">
+      <incoming>_61</incoming>
+      <outgoing>_76</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_25_1" isCollection="false" itemSubjectRef="ID_4" name="MySQLInstallDAsDataInput"/>
+        <dataOutput id="Dout_25_1" isCollection="false" itemSubjectRef="ID_2" name="MySQLInstallDAsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_25_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_25_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_25_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_25_1</targetRef>
+        <assignment id="DIA_25_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_25_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+        <assignment id="DIA_25_1_A_2">
+          <from><![CDATA[string('mysql-server mysql')]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_25_1')/ns1:parameters/ns1:packageName]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_25_1">
+        <sourceRef>Dout_25_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_25_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_25_1')/ns1:parameters/ns1:installPackageReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:MySQL_Install_DAs_2_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask completionQuantity="1" id="_26" implementation="##WebService" isForCompensation="false" name="3.1 &#10;Apache Install &#10;DAs" startQuantity="1">
+      <incoming>_51</incoming>
+      <outgoing>_52</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_26_1" isCollection="false" itemSubjectRef="ID_4" name="ApacheInstallDAsDataInput"/>
+        <dataOutput id="Dout_26_1" isCollection="false" itemSubjectRef="ID_2" name="ApacheInstallDAsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_26_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_26_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_26_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_26_1</targetRef>
+        <assignment id="DIA_26_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_26_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+        <assignment id="DIA_26_1_A_2">
+          <from><![CDATA[string('httpd')]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_25_1')/ns1:parameters/ns1:packageName]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_26_1">
+        <sourceRef>Dout_26_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_26_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_26_1')/ns1:parameters/ns1:installPackageReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:Apache_Install_DAs_3_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask completionQuantity="1" id="_27" implementation="##WebService" isForCompensation="false" name="4.1 &#10;PHP &#10;Install &#10;DAs" operationRef="IF_1_O_2" startQuantity="1">
+      <incoming>_62</incoming>
+      <outgoing>_45</outgoing>
+      <ioSpecification>
+        <dataInput id="Din_27_1" isCollection="false" itemSubjectRef="ID_4" name="PHPInstallDAsDataInput"/>
+        <dataOutput id="Dout_27_1" isCollection="false" itemSubjectRef="ID_2" name="PHPInstallDAsDataOutput"/>
+        <inputSet>
+          <dataInputRefs>Din_27_1</dataInputRefs>
+        </inputSet>
+        <outputSet>
+          <dataOutputRefs>Dout_27_1</dataOutputRefs>
+        </outputSet>
+      </ioSpecification>
+      <dataInputAssociation id="DIA_27_1">
+        <sourceRef>DO_1_3</sourceRef>
+        <targetRef>Din_27_1</targetRef>
+        <assignment id="DIA_27_1_A_1">
+          <from><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:publicDNS]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_27_1')/ns1:parameters/ns1:host]]></to>
+        </assignment>
+        <assignment id="DIA_27_1_A_2">
+          <from><![CDATA[string('php.x86_64 php-cli.x86_64 php-common php-mbstring.x86_64 php-imap php-mysql')]]></from>
+          <to><![CDATA[bpmn:getDataInput('Din_27_1')/ns1:parameters/ns1:packageName]]></to>
+        </assignment>
+      </dataInputAssociation>
+      <dataOutputAssociation id="DOA_27_1">
+        <sourceRef>Dout_27_1</sourceRef>
+        <targetRef>DO_1_3</targetRef>
+        <assignment id="DOA_27_1_A_1">
+          <from><![CDATA[bpmn:getDataOutput('Dout_27_1')/ns1:parameters/ns1:installPackageReturn]]></from>
+          <to><![CDATA[bpmn:getDataObject('DO_1_3')/ns3:PHP_Install_DAs_4_1_Result]]></to>
+        </assignment>
+      </dataOutputAssociation>
+    </serviceTask>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=597.6;height=842.4;imageableWidth=587.6;imageableHeight=832.4;imageableX=5.0;imageableY=5.0" id="Yaoqiang_Diagram-_1" name="SugarCRM Build Plan">
+    <bpmndi:BPMNPlane bpmnElement="_1">
+      <bpmndi:BPMNShape bpmnElement="_10" id="Yaoqiang-_10">
+        <dc:Bounds height="60.0" width="125.0" x="66.0" y="80.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_11" id="Yaoqiang-_11">
+        <dc:Bounds height="32.0" width="32.0" x="221.0" y="94.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_13" id="Yaoqiang-_13">
+        <dc:Bounds height="60.0" width="125.0" x="287.0" y="80.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_14" id="Yaoqiang-_14">
+        <dc:Bounds height="60.0" width="125.0" x="437.0" y="80.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_15" id="Yaoqiang-_15">
+        <dc:Bounds height="60.0" width="125.0" x="590.6666666666666" y="80.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16">
+        <dc:Bounds height="60.0" width="125.0" x="744.3333333333333" y="80.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_17" id="Yaoqiang-_17">
+        <dc:Bounds height="60.0" width="125.0" x="746.9999999999999" y="173.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_19" id="Yaoqiang-_19">
+        <dc:Bounds height="60.0" width="125.0" x="287.8" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_21" id="Yaoqiang-_21">
+        <dc:Bounds height="60.0" width="125.0" x="441.20000000000005" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_22" id="Yaoqiang-_22">
+        <dc:Bounds height="60.0" width="125.0" x="144.0" y="433.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_23" id="Yaoqiang-_23">
+        <dc:Bounds height="60.0" width="125.0" x="752.0" y="374.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_24" id="Yaoqiang-_24">
+        <dc:Bounds height="60.0" width="125.0" x="748.0" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_25" id="Yaoqiang-_25">
+        <dc:Bounds height="60.0" width="125.0" x="-19.0" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_26" id="Yaoqiang-_26">
+        <dc:Bounds height="60.0" width="125.0" x="594.6" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_27" id="Yaoqiang-_27">
+        <dc:Bounds height="60.0" width="125.0" x="-16.0" y="433.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_28" id="Yaoqiang-_28">
+        <dc:Bounds height="60.0" width="125.0" x="304.0" y="433.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_29" id="Yaoqiang-_29">
+        <dc:Bounds height="60.0" width="125.0" x="464.0" y="433.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_30" id="Yaoqiang-_30">
+        <dc:Bounds height="60.0" width="125.0" x="459.0" y="533.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_31" id="Yaoqiang-_31">
+        <dc:Bounds height="60.0" width="125.0" x="-17.0" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_32" id="Yaoqiang-_32">
+        <dc:Bounds height="60.0" width="125.0" x="133.78571428571428" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_33" id="Yaoqiang-_33">
+        <dc:Bounds height="60.0" width="125.0" x="284.57142857142856" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_34" id="Yaoqiang-_34">
+        <dc:Bounds height="60.0" width="125.0" x="435.3571428571429" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_35" id="Yaoqiang-_35">
+        <dc:Bounds height="60.0" width="125.0" x="586.1428571428571" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_36" id="Yaoqiang-_36">
+        <dc:Bounds height="60.0" width="125.0" x="736.9285714285713" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_37" id="Yaoqiang-_37">
+        <dc:Bounds height="60.0" width="125.0" x="887.7142857142856" y="619.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_63" id="Yaoqiang-_63">
+        <dc:Bounds height="32.0" width="32.0" x="1067.9999999999998" y="633.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_64" id="Yaoqiang-_64">
+        <dc:Bounds height="32.0" width="32.0" x="0.0" y="94.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_69" id="Yaoqiang-_69">
+        <dc:Bounds height="38.0" width="29.0" x="985.0" y="-15.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="38.0" width="29.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_75" id="Yaoqiang-_75">
+        <dc:Bounds height="60.0" width="125.0" x="134.4" y="273.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="60.0" width="125.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_59" id="Yaoqiang-_59" sourceElement="_11" targetElement="_13">
+        <di:waypoint x="254.96153846153845" y="110.00000000000003"/>
+        <di:waypoint x="284.80769230769226" y="110.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_58" id="Yaoqiang-_58" sourceElement="_30" targetElement="_31">
+        <di:waypoint x="457.1153846153845" y="563.0"/>
+        <di:waypoint x="50.0" y="618.0"/>
+        <di:waypoint x="50.0" y="617.2307692307692"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_56" id="Yaoqiang-_56" sourceElement="_16" targetElement="_17">
+        <di:waypoint x="808.1666666666666" y="142.0"/>
+        <di:waypoint x="808.1666666666666" y="171.07692307692307"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_55" id="Yaoqiang-_55" sourceElement="_15" targetElement="_16">
+        <di:waypoint x="718.0384615384614" y="110.0"/>
+        <di:waypoint x="742.5" y="110.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_54" id="Yaoqiang-_54" sourceElement="_14" targetElement="_15">
+        <di:waypoint x="564.1923076923076" y="110.0"/>
+        <di:waypoint x="588.6538461538461" y="110.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_53" id="Yaoqiang-_53" sourceElement="_24" targetElement="_23">
+        <di:waypoint x="812.5" y="335.07692307692304"/>
+        <di:waypoint x="812.5" y="371.8461538461538"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_52" id="Yaoqiang-_52" sourceElement="_26" targetElement="_24">
+        <di:waypoint x="721.8846153846152" y="303.0"/>
+        <di:waypoint x="746.3461538461538" y="303.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_51" id="Yaoqiang-_51" sourceElement="_21" targetElement="_26">
+        <di:waypoint x="568.0384615384614" y="303.0"/>
+        <di:waypoint x="592.4999999999999" y="303.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_50" id="Yaoqiang-_50" sourceElement="_19" targetElement="_21">
+        <di:waypoint x="414.96153846153834" y="303.0"/>
+        <di:waypoint x="439.42307692307685" y="303.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_48" id="Yaoqiang-_48" sourceElement="_29" targetElement="_30">
+        <di:waypoint x="524.0" y="495.0769230769231"/>
+        <di:waypoint x="524.0" y="531.0769230769231"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="Yaoqiang-_4" sourceElement="_10" targetElement="_69">
+        <di:waypoint x="128.5" y="78.0"/>
+        <di:waypoint x="879.0" y="-55.0"/>
+        <di:waypoint x="999.5" y="-16.61538461538462"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_47" id="Yaoqiang-_47" sourceElement="_28" targetElement="_29">
+        <di:waypoint x="431.1153846153845" y="463.0"/>
+        <di:waypoint x="461.73076923076917" y="463.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3" sourceElement="_64" targetElement="_69">
+        <di:waypoint x="25.0" y="94.21225289726613"/>
+        <di:waypoint x="25.0" y="65.0"/>
+        <di:waypoint x="983.269230769231" y="4.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_46" id="Yaoqiang-_46" sourceElement="_22" targetElement="_28">
+        <di:waypoint x="271.1153846153845" y="463.0"/>
+        <di:waypoint x="301.73076923076917" y="463.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_78" id="Yaoqiang-_78" sourceElement="_69" targetElement="_63">
+        <di:waypoint x="1015.730769230769" y="4.0"/>
+        <di:waypoint x="1085.0" y="500.0"/>
+        <di:waypoint x="1085.0" y="631.0994332956734"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_45" id="Yaoqiang-_45" sourceElement="_27" targetElement="_22">
+        <di:waypoint x="111.11538461538458" y="463.0"/>
+        <di:waypoint x="141.73076923076917" y="463.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_77" id="Yaoqiang-_77" sourceElement="_75" targetElement="_19">
+        <di:waypoint x="261.1153846153845" y="303.0"/>
+        <di:waypoint x="285.57692307692304" y="303.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="Yaoqiang-_12" sourceElement="_10" targetElement="_11">
+        <di:waypoint x="192.65384615384613" y="110.0"/>
+        <di:waypoint x="218.65384615384608" y="110.00000000000003"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_76" id="Yaoqiang-_76" sourceElement="_25" targetElement="_75">
+        <di:waypoint x="108.03846153846149" y="303.0"/>
+        <di:waypoint x="132.49999999999994" y="303.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_43" id="Yaoqiang-_43" sourceElement="_36" targetElement="_37">
+        <di:waypoint x="864.1923076923077" y="649.0"/>
+        <di:waypoint x="885.5769230769231" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_42" id="Yaoqiang-_42" sourceElement="_35" targetElement="_36">
+        <di:waypoint x="713.4230769230768" y="649.0"/>
+        <di:waypoint x="734.8076923076924" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_41" id="Yaoqiang-_41" sourceElement="_34" targetElement="_35">
+        <di:waypoint x="562.6538461538461" y="649.0"/>
+        <di:waypoint x="584.0384615384614" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_40" id="Yaoqiang-_40" sourceElement="_33" targetElement="_34">
+        <di:waypoint x="411.88461538461524" y="649.0"/>
+        <di:waypoint x="433.2692307692307" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_39" id="Yaoqiang-_39" sourceElement="_32" targetElement="_33">
+        <di:waypoint x="261.1153846153845" y="649.0"/>
+        <di:waypoint x="282.49999999999994" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_38" id="Yaoqiang-_38" sourceElement="_31" targetElement="_32">
+        <di:waypoint x="110.34615384615381" y="649.0"/>
+        <di:waypoint x="131.73076923076917" y="649.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_67" id="Yaoqiang-_67" sourceElement="_37" targetElement="_63">
+        <di:waypoint x="1014.9615384615386" y="649.0"/>
+        <di:waypoint x="1066.3475895824545" y="648.9999999999999"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_65" id="Yaoqiang-_65" sourceElement="_64" targetElement="_10">
+        <di:waypoint x="34.192307692307665" y="110.00000000000003"/>
+        <di:waypoint x="64.03846153846152" y="110.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_62" id="Yaoqiang-_62" sourceElement="_23" targetElement="_27">
+        <di:waypoint x="750.1923076923077" y="377.99999999999994"/>
+        <di:waypoint x="90.0" y="378.0"/>
+        <di:waypoint x="90.0" y="431.07692307692304"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_61" id="Yaoqiang-_61" sourceElement="_17" targetElement="_25">
+        <di:waypoint x="744.8076923076924" y="203.00000000000003"/>
+        <di:waypoint x="90.0" y="243.0"/>
+        <di:waypoint x="90.0" y="271.07692307692304"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_60" id="Yaoqiang-_60" sourceElement="_13" targetElement="_14">
+        <di:waypoint x="414.19230769230757" y="110.0"/>
+        <di:waypoint x="434.80769230769226" y="110.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
