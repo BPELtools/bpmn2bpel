@@ -1,0 +1,5 @@
+This product includes software created by Omar Omana in the context 
+of the diploma thesis 3324 "Eine BPMN-nach-BPEL-Transformation" at 
+the Institute of Architecture of Application Systems (IAAS) of
+the University of Stuttgart in 2012.
+For more information see http://www.iaas.uni-stuttgart.de.
