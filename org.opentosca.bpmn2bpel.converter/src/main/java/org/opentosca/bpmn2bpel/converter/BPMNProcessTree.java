@@ -133,7 +133,11 @@ public class BPMNProcessTree extends DirectedGraph {
 	private Map<String, Set<Link>> boundaryLinks;
 	private boolean interruptsflow = false;
 	
-	
+	/**
+	 * Creates an instance of the tree based on the given resource
+	 * 
+	 * @param res the EMF BPMN representation to represent in the tree
+	 */
 	public BPMNProcessTree(Bpmn2Resource res) {
 		super();
 		this.BPMN2Resource = res;
@@ -142,10 +146,10 @@ public class BPMNProcessTree extends DirectedGraph {
 		for (EObject content : root.eContents()) {
 			if (content instanceof Definitions) {
 				Definitions def = (Definitions) content;
-				System.out.println("id: " + def.getId());
-				System.out.println("class: " + def.getClass());
+				BPMNProcessTree.logger.debug("id: " + def.getId());
+				BPMNProcessTree.logger.debug("class: " + def.getClass());
 				
-				this.FillTree(content);
+				this.fillTree(content);
 				this.searchBoundaryEvents(content, this, null);
 				BPMNProcessTree.logger.debug("BPMNProcessTree", this.toString());
 				this.AssignImports(def.getImports());
@@ -161,13 +165,11 @@ public class BPMNProcessTree extends DirectedGraph {
 	
 	@Override
 	public String getName() {
-		
 		return this.name;
 	}
 	
 	@Override
 	public void setName(String procname) {
-		
 		this.name = procname;
 	}
 	
@@ -231,7 +233,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		this.rpstg = rpstGraph;
 	}
 	
-	public void FillTree(EObject eobj) {
+	public void fillTree(EObject eobj) {
 		
 		for (EObject son : eobj.eContents()) {
 			
@@ -246,7 +248,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					// or Gateway
 					FlowNode nodo = (FlowNode) son;
 					n1 = new WFNode(nodo);
-					this.FillProcTree(n1);
+					this.fillProcTree(n1);
 					break;
 					
 				}
@@ -259,10 +261,10 @@ public class BPMNProcessTree extends DirectedGraph {
 						break;
 					}
 				}
-				// System.out.println("clase: "+son.getClass());
+				BPMNProcessTree.logger.debug("clase: " + son.getClass());
 				if (son instanceof Process) {
 					this.setName(((Process) son).getName());
-					this.FillTree(son);
+					this.fillTree(son);
 				}
 				
 			}
@@ -273,7 +275,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	
 	// Returns the graph corresponding to an exception flow either error,
 	// compensation, signal.. etc
-	private BPMNProcessTree GenerateBoundGraph(WFNode ExFlowNode, BPMNProcessTree excepFlowTree, boolean interrupting) {
+	private BPMNProcessTree generateBoundGraph(WFNode ExFlowNode, BPMNProcessTree excepFlowTree, boolean interrupting) {
 		
 		BPMNProcessTree subTree = new BPMNProcessTree();
 		FlowNode ExFlowElem = ExFlowNode.getElement();
@@ -284,17 +286,17 @@ public class BPMNProcessTree extends DirectedGraph {
 			// filled
 			if (ExFlowElem instanceof SubProcess) {
 				
-				subTree.FillTree(ExFlowElem);
+				subTree.fillTree(ExFlowElem);
 				ExFlowNode.setSubProcessTree(subTree);
 				
 			}
 			if (excepFlowTree.addVertex(ExFlowNode) != null) {
-				System.out.println("Vertex " + ExFlowNode.getName() + " newly added succesfully");
+				BPMNProcessTree.logger.debug("Vertex " + ExFlowNode.getName() + " newly added succesfully");
 				ExFlowNode.setVisited();
 			}
 		} else {
 			ExFlowNode = excepFlowTree.containsVertex(ExFlowNode.getId());
-			System.out.println("Vertex " + ExFlowNode.getName() + " not added, already exists");
+			BPMNProcessTree.logger.debug("Vertex " + ExFlowNode.getName() + " not added, already exists");
 			ExFlowNode.setVisited();
 		}
 		
@@ -340,10 +342,10 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					if (excepFlowTree.addEdge(s, ExFlowNode, ntarget) != null) {
 						
-						System.out.println("Edge " + ExFlowNode.getName() + "," + ntarget.getName() + " created succesfully1");
+						BPMNProcessTree.logger.debug("Edge " + ExFlowNode.getName() + "," + ntarget.getName() + " created succesfully1");
 					}
 					if (!ntarget.isVisited()) {
-						excepFlowTree = this.GenerateBoundGraph(ntarget, excepFlowTree, interrupting);
+						excepFlowTree = this.generateBoundGraph(ntarget, excepFlowTree, interrupting);
 					}
 				} else {
 					ntarget = new WFNode(s.getTargetRef());
@@ -355,15 +357,15 @@ public class BPMNProcessTree extends DirectedGraph {
 					}
 					
 					if (excepFlowTree.addVertex(ntarget) != null) {
-						System.out.println("Vertex " + ntarget.getName() + " added succesfully");
+						BPMNProcessTree.logger.debug("Vertex " + ntarget.getName() + " added succesfully");
 						if (excepFlowTree.addEdge(s, ExFlowNode, ntarget) != null) {
-							System.out.println("Edge " + ExFlowNode.getName() + "," + ntarget.getName() + " created succesfully2");
+							BPMNProcessTree.logger.debug("Edge " + ExFlowNode.getName() + "," + ntarget.getName() + " created succesfully2");
 							
 						} else {
-							System.out.println("Edge not created");
+							BPMNProcessTree.logger.debug("Edge not created");
 						}
 						if (!ntarget.isVisited()) {
-							excepFlowTree = this.GenerateBoundGraph(ntarget, excepFlowTree, interrupting);
+							excepFlowTree = this.generateBoundGraph(ntarget, excepFlowTree, interrupting);
 						}
 					}
 				}
@@ -376,11 +378,9 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 	}
 	
-	private void FillProcTree(WFNode n1) {
-		// TODO Auto-generated method stub
-		
+	private void fillProcTree(WFNode n1) {
 		FlowNode son = n1.getElement();
-		System.out.println("son: " + son.getName());
+		BPMNProcessTree.logger.debug("son: " + son.getName());
 		
 		BPMNProcessTree subTree = new BPMNProcessTree();
 		// If the vertex isn't part of the Graph
@@ -390,29 +390,29 @@ public class BPMNProcessTree extends DirectedGraph {
 			// filled
 			if (son instanceof SubProcess) {
 				
-				subTree.FillTree(son);
+				subTree.fillTree(son);
 				n1.setSubProcessTree(subTree);
 				
 			}
 			if (this.addVertex(n1) != null) {
-				System.out.println("Vertex " + n1.getName() + " newly added succesfully");
+				BPMNProcessTree.logger.debug("Vertex " + n1.getName() + " newly added succesfully");
 				n1.setVisited();
 				n1.setMainFlow();
 			}
 		} else {
 			n1 = this.containsVertex(n1.getId());
-			System.out.println("Vertex " + n1.getName() + " not added, already exists");
+			BPMNProcessTree.logger.debug("Vertex " + n1.getName() + " not added, already exists");
 			n1.setVisited();
 			n1.setMainFlow();
 		}
-		System.out.println("vertices: " + this.countVertices());
+		BPMNProcessTree.logger.debug("vertices: " + this.countVertices());
 		
-		System.out.println(n1.getElement().getOutgoing().size());
+		BPMNProcessTree.logger.debug(Integer.toString(n1.getElement().getOutgoing().size()));
 		
 		// Get outgoing SequenceFlows if any
 		for (SequenceFlow s : n1.getElement().getOutgoing()) {
 			
-			System.out.println("verticesd: " + this.countVertices());
+			BPMNProcessTree.logger.debug("verticesd: " + this.countVertices());
 			String targetid = s.getTargetRef().getId();
 			WFNode ntarget = this.containsVertex(targetid);
 			WFEdge edge1;
@@ -421,14 +421,13 @@ public class BPMNProcessTree extends DirectedGraph {
 				// NOTE: The testing of correct creation of edge is missing!
 				
 				if (this.addEdge(s, n1, ntarget) != null) {
-					
-					System.out.println("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully1");
+					BPMNProcessTree.logger.debug("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully1");
 				} else {
-					System.out.println("Edge not created");
+					BPMNProcessTree.logger.debug("Edge not created");
 				}
 				// visit the child
 				if (!ntarget.isVisited()) {
-					this.FillProcTree(ntarget);
+					this.fillProcTree(ntarget);
 				}
 			} else {
 				ntarget = new WFNode(s.getTargetRef());
@@ -438,30 +437,30 @@ public class BPMNProcessTree extends DirectedGraph {
 				if (s.getTargetRef() instanceof SubProcess) {
 					
 					// The subtree is filled.
-					subTree.FillTree(s.getTargetRef());
+					subTree.fillTree(s.getTargetRef());
 					subTree.transfrom2SESE();
 					ntarget.setSubProcessTree(subTree);
 					// The Handlers are searched and established as Boundaries.
 					
 				}
 				if (this.addVertex(ntarget) != null) {
-					System.out.println("Vertex " + ntarget.getName() + " added succesfully");
-					System.out.println("vertices: " + this.countVertices());
+					BPMNProcessTree.logger.debug("Vertex " + ntarget.getName() + " added succesfully");
+					BPMNProcessTree.logger.debug("vertices: " + this.countVertices());
 					if (this.addEdge(s, n1, ntarget) != null) {
-						System.out.println("verticess: " + this.countVertices());
-						System.out.println("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully2");
+						BPMNProcessTree.logger.debug("verticess: " + this.countVertices());
+						BPMNProcessTree.logger.debug("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully2");
 						
 					} else {
-						System.out.println("Edge not created");
+						BPMNProcessTree.logger.debug("Edge not created");
 					}
 					if (!ntarget.isVisited()) {
-						this.FillProcTree(ntarget);
+						this.fillProcTree(ntarget);
 					}
 				}
 				
 			}
-			System.out.println("->  outgoing: " + s.getName());
-			System.out.println("out target: " + s.getTargetRef().getName());
+			BPMNProcessTree.logger.debug("->  outgoing: " + s.getName());
+			BPMNProcessTree.logger.debug("out target: " + s.getTargetRef().getName());
 			
 		}
 		
@@ -2758,11 +2757,11 @@ public class BPMNProcessTree extends DirectedGraph {
 					// sequence flows.
 					if (boundEvent.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
 						
-						System.out.println("associations: " + boundEvent.getOutgoing());
+						BPMNProcessTree.logger.debug("associations: " + boundEvent.getOutgoing());
 						
 					} else {
 						
-						ExcepFlowTree = this.GenerateBoundGraph(boundEventRoot, ExcepFlowTree, interrupting);
+						ExcepFlowTree = this.generateBoundGraph(boundEventRoot, ExcepFlowTree, interrupting);
 						task1.addBoundaryEvent(ExcepFlowTree);
 						
 					}
@@ -2793,7 +2792,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							if (startHandler != null && subprocGrandP != null) {
 								
-								ExcepFlowTree = this.GenerateBoundGraph(startHandler, ExcepFlowTree, interrupting);
+								ExcepFlowTree = this.generateBoundGraph(startHandler, ExcepFlowTree, interrupting);
 								subprocGrandP.addBoundaryEvent(ExcepFlowTree);
 								
 							}
