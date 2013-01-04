@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://sourceforge.net/bpmn/definitions/_dECpgZXLEeGzS-0bcbokjw" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:yaoqiang="http://bpmn.sourceforge.net" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="6.1.0" expressionLanguage="http://www.w3.org/1999/XPath" id="_dECpgZXLEeGzS-0bcbokjw" name="" targetNamespace="http://sourceforge.net/bpmn/definitions/_dECpgZXLEeGzS-0bcbokjw" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn2:process id="_gLoskJXLEeGzS-0bcbokjw" isClosed="false" processType="None">
+    <bpmn2:startEvent id="_gLpToJXLEeGzS-0bcbokjw" isInterrupting="true" name="start" parallelMultiple="false">
+      <bpmn2:outgoing>_BhjIYJXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:endEvent id="_gLpToZXLEeGzS-0bcbokjw" name="end">
+      <bpmn2:incoming>idunique</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:task completionQuantity="1" id="_5LA7QZXLEeG0qu6ZbM3Vag" isForCompensation="false" name="task1" startQuantity="1">
+      <bpmn2:incoming>_BhjIYJXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:outgoing>_BhjIYZXMEeG0qu6ZbM3Vag</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:task completionQuantity="1" id="_5LBiUJXLEeG0qu6ZbM3Vag" isForCompensation="false" name="task2" startQuantity="1">
+      <bpmn2:incoming>_BdB-IKRZEeGmn5iEQDLE9Q</bpmn2:incoming>
+      <bpmn2:outgoing>_JpwH8KRZEeGmn5iEQDLE9Q</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:task completionQuantity="1" id="_5LBiUZXLEeG0qu6ZbM3Vag" isForCompensation="false" name="task3" startQuantity="1">
+      <bpmn2:incoming>_JpwH8KRZEeGmn5iEQDLE9Q</bpmn2:incoming>
+      <bpmn2:outgoing>_ddZRkKRZEeGmn5iEQDLE9Q</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:exclusiveGateway gatewayDirection="Unspecified" id="_5LBiU5XLEeG0qu6ZbM3Vag" name="split1">
+      <bpmn2:incoming>_BhjIYZXMEeG0qu6ZbM3Vag</bpmn2:incoming>
+      <bpmn2:incoming>_ddZRkaRZEeGmn5iEQDLE9Q</bpmn2:incoming>
+      <bpmn2:outgoing>_BdB-IKRZEeGmn5iEQDLE9Q</bpmn2:outgoing>
+      <bpmn2:outgoing>idunique</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:exclusiveGateway gatewayDirection="Unspecified" id="_5LBiVJXLEeG0qu6ZbM3Vag" name="join1">
+      <bpmn2:incoming>_ddZRkKRZEeGmn5iEQDLE9Q</bpmn2:incoming>
+      <bpmn2:outgoing>_ddZRkaRZEeGmn5iEQDLE9Q</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="_BhjIYJXMEeG0qu6ZbM3Vag" name="flow1" sourceRef="_gLpToJXLEeGzS-0bcbokjw" targetRef="_5LA7QZXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_BhjIYZXMEeG0qu6ZbM3Vag" name="flow2" sourceRef="_5LA7QZXLEeG0qu6ZbM3Vag" targetRef="_5LBiU5XLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="idunique" name="flow3" sourceRef="_5LBiU5XLEeG0qu6ZbM3Vag" targetRef="_gLpToZXLEeGzS-0bcbokjw"/>
+    <bpmn2:sequenceFlow id="_BdB-IKRZEeGmn5iEQDLE9Q" name="flowrep1" sourceRef="_5LBiU5XLEeG0qu6ZbM3Vag" targetRef="_5LBiUJXLEeG0qu6ZbM3Vag">
+      <bpmn2:conditionExpression id="x&gt;15" xsi:type="bpmn2:tExpression"/>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_JpwH8KRZEeGmn5iEQDLE9Q" name="flowrep2" sourceRef="_5LBiUJXLEeG0qu6ZbM3Vag" targetRef="_5LBiUZXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_ddZRkKRZEeGmn5iEQDLE9Q" name="flowrep3" sourceRef="_5LBiUZXLEeG0qu6ZbM3Vag" targetRef="_5LBiVJXLEeG0qu6ZbM3Vag"/>
+    <bpmn2:sequenceFlow id="_ddZRkaRZEeGmn5iEQDLE9Q" name="flowrep4" sourceRef="_5LBiVJXLEeG0qu6ZbM3Vag" targetRef="_5LBiU5XLEeG0qu6ZbM3Vag"/>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=597.6;height=842.4;imageableWidth=587.6;imageableHeight=832.4;imageableX=5.0;imageableY=5.0" id="Yaoqiang_Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="_gLoskJXLEeGzS-0bcbokjw">
+      <bpmndi:BPMNShape bpmnElement="_5LBiVJXLEeG0qu6ZbM3Vag" id="Yaoqiang-_5LBiVJXLEeG0qu6ZbM3Vag" isMarkerVisible="false">
+        <dc:Bounds height="42.0" width="42.0" x="235.0" y="15.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="42.0" width="42.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5LBiU5XLEeG0qu6ZbM3Vag" id="Yaoqiang-_5LBiU5XLEeG0qu6ZbM3Vag" isMarkerVisible="false">
+        <dc:Bounds height="42.0" width="42.0" x="257.0" y="195.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="42.0" width="42.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5LBiUZXLEeG0qu6ZbM3Vag" id="Yaoqiang-_5LBiUZXLEeG0qu6ZbM3Vag">
+        <dc:Bounds height="55.0" width="85.0" x="435.0" y="189.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5LBiUJXLEeG0qu6ZbM3Vag" id="Yaoqiang-_5LBiUJXLEeG0qu6ZbM3Vag">
+        <dc:Bounds height="55.0" width="85.0" x="300.0" y="329.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_5LA7QZXLEeG0qu6ZbM3Vag" id="Yaoqiang-_5LA7QZXLEeG0qu6ZbM3Vag">
+        <dc:Bounds height="55.0" width="85.0" x="112.0" y="188.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_gLpToZXLEeGzS-0bcbokjw" id="Yaoqiang-_gLpToZXLEeGzS-0bcbokjw">
+        <dc:Bounds height="32.0" width="32.0" x="255.0" y="470.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_gLpToJXLEeGzS-0bcbokjw" id="Yaoqiang-_gLpToJXLEeGzS-0bcbokjw">
+        <dc:Bounds height="32.0" width="32.0" x="20.0" y="200.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_ddZRkKRZEeGmn5iEQDLE9Q" id="Yaoqiang-_ddZRkKRZEeGmn5iEQDLE9Q" sourceElement="_5LBiUZXLEeG0qu6ZbM3Vag" targetElement="_5LBiVJXLEeG0qu6ZbM3Vag">
+        <di:waypoint x="434.6724137931035" y="217.0"/>
+        <di:waypoint x="276.4827586206897" y="36.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_BdB-IKRZEeGmn5iEQDLE9Q" id="Yaoqiang-_BdB-IKRZEeGmn5iEQDLE9Q" sourceElement="_5LBiU5XLEeG0qu6ZbM3Vag" targetElement="_5LBiUJXLEeG0qu6ZbM3Vag">
+        <di:waypoint x="298.55172413793105" y="216.0"/>
+        <di:waypoint x="300.18965517241384" y="357.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_JpwH8KRZEeGmn5iEQDLE9Q" id="Yaoqiang-_JpwH8KRZEeGmn5iEQDLE9Q" sourceElement="_5LBiUJXLEeG0qu6ZbM3Vag" targetElement="_5LBiUZXLEeG0qu6ZbM3Vag">
+        <di:waypoint x="385.01724137931035" y="357.0"/>
+        <di:waypoint x="434.6724137931035" y="217.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_BhjIYZXMEeG0qu6ZbM3Vag" id="Yaoqiang-_BhjIYZXMEeG0qu6ZbM3Vag" sourceElement="_5LA7QZXLEeG0qu6ZbM3Vag" targetElement="_5LBiU5XLEeG0qu6ZbM3Vag">
+        <di:waypoint x="196.74137931034488" y="216.0"/>
+        <di:waypoint x="257.00000000000006" y="216.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_ddZRkaRZEeGmn5iEQDLE9Q" id="Yaoqiang-_ddZRkaRZEeGmn5iEQDLE9Q" sourceElement="_5LBiVJXLEeG0qu6ZbM3Vag" targetElement="_5LBiU5XLEeG0qu6ZbM3Vag">
+        <di:waypoint x="267.00000000000006" y="45.48275862068964"/>
+        <di:waypoint x="267.00000000000006" y="205.48275862068965"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_BhjIYJXMEeG0qu6ZbM3Vag" id="Yaoqiang-_BhjIYJXMEeG0qu6ZbM3Vag" sourceElement="_gLpToJXLEeGzS-0bcbokjw" targetElement="_5LA7QZXLEeG0qu6ZbM3Vag">
+        <di:waypoint x="51.9135588438474" y="216.0"/>
+        <di:waypoint x="111.91379310344831" y="216.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="idunique" id="Yaoqiang-idunique" sourceElement="_5LBiU5XLEeG0qu6ZbM3Vag" targetElement="_gLpToZXLEeGzS-0bcbokjw">
+        <di:waypoint x="272.00000000000006" y="231.0"/>
+        <di:waypoint x="272.00000000000006" y="470.6069337978447"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
