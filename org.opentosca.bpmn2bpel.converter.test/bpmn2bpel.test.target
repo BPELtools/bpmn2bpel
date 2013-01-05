@@ -11,7 +11,6 @@
 </locations>
 <includeBundles>
 <plugin id="org.slf4j.api"/>
-<plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
 <plugin id="org.eclipse.jetty.io.source"/>
 <plugin id="org.junit.source" version="3.8.2.v3_8_2_v20100427-1100"/>
 <plugin id="org.eclipse.equinox.event.source"/>
@@ -29,16 +28,13 @@
 <plugin id="org.eclipse.core.databinding.observable"/>
 <plugin id="org.eclipse.core.runtime"/>
 <plugin id="org.eclipse.core.resources.source"/>
-<plugin id="org.eclipse.e4.ui.workbench.source"/>
 <plugin id="org.eclipse.core.commands"/>
 <plugin id="org.eclipse.ui.workbench"/>
 <plugin id="org.eclipse.emf.ecore.xmi"/>
 <plugin id="org.eclipse.core.jobs"/>
 <plugin id="org.eclipse.jetty.servlet.source"/>
 <plugin id="slf4j.api"/>
-<plugin id="org.eclipse.e4.ui.services.source"/>
 <plugin id="org.objectweb.asm"/>
-<plugin id="org.eclipse.e4.ui.model.workbench"/>
 <plugin id="org.eclipse.e4.core.di"/>
 <plugin id="com.sun.jersey.contribs.jersey-multipart"/>
 <plugin id="org.eclipse.equinox.ds"/>
@@ -70,15 +66,11 @@
 <plugin id="org.eclipse.equinox.p2.metadata"/>
 <plugin id="org.eclipse.ui.navigator"/>
 <plugin id="org.apache.batik.util.gui"/>
-<plugin id="org.eclipse.e4.ui.di.source"/>
 <plugin id="org.apache.lucene.misc"/>
 <plugin id="org.eclipse.ui.workbench.texteditor"/>
 <plugin id="org.eclipse.ui.views.source"/>
-<plugin id="org.eclipse.e4.ui.services"/>
 <plugin id="org.eclipse.xsd"/>
-<plugin id="org.eclipse.e4.ui.bindings.source"/>
 <plugin id="org.apache.lucene.core" version="3.5.0.v20120319-2345"/>
-<plugin id="org.eclipse.e4.ui.model.workbench.source"/>
 <plugin id="org.eclipse.jface.text.source"/>
 <plugin id="org.eclipse.equinox.p2.engine"/>
 <plugin id="org.eclipse.equinox.security.source"/>
@@ -90,7 +82,6 @@
 <plugin id="org.eclipse.team.core.source"/>
 <plugin id="org.eclipse.jetty.server.source"/>
 <plugin id="org.eclipse.equinox.ds.source"/>
-<plugin id="org.eclipse.e4.ui.widgets.source"/>
 <plugin id="org.eclipse.core.commands.source"/>
 <plugin id="org.eclipse.jem.util"/>
 <plugin id="org.apache.felix.gogo.runtime.source"/>
@@ -106,7 +97,6 @@
 <plugin id="org.eclipse.ui.forms.source"/>
 <plugin id="org.eclipse.ui.forms"/>
 <plugin id="org.eclipse.ui.win32"/>
-<plugin id="org.eclipse.e4.ui.workbench"/>
 <plugin id="org.eclipse.ui.views"/>
 <plugin id="org.eclipse.m2e.maven.runtime"/>
 <plugin id="org.jboss.netty"/>
@@ -116,13 +106,10 @@
 <plugin id="org.eclipse.equinox.console"/>
 <plugin id="org.apache.lucene.core" version="2.9.1.v201101211721"/>
 <plugin id="org.apache.felix.gogo.runtime"/>
-<plugin id="org.eclipse.e4.ui.workbench.swt"/>
 <plugin id="org.eclipse.jface.text"/>
 <plugin id="org.apache.felix.gogo.command.source"/>
 <plugin id="org.w3c.dom.svg"/>
 <plugin id="com.ibm.icu.source"/>
-<plugin id="org.eclipse.e4.ui.css.swt.theme"/>
-<plugin id="org.eclipse.e4.ui.workbench3"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="org.apache.xml.serializer"/>
 <plugin id="org.eclipse.jetty.server"/>
@@ -139,9 +126,7 @@
 <plugin id="org.eclipse.jetty.continuation.source"/>
 <plugin id="org.eclipse.m2e.model.edit"/>
 <plugin id="org.eclipse.e4.core.contexts"/>
-<plugin id="org.eclipse.e4.ui.css.core.source"/>
 <plugin id="javax.servlet"/>
-<plugin id="org.eclipse.e4.ui.bindings"/>
 <plugin id="org.eclipse.e4.core.services"/>
 <plugin id="org.apache.lucene.source"/>
 <plugin id="org.apache.lucene" version="3.5.0.v20120319-2345"/>
@@ -181,7 +166,6 @@
 <plugin id="org.eclipse.jetty.continuation"/>
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="org.eclipse.wst.common.project.facet.core"/>
-<plugin id="org.eclipse.e4.ui.css.core"/>
 <plugin id="org.eclipse.osgi.source"/>
 <plugin id="org.eclipse.e4.core.di.extensions.source"/>
 <plugin id="org.eclipse.emf.ecore.change.source"/>
@@ -189,8 +173,6 @@
 <plugin id="org.eclipse.m2e.maven.indexer"/>
 <plugin id="org.eclipse.equinox.http.servlet.source"/>
 <plugin id="org.eclipse.equinox.registry.source"/>
-<plugin id="org.eclipse.e4.ui.workbench.renderers.swt.source"/>
-<plugin id="org.eclipse.e4.ui.di"/>
 <plugin id="org.eclipse.equinox.p2.repository.source"/>
 <plugin id="org.eclipse.ui.ide.source"/>
 <plugin id="org.eclipse.equinox.preferences"/>
@@ -209,12 +191,10 @@
 <plugin id="org.eclipse.osgi.util.source"/>
 <plugin id="org.eclipse.core.databinding.property.source"/>
 <plugin id="javax.servlet.jsp"/>
-<plugin id="org.eclipse.e4.ui.workbench.swt.source"/>
 <plugin id="org.eclipse.jetty.security.source"/>
 <plugin id="org.eclipse.wst.xsd.core"/>
 <plugin id="javax.annotation"/>
 <plugin id="org.eclipse.wst.common.uriresolver"/>
-<plugin id="org.eclipse.e4.ui.css.swt"/>
 <plugin id="org.apache.felix.http.jetty"/>
 <plugin id="org.eclipse.emf.ecore"/>
 <plugin id="org.eclipse.jface"/>
@@ -232,23 +212,19 @@
 <plugin id="org.eclipse.equinox.p2.engine.source"/>
 <plugin id="org.eclipse.emf.ecore.xmi.source"/>
 <plugin id="org.eclipse.m2e.core"/>
-<plugin id="org.eclipse.e4.ui.css.swt.source"/>
 <plugin id="org.eclipse.equinox.common.source"/>
 <plugin id="org.eclipse.core.variables.source"/>
-<plugin id="org.eclipse.e4.ui.css.swt.theme.source"/>
 <plugin id="org.eclipse.core.runtime.source"/>
 <plugin id="org.eclipse.equinox.event"/>
 <plugin id="org.eclipse.core.databinding.source"/>
 <plugin id="org.eclipse.ui.workbench.source"/>
 <plugin id="org.eclipse.core.runtime.compatibility.registry.source"/>
 <plugin id="org.eclipse.core.databinding.observable.source"/>
-<plugin id="org.eclipse.e4.ui.workbench3.source"/>
 <plugin id="com.sun.jersey.servlet"/>
 <plugin id="org.eclipse.e4.core.di.extensions"/>
 <plugin id="org.hamcrest.core"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.inject"/>
-<plugin id="org.eclipse.e4.ui.widgets"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="org.eclipse.wst.common.frameworks"/>
 <plugin id="org.eclipse.core.jobs.source"/>
