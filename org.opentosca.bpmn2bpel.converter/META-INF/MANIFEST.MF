@@ -1,13 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BPMN2-importer
-Bundle-SymbolicName: org.opentosca.bpmn2bpel.converter;singleton:=true
+Bundle-SymbolicName: org.opentosca.bpmn2bpel.converter
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.bpmn2;bundle-version="0.7.0",
  org.eclipse.wst.wsdl,
  javax.wsdl;bundle-version="1.5.1",
  org.slf4j.api;bundle-version="1.6.4"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  libs/jbpt.jar
