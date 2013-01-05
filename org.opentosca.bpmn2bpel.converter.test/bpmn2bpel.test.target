@@ -11,6 +11,7 @@
 </locations>
 <includeBundles>
 <plugin id="org.eclipse.equinox.console"/>
+<plugin id="org.apache.felix.gogo.command"/>
 <plugin id="org.w3c.dom.smil"/>
 <plugin id="org.apache.batik.css"/>
 <plugin id="org.eclipse.core.contenttype"/>
@@ -21,6 +22,7 @@
 <plugin id="org.apache.felix.gogo.runtime"/>
 <plugin id="org.eclipse.wst.wsdl"/>
 <plugin id="org.eclipse.equinox.event"/>
+<plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="javax.inject"/>
 <plugin id="org.eclipse.jetty.continuation"/>
 <plugin id="org.eclipse.core.filesystem"/>

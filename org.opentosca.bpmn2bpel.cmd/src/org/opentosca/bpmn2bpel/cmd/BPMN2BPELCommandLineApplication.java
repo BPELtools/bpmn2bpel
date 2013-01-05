@@ -6,7 +6,6 @@ import org.opentosca.bpmn2bpel.converter.Converter;
 
 public class BPMN2BPELCommandLineApplication implements IApplication {
 	
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
 		Converter.convert("C:/git-repositories/BPMN2BPEL/examples/sugarCRMBuildPlan2.xml", "C:/git-repositories/BPMN2BPEL/results/Result-bpel.xml");

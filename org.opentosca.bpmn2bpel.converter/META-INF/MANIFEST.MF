@@ -14,13 +14,4 @@ Bundle-ClassPath: .,
 Import-Package: org.eclipse.bpel.model,
  org.eclipse.bpel.model.impl,
  org.eclipse.bpel.model.resource
-Export-Package: org.opentosca.bpmn2bpel.converter;
-  uses:="org.eclipse.emf.ecore,
-   org.eclipse.bpmn2,
-   org.eclipse.bpel.model.resource,
-   org.eclipse.bpmn2.util,
-   org.jbpt.hypergraph.abs,
-   org.jbpt.graph.abs,
-   org.jbpt.graph.algo.rpst,
-   org.eclipse.bpel.model.impl,
-   org.jbpt.graph"
+Export-Package: org.opentosca.bpmn2bpel.converter
