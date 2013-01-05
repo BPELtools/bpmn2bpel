@@ -1,7 +1,9 @@
-package org.opentosca.bpmn2bpel.converter;
+package org.opentosca.bpmn2bpel.converter.test;
 
-import org.eclipse.emf.common.util.URI;
+import java.io.IOException;
+
 import org.junit.Test;
+import org.opentosca.bpmn2bpel.converter.Converter;
 
 public class ConverterTest {
 	
@@ -10,8 +12,7 @@ public class ConverterTest {
 	}
 	
 	@Test
-	public void testLoopingTask() {
-		URI uri = URI.createFileURI("src/test/resources/bpmn/structures-only/plain/looping-task.xml");
-		System.out.println(uri.toString());
+	public void testLoopingTask() throws IOException {
+		Converter.convert("src/test/resources/bpmn/structures-only/plain/looping-task.xml", "C:/git-repositories/BPMN2BPEL/results/Result-bpel.xml");
 	}
 }
