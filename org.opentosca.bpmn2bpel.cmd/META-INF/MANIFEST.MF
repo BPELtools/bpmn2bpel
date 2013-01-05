@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.opentosca.bpmn2bpel.cmd;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.8.0",
- org.opentosca.bpmn2bpel.converter;bundle-version="1.0.0",
  org.eclipse.bpel.model;bundle-version="1.0.1",
  org.eclipse.bpmn2;bundle-version="0.7.0",
  org.slf4j.api;bundle-version="1.6.4"
+Import-Package: org.opentosca.bpmn2bpel.converter
