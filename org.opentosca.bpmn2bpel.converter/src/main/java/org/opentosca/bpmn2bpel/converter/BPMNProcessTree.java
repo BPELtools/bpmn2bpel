@@ -128,10 +128,11 @@ public class BPMNProcessTree extends DirectedGraph {
 	private Bpmn2Resource BPMN2Resource;
 	private RPST rpstg;
 	private List<Import> BpmnImports;
-	private ProcessImpl mainproc;
 	private String name;
 	private Map<String, Set<Link>> boundaryLinks;
 	private boolean interruptsflow = false;
+	
+	private final BPELFactoryImpl mainfact = new BPELFactoryImpl();
 	
 	/**
 	 * Creates an instance of the tree based on the given resource
@@ -551,28 +552,67 @@ public class BPMNProcessTree extends DirectedGraph {
 	public ProcessImpl BpmnProctree2BpelModel(RPSTNode rpstnode) {
 		BPMNProcessTree.logger.entry("BpmnProctree2BpelModel");
 		
-		BPELFactoryImpl mainfact = new BPELFactoryImpl();
-		this.mainproc = (ProcessImpl) mainfact.createProcess();
+		ProcessImpl mainProc = (ProcessImpl) this.mainfact.createProcess();
 		
-		BPELFactoryImpl creator = new BPELFactoryImpl();
 		org.eclipse.bpel.model.Activity a1 = null;
 		
 		// For every child of root RPSTNode visit and unfold in order to analyze
 		// and create BPEL Structures
 		a1 = this.BpmnProctree2BpelModelPart(rpstnode, this.rpstg);
 		
-		this.mainproc.setActivity(a1);
+		mainProc.setActivity(a1);
 		
 		BPMNProcessTree.logger.exit("BpmnProctree2BpelModel");
-		return this.mainproc;
+		return mainProc;
 		
 	}
 	
+	private void handleLoopCharacteristics(Task t1) {
+		if (t1.getLoopCharacteristics() != null) {
+			
+			if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
+				
+				MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
+				ForEachImpl fe1 = (ForEachImpl) this.mainfact.createForEach();
+				org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) this.mainfact.createExpression();
+				org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) this.mainfact.createExpression();
+				ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
+				exprS.setBody("1");
+				exprF.setBody(exp.getId());
+				ScopeImpl scope1 = (ScopeImpl) this.mainfact.createScope();
+				scope1.setActivity(i1);
+				fe1.setStartCounterValue(exprS);
+				fe1.setFinalCounterValue(exprF);
+				fe1.setParallel(!mloopchar.isIsSequential());
+				fe1.setActivity(scope1);
+				
+				return fe1;
+				
+			} else {
+				LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
+				ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
+				WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
+				
+				Condition BpelWhileCond = this.mainfact.createCondition();
+				
+				// The body of the condition set to the id.
+				// (NOTE)
+				BpelWhileCond.setBody(loopCond.getId());
+				
+				// The Bpel-While structure is filled with the
+				// activity (in this case invoke) and condition
+				while1.setActivity(i1);
+				while1.setCondition(BpelWhileCond);
+				
+				return while1;
+			}
+			
+		}
+	}
+	
 	private org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node, RPST rpstParent) {
-		// TODO Auto-generated method stub
 		// If the node is of trivial type
 		
-		BPELFactoryImpl mainfact = new BPELFactoryImpl();
 		RPSTNode nodeP = rpstParent.getParent(node);
 		boolean hasBoundary = false;
 		
@@ -588,7 +628,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						Task t1 = (Task) nentry.getElement();
 						ServiceTask st1 = (ServiceTask) nentry.getElement();
-						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						InvokeImpl i1 = (InvokeImpl) this.mainfact.createInvoke();
 						org.eclipse.bpmn2.Operation st1Op = st1.getOperationRef();
 						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
 						Operation i1Op = wsdlfact.createOperation();
@@ -602,53 +642,13 @@ public class BPMNProcessTree extends DirectedGraph {
 						i1.setName(nentry.getName());
 						
 						// Check if the task has a Loop definition
-						if (t1.getLoopCharacteristics() != null) {
-							
-							if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
-								
-								MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
-								ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
-								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
-								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
-								ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
-								exprS.setBody("1");
-								exprF.setBody(exp.getId());
-								ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
-								scope1.setActivity(i1);
-								fe1.setStartCounterValue(exprS);
-								fe1.setFinalCounterValue(exprF);
-								fe1.setParallel(!mloopchar.isIsSequential());
-								fe1.setActivity(scope1);
-								
-								return fe1;
-								
-							} else {
-								LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
-								ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-								WhileImpl while1 = (WhileImpl) mainfact.createWhile();
-								
-								Condition BpelWhileCond = mainfact.createCondition();
-								
-								// The body of the condition set to the id.
-								// (NOTE)
-								BpelWhileCond.setBody(loopCond.getId());
-								
-								// The Bpel-While structure is filled with the
-								// activity (in this case invoke) and condition
-								while1.setActivity(i1);
-								while1.setCondition(BpelWhileCond);
-								
-								return while1;
-							}
-							
-						}
-						
+						this.handleLoopCharacteristics(t1);
 						return i1;
 					} else if (nentry.getElement() instanceof SendTask) {
 						
 						Task t1 = (Task) nentry.getElement();
 						SendTask st1 = (SendTask) nentry.getElement();
-						InvokeImpl i1 = (InvokeImpl) mainfact.createInvoke();
+						InvokeImpl i1 = (InvokeImpl) this.mainfact.createInvoke();
 						org.eclipse.bpmn2.Operation st1Op = st1.getOperationRef();
 						WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
 						Operation i1Op = wsdlfact.createOperation();
@@ -667,13 +667,13 @@ public class BPMNProcessTree extends DirectedGraph {
 							if (t1.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
 								
 								MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) t1.getLoopCharacteristics();
-								ForEachImpl fe1 = (ForEachImpl) mainfact.createForEach();
-								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
-								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) mainfact.createExpression();
+								ForEachImpl fe1 = (ForEachImpl) this.mainfact.createForEach();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) this.mainfact.createExpression();
+								org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) this.mainfact.createExpression();
 								ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
 								exprS.setBody("1");
 								exprF.setBody(exp.getId());
-								ScopeImpl scope1 = (ScopeImpl) mainfact.createScope();
+								ScopeImpl scope1 = (ScopeImpl) this.mainfact.createScope();
 								scope1.setActivity(i1);
 								fe1.setStartCounterValue(exprS);
 								fe1.setFinalCounterValue(exprF);
@@ -685,9 +685,9 @@ public class BPMNProcessTree extends DirectedGraph {
 							} else {
 								LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
 								ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-								WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+								WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
 								
-								Condition BpelWhileCond = mainfact.createCondition();
+								Condition BpelWhileCond = this.mainfact.createCondition();
 								
 								// The body of the condition set to the id.
 								// (NOTE)
@@ -709,7 +709,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						Task t1 = (Task) nentry.getElement();
 						ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
-						ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+						ReceiveImpl r1 = (ReceiveImpl) this.mainfact.createReceive();
 						
 						org.eclipse.bpmn2.Operation rt1Op = rt1.getOperationRef();
 						if (rt1Op != null) {
@@ -736,7 +736,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						// Bpel-Flow is declared belonging to the Activity (it's
 						// scope, and handlers)
-						Flow excpFlowFlow = mainfact.createFlow();
+						Flow excpFlowFlow = this.mainfact.createFlow();
 						
 						// BOUNDARY EVENTS
 						if (eventFlows.size() != 0) {
@@ -757,9 +757,9 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) t1.getLoopCharacteristics();
 							ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-							WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+							WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
 							
-							Condition BpelWhileCond = mainfact.createCondition();
+							Condition BpelWhileCond = this.mainfact.createCondition();
 							
 							// The body of the condition set to the id. (NOTE)
 							BpelWhileCond.setBody(loopCond.getId());
@@ -790,7 +790,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					} else if (nentry.getElement() instanceof CallActivity || nentry.getElement() instanceof ServiceTask) {
 						
 						Activity a1 = (Activity) nentry.getElement();
-						Invoke i1 = mainfact.createInvoke();
+						Invoke i1 = this.mainfact.createInvoke();
 						
 						// Set name of the Receive
 						i1.setName(nentry.getName());
@@ -819,9 +819,9 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) a1.getLoopCharacteristics();
 							ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-							WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+							WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
 							
-							Condition BpelWhileCond = mainfact.createCondition();
+							Condition BpelWhileCond = this.mainfact.createCondition();
 							
 							// The body of the condition set to the id. (NOTE)
 							BpelWhileCond.setBody(loopCond.getId());
@@ -851,7 +851,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 					} else {
 						
-						Empty e1 = mainfact.createEmpty();
+						Empty e1 = this.mainfact.createEmpty();
 						e1.setName(nentry.getName());
 						return e1;
 						
@@ -860,7 +860,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				} else if (nentry.getElement() instanceof ReceiveTask && rpstParent.getParent(node).getDescription().equals("ignore_rcv")) {
 					
 					ReceiveTask rt1 = (ReceiveTask) nentry.getElement();
-					ReceiveImpl r1 = (ReceiveImpl) mainfact.createReceive();
+					ReceiveImpl r1 = (ReceiveImpl) this.mainfact.createReceive();
 					
 					// Set name of the receive
 					r1.setName(nentry.getName());
@@ -869,7 +869,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (nentry.getElement() instanceof SubProcess) {
 					
-					Scope scope1 = mainfact.createScope();
+					Scope scope1 = this.mainfact.createScope();
 					BPMNProcessTree subprocT = nentry.getSubprocessTree();
 					SubProcess s1 = (SubProcess) nentry.getElement();
 					
@@ -903,9 +903,9 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) s1.getLoopCharacteristics();
 						ExpressionImpl loopCond = (ExpressionImpl) loopchar.eContents().get(0);
-						WhileImpl while1 = (WhileImpl) mainfact.createWhile();
+						WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
 						
-						Condition BpelWhileCond = mainfact.createCondition();
+						Condition BpelWhileCond = this.mainfact.createCondition();
 						
 						// The body of the condition set to the id. (NOTE)
 						BpelWhileCond.setBody(loopCond.getId());
@@ -924,7 +924,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (nentry.getElement() instanceof ParallelGateway && !nodeP.getEntry().equals(nentry)) {
 					
-					return mainfact.createEmpty();
+					return this.mainfact.createEmpty();
 					
 					// If the entry element of the Trivial component is an
 					// intermediate catch event its definition is checked to
@@ -940,7 +940,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							MessageEventDefinition messageDef = (MessageEventDefinition) inEv.getEventDefinitions().get(0);
 							
-							Receive r1 = mainfact.createReceive();
+							Receive r1 = this.mainfact.createReceive();
 							r1.setCreateInstance(false);
 							
 							if (!inEv.getName().equals("")) {
@@ -953,10 +953,10 @@ public class BPMNProcessTree extends DirectedGraph {
 						} else if (inEv.getEventDefinitions().get(0) instanceof TimerEventDefinition) {
 							
 							TimerEventDefinition timerDef = (TimerEventDefinition) inEv.getEventDefinitions().get(0);
-							Wait wait1 = mainfact.createWait();
+							Wait wait1 = this.mainfact.createWait();
 							Expression timedur = timerDef.getTimeDuration();
 							Expression timeDate = timerDef.getTimeDate();
-							org.eclipse.bpel.model.Expression waitExp = mainfact.createExpression();
+							org.eclipse.bpel.model.Expression waitExp = this.mainfact.createExpression();
 							
 							if (timedur != null) {
 								waitExp.setBody(timedur.getAnyAttribute());
@@ -976,10 +976,10 @@ public class BPMNProcessTree extends DirectedGraph {
 						} else if (inEv.getEventDefinitions().get(0) instanceof ConditionalEventDefinition) {
 							
 							ConditionalEventDefinition condDef = (ConditionalEventDefinition) inEv.getEventDefinitions().get(0);
-							RepeatUntil repeat1 = mainfact.createRepeatUntil();
-							Empty empty1 = mainfact.createEmpty();
+							RepeatUntil repeat1 = this.mainfact.createRepeatUntil();
+							Empty empty1 = this.mainfact.createEmpty();
 							FormalExpression condition = (FormalExpression) condDef.getCondition();
-							Condition repeatExp = mainfact.createCondition();
+							Condition repeatExp = this.mainfact.createCondition();
 							
 							if (condition != null) {
 								repeatExp.setBody(condition.getMixed().getValue(0));
@@ -1009,7 +1009,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							MessageEventDefinition messageDef = (MessageEventDefinition) inEv.getEventDefinitions().get(0);
 							
-							Invoke i1 = mainfact.createInvoke();
+							Invoke i1 = this.mainfact.createInvoke();
 							
 							if (!inEv.getName().equals("")) {
 								
@@ -1041,14 +1041,14 @@ public class BPMNProcessTree extends DirectedGraph {
 						
 						if (endEv.getEventDefinitions().get(0) instanceof TerminateEventDefinition || endEv.getEventDefinitions().get(0) instanceof CancelEventDefinition) {
 							
-							Exit exit1 = mainfact.createExit();
+							Exit exit1 = this.mainfact.createExit();
 							return exit1;
 							
 						}
 						
 					} else {
 						
-						Empty e1 = mainfact.createEmpty();
+						Empty e1 = this.mainfact.createEmpty();
 						if (!endEv.getName().equals("")) {
 							
 							e1.setName(endEv.getName());
@@ -1078,7 +1078,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If an XOR Structure is found
 				if (entryNode instanceof ExclusiveGateway && exitNode instanceof ExclusiveGateway) {
 					
-					IfImpl if1 = (IfImpl) mainfact.createIf();
+					IfImpl if1 = (IfImpl) this.mainfact.createIf();
 					ElseIfImpl elseif1 = null;
 					org.eclipse.bpel.model.Activity actif;
 					ElseImpl else1 = null;
@@ -1090,7 +1090,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						RPSTNode child = (RPSTNode) e;
 						SequenceFlow conditionFlow = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 						expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-						ConditionImpl cond1 = (ConditionImpl) mainfact.createCondition();
+						ConditionImpl cond1 = (ConditionImpl) this.mainfact.createCondition();
 						
 						if (elseif1 == null) {
 							
@@ -1102,7 +1102,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							} else {
 								// if it doesn't already exist an else
 								if (else1 == null) {
-									else1 = (ElseImpl) mainfact.createElse();
+									else1 = (ElseImpl) this.mainfact.createElse();
 									else1.setActivity(this.BpmnProctree2BpelModelPart(child, rpstParent));
 									if1.setElse(else1);
 								} else {
@@ -1125,7 +1125,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							else {
 								// If it doesn't already exist an else
 								if (else1 == null) {
-									else1 = (ElseImpl) mainfact.createElse();
+									else1 = (ElseImpl) this.mainfact.createElse();
 									else1.setActivity(this.BpmnProctree2BpelModelPart(child, rpstParent));
 									if1.setElse(else1);
 								}
@@ -1138,7 +1138,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 						}
 						
-						elseif1 = (ElseIfImpl) mainfact.createElseIf();
+						elseif1 = (ElseIfImpl) this.mainfact.createElseIf();
 					}
 					return if1;
 					
@@ -1146,7 +1146,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If an AND Structure is found
 				else if (entryNode instanceof ParallelGateway && exitNode instanceof ParallelGateway) {
 					
-					FlowImpl flow1 = (FlowImpl) mainfact.createFlow();
+					FlowImpl flow1 = (FlowImpl) this.mainfact.createFlow();
 					org.eclipse.bpel.model.Activity actflow;
 					
 					// For every Polygon child of the Bond element
@@ -1162,18 +1162,18 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If an Inclusive OR Structure is found
 				else if (entryNode instanceof InclusiveGateway && exitNode instanceof InclusiveGateway) {
 					
-					FlowImpl flowp = (FlowImpl) mainfact.createFlow();
-					FlowImpl flowc = (FlowImpl) mainfact.createFlow();
+					FlowImpl flowp = (FlowImpl) this.mainfact.createFlow();
+					FlowImpl flowc = (FlowImpl) this.mainfact.createFlow();
 					org.eclipse.bpel.model.Activity actflow;
-					LinksImpl links = (LinksImpl) mainfact.createLinks();
-					LinkImpl link1 = (LinkImpl) mainfact.createLink();
-					LinkImpl link2 = (LinkImpl) mainfact.createLink();
-					SourcesImpl sources = (SourcesImpl) mainfact.createSources();
-					SourcesImpl sourcesc = (SourcesImpl) mainfact.createSources();
-					SourceImpl source1 = (SourceImpl) mainfact.createSource();
-					TargetsImpl targets = (TargetsImpl) mainfact.createTargets();
-					TargetsImpl targetsc = (TargetsImpl) mainfact.createTargets();
-					TargetImpl target1 = (TargetImpl) mainfact.createTarget();
+					LinksImpl links = (LinksImpl) this.mainfact.createLinks();
+					LinkImpl link1 = (LinkImpl) this.mainfact.createLink();
+					LinkImpl link2 = (LinkImpl) this.mainfact.createLink();
+					SourcesImpl sources = (SourcesImpl) this.mainfact.createSources();
+					SourcesImpl sourcesc = (SourcesImpl) this.mainfact.createSources();
+					SourceImpl source1 = (SourceImpl) this.mainfact.createSource();
+					TargetsImpl targets = (TargetsImpl) this.mainfact.createTargets();
+					TargetsImpl targetsc = (TargetsImpl) this.mainfact.createTargets();
+					TargetImpl target1 = (TargetImpl) this.mainfact.createTarget();
 					SequenceFlow sourceSeqF, targetSeqF = null;
 					FormalExpressionImpl expr1 = null;
 					
@@ -1183,7 +1183,7 @@ public class BPMNProcessTree extends DirectedGraph {
 						RPSTNode child = (RPSTNode) e;
 						sourceSeqF = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 						targetSeqF = exit.getTargetOfPolygon((AbstractDirectedGraph) child.getFragment());
-						ConditionImpl cond1 = (ConditionImpl) mainfact.createCondition();
+						ConditionImpl cond1 = (ConditionImpl) this.mainfact.createCondition();
 						expr1 = (FormalExpressionImpl) sourceSeqF.getConditionExpression();
 						
 						// Obtain the child-Bpel-Activity
@@ -1243,7 +1243,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (entryNode instanceof EventBasedGateway && exitNode instanceof ExclusiveGateway) {
 					
-					PickImpl pick1 = (PickImpl) mainfact.createPick();
+					PickImpl pick1 = (PickImpl) this.mainfact.createPick();
 					
 					for (Object e : BondChildren) {
 						
@@ -1261,7 +1261,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 								MessageEventDefinitionImpl msgEvent = (MessageEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 								
-								OnMessageImpl onMsg1 = (OnMessageImpl) mainfact.createOnMessage();
+								OnMessageImpl onMsg1 = (OnMessageImpl) this.mainfact.createOnMessage();
 								
 								// Momentarily the OnMessage element's operation
 								// is given the Event's name + "operation"
@@ -1280,10 +1280,10 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 								TimerEventDefinitionImpl timeEvent = (TimerEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 								
-								OnAlarmImpl onalrm1 = (OnAlarmImpl) mainfact.createOnAlarm();
+								OnAlarmImpl onalrm1 = (OnAlarmImpl) this.mainfact.createOnAlarm();
 								
 								Expression exprTime = timeEvent.getTimeDuration();
-								org.eclipse.bpel.model.Expression exprOnAlarm = mainfact.createExpression();
+								org.eclipse.bpel.model.Expression exprOnAlarm = this.mainfact.createExpression();
 								
 								if (timeEvent.getTimeDuration() != null) {
 									
@@ -1313,7 +1313,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 								SignalEventDefinitionImpl sigEvent = (SignalEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 								
-								OnMessageImpl onMsg1 = (OnMessageImpl) mainfact.createOnMessage();
+								OnMessageImpl onMsg1 = (OnMessageImpl) this.mainfact.createOnMessage();
 								
 								onMsg1.setOperationName(sigEvent.getSignalRef().getName());
 								
@@ -1332,7 +1332,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							// must be ignored (it's not part of the activity)
 							child.setDescription("ignore_rcv");
 							
-							OnMessageImpl onMsg1 = (OnMessageImpl) mainfact.createOnMessage();
+							OnMessageImpl onMsg1 = (OnMessageImpl) this.mainfact.createOnMessage();
 							
 							// Momentarily the OnMessage element's operation is
 							// given the Event's name + "operation" (NOTE)
@@ -1356,7 +1356,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				// (NOT YET COMPLETELY SUPPORTED)
 				else if (entryNode instanceof Task && exitNode instanceof Task) {
 					
-					Flow f1 = mainfact.createFlow();
+					Flow f1 = this.mainfact.createFlow();
 					org.eclipse.bpel.model.Activity actflow;
 					
 					for (Object e : BondChildren) {
@@ -1371,7 +1371,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					// Some Documentation is added to the flow element stating
 					// that the following activities should be parallel executed
 					// till the end of the process
-					Documentation doc = mainfact.createDocumentation();
+					Documentation doc = this.mainfact.createDocumentation();
 					doc.setValue("FlowtillEnd");
 					f1.setDocumentation(doc);
 					
@@ -1385,9 +1385,9 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If the structure is that of Repeat
 				if (exit.numberOfPathsto(BondChildren, entry) == 1 && exit.numberOfEdgesto(BondChildren, entry) == 1 && exitNode instanceof ExclusiveGateway) {
 					
-					RepeatUntil repeat = mainfact.createRepeatUntil();
-					org.eclipse.bpel.model.Activity a1 = mainfact.createActivity();
-					IfImpl if1 = (IfImpl) mainfact.createIf();
+					RepeatUntil repeat = this.mainfact.createRepeatUntil();
+					org.eclipse.bpel.model.Activity a1 = this.mainfact.createActivity();
+					IfImpl if1 = (IfImpl) this.mainfact.createIf();
 					int EntryToExit = entry.numberOfPathsto(BondChildren, exit);
 					FormalExpressionImpl expr1 = null;
 					org.eclipse.bpel.model.Activity actif;
@@ -1414,7 +1414,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							SequenceFlow backRep = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 							Expression exprbackRep = backRep.getConditionExpression();
-							Condition Repcond = mainfact.createCondition();
+							Condition Repcond = this.mainfact.createCondition();
 							
 							// The condition is set with the negation of the
 							// Bpmn-expression's id
@@ -1430,8 +1430,8 @@ public class BPMNProcessTree extends DirectedGraph {
 				// If the structure is that of While
 				else if (entry.numberOfPathsto(BondChildren, exit) == 1 && entry.numberOfEdgesto(BondChildren, exit) == 1 && exitNode instanceof ExclusiveGateway) {
 					
-					While while1 = mainfact.createWhile();
-					org.eclipse.bpel.model.Activity a1 = mainfact.createActivity();
+					While while1 = this.mainfact.createWhile();
+					org.eclipse.bpel.model.Activity a1 = this.mainfact.createActivity();
 					int polygons = BondChildren.size();
 					
 					if (polygons == 2) {
@@ -1443,7 +1443,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							if (whileCondFlow != null) {
 								
 								Expression whileCond = whileCondFlow.getConditionExpression();
-								Condition BpelWhileCond = mainfact.createCondition();
+								Condition BpelWhileCond = this.mainfact.createCondition();
 								
 								// the main activity of the While is created and
 								// the body of the condition set
@@ -1461,7 +1461,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					} else if (polygons > 2) {
 						
 						// ***** Create the if ******
-						IfImpl if1 = (IfImpl) mainfact.createIf();
+						IfImpl if1 = (IfImpl) this.mainfact.createIf();
 						ElseIfImpl elseif1 = null;
 						org.eclipse.bpel.model.Activity actif;
 						ElseImpl else1 = null;
@@ -1478,7 +1478,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							}
 							SequenceFlow conditionFlow = exit.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 							expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-							Condition cond1 = mainfact.createCondition();
+							Condition cond1 = this.mainfact.createCondition();
 							
 							// The Body of the condition is filled with the id
 							// of the corresponding BPMN condition (NOTE)
@@ -1508,7 +1508,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 							}
 							
-							elseif1 = (ElseIfImpl) mainfact.createElseIf();
+							elseif1 = (ElseIfImpl) this.mainfact.createElseIf();
 						}
 						// ***********************
 						
@@ -1525,17 +1525,17 @@ public class BPMNProcessTree extends DirectedGraph {
 				else if ((exit.numberOfPathsto(BondChildren, entry) > 1 || exit.numberOfPathsto(BondChildren, exit) == 1 && exit.numberOfEdgesto(BondChildren, exit) == 0) && entry.numberOfPathsto(BondChildren, exit) > 1 && entry.numberOfEdgesto(BondChildren, exit) == 0 && exitNode instanceof ExclusiveGateway) {
 					
 					// The Structure must be rearranged
-					SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
-					SequenceImpl seq2 = (SequenceImpl) mainfact.createSequence();
-					SequenceImpl seq3 = (SequenceImpl) mainfact.createSequence();
-					IfImpl if1 = (IfImpl) mainfact.createIf();
+					SequenceImpl seq1 = (SequenceImpl) this.mainfact.createSequence();
+					SequenceImpl seq2 = (SequenceImpl) this.mainfact.createSequence();
+					SequenceImpl seq3 = (SequenceImpl) this.mainfact.createSequence();
+					IfImpl if1 = (IfImpl) this.mainfact.createIf();
 					org.eclipse.bpel.model.Activity if2 = null;
 					ElseIfImpl elseif1 = null;
 					org.eclipse.bpel.model.Activity actif;
 					ElseImpl else1 = null;
 					FormalExpressionImpl expr1 = null;
-					WhileImpl while1 = (WhileImpl) mainfact.createWhile();
-					Condition whileCondition1 = mainfact.createCondition();
+					WhileImpl while1 = (WhileImpl) this.mainfact.createWhile();
+					Condition whileCondition1 = this.mainfact.createCondition();
 					String WhileCondition = "";
 					
 					for (Object e : BondChildren) {
@@ -1548,7 +1548,7 @@ public class BPMNProcessTree extends DirectedGraph {
 							
 							SequenceFlow conditionFlow = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 							expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-							Condition cond1 = mainfact.createCondition();
+							Condition cond1 = this.mainfact.createCondition();
 							
 							cond1.setBody(expr1.getMixed().getValue(0));
 							// Get the text of the expression (value of the
@@ -1578,10 +1578,10 @@ public class BPMNProcessTree extends DirectedGraph {
 								}
 								
 							}
-							elseif1 = (ElseIfImpl) mainfact.createElseIf();
+							elseif1 = (ElseIfImpl) this.mainfact.createElseIf();
 						} else if (centry.equals(entry) && cexit.equals(exit)) {
 							
-							seq1 = (SequenceImpl) mainfact.createSequence();
+							seq1 = (SequenceImpl) this.mainfact.createSequence();
 							
 							if2 = this.BpmnProctree2BpelModelPart(child, rpstParent);
 							
@@ -1608,13 +1608,13 @@ public class BPMNProcessTree extends DirectedGraph {
 			
 			ArrayList<RPSTNode> childrenP = (ArrayList<RPSTNode>) this.organizeRPST(node, rpstParent.getChildren(node));
 			int childrenPsize = childrenP.size();
-			SequenceImpl seq1 = (SequenceImpl) mainfact.createSequence();
+			SequenceImpl seq1 = (SequenceImpl) this.mainfact.createSequence();
 			Flow flow1 = null;
 			Flow flow2 = null;
 			// Hashtable with the activity where a boundary event ends and the
 			// corresponding link to be added to it.
 			Map<String, Set<Link>> boundaryLinks = new Hashtable<String, Set<Link>>();
-			Links flowLinks = mainfact.createLinks();
+			Links flowLinks = this.mainfact.createLinks();
 			Scope act1scope = null;
 			org.eclipse.bpel.model.Activity act1 = null;
 			org.eclipse.bpel.model.Activity lastAct = null;
@@ -1627,7 +1627,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			// -> join) SequenceFlow
 			if (childrenPsize == 1) {
 				
-				return mainfact.createEmpty();
+				return this.mainfact.createEmpty();
 				
 			} else {
 				
@@ -1664,8 +1664,8 @@ public class BPMNProcessTree extends DirectedGraph {
 							// activity
 							if (nextActlink != null) {
 								
-								Targets scopeTs = mainfact.createTargets();
-								Target scopeT = mainfact.createTarget();
+								Targets scopeTs = this.mainfact.createTargets();
+								Target scopeT = this.mainfact.createTarget();
 								scopeT.setLink(nextActlink);
 								scopeTs.getChildren().add(scopeT);
 								act1scope.setTargets(scopeTs);
@@ -1682,7 +1682,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 										
 										Link l = p.next();
-										Target t = mainfact.createTarget();
+										Target t = this.mainfact.createTarget();
 										t.setLink(l);
 										act1scope.getTargets().getChildren().add(t);
 										
@@ -1694,7 +1694,7 @@ public class BPMNProcessTree extends DirectedGraph {
 								
 							} else {
 								
-								Targets scopeTs = mainfact.createTargets();
+								Targets scopeTs = this.mainfact.createTargets();
 								
 								Set<Link> linksact = boundaryLinks.get(actId);
 								
@@ -1703,7 +1703,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 										
 										Link l = p.next();
-										Target t = mainfact.createTarget();
+										Target t = this.mainfact.createTarget();
 										t.setLink(l);
 										scopeTs.getChildren().add(t);
 										
@@ -1728,7 +1728,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									// therefore a bpel-Flow structure should be
 									// created
 									if (flow1 == null) {
-										flow1 = mainfact.createFlow();
+										flow1 = this.mainfact.createFlow();
 									}
 									
 									// If it ends in an activity, the id of the
@@ -1746,18 +1746,18 @@ public class BPMNProcessTree extends DirectedGraph {
 										// The link corresponding to the end of
 										// the Handler's activity is created and
 										// added.
-										Empty emptyL = mainfact.createEmpty();
-										Sources sourcesL = mainfact.createSources();
-										Source sourceL = mainfact.createSource();
-										Link afterBoundExec = mainfact.createLink();
+										Empty emptyL = this.mainfact.createEmpty();
+										Sources sourcesL = this.mainfact.createSources();
+										Source sourceL = this.mainfact.createSource();
+										Link afterBoundExec = this.mainfact.createLink();
 										afterBoundExec.setName(p[1]);
 										
 										// The Link corresponding to the correct
 										// execution of the activity (without
 										// influence of the Boundary) is created
-										Sources sourcesScope = mainfact.createSources();
-										Source sScope = mainfact.createSource();
-										Link linkScope = mainfact.createLink();
+										Sources sourcesScope = this.mainfact.createSources();
+										Source sScope = this.mainfact.createSource();
+										Link linkScope = this.mainfact.createLink();
 										linkScope.setName(ChildPentry.getElement().getOutgoing().get(0).getName());
 										sScope.setLink(linkScope);
 										sourcesScope.getChildren().add(sScope);
@@ -1771,7 +1771,7 @@ public class BPMNProcessTree extends DirectedGraph {
 										// activity.
 										// by creating a new sequence that
 										// contains both.
-										Sequence catchSeq = mainfact.createSequence();
+										Sequence catchSeq = this.mainfact.createSequence();
 										catchSeq.getActivities().add(a.getActivity());
 										catchSeq.getActivities().add(emptyL);
 										
@@ -1804,9 +1804,9 @@ public class BPMNProcessTree extends DirectedGraph {
 										// The Link corresponding to the correct
 										// execution of the activity (without
 										// influence of the Boundary) is created
-										Sources sourcesScope = mainfact.createSources();
-										Source sScope = mainfact.createSource();
-										Link linkScope = mainfact.createLink();
+										Sources sourcesScope = this.mainfact.createSources();
+										Source sScope = this.mainfact.createSource();
+										Link linkScope = this.mainfact.createLink();
 										linkScope.setName(ChildPentry.getElement().getOutgoing().get(0).getName());
 										sScope.setLink(linkScope);
 										sourcesScope.getChildren().add(sScope);
@@ -1836,8 +1836,8 @@ public class BPMNProcessTree extends DirectedGraph {
 								// current activity
 								if (nextActlink != null) {
 									
-									Targets scopeTs = mainfact.createTargets();
-									Target scopeT = mainfact.createTarget();
+									Targets scopeTs = this.mainfact.createTargets();
+									Target scopeT = this.mainfact.createTarget();
 									scopeT.setLink(nextActlink);
 									scopeTs.getChildren().add(scopeT);
 									act1.setTargets(scopeTs);
@@ -1858,7 +1858,7 @@ public class BPMNProcessTree extends DirectedGraph {
 										for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 											
 											Link l = p.next();
-											Target t = mainfact.createTarget();
+											Target t = this.mainfact.createTarget();
 											t.setLink(l);
 											act1.getTargets().getChildren().add(t);
 											
@@ -1870,7 +1870,7 @@ public class BPMNProcessTree extends DirectedGraph {
 									
 								} else {
 									
-									Targets scopeTs = mainfact.createTargets();
+									Targets scopeTs = this.mainfact.createTargets();
 									
 									Set<Link> linksact = boundaryLinks.get(actId);
 									
@@ -1879,7 +1879,7 @@ public class BPMNProcessTree extends DirectedGraph {
 										for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 											
 											Link l = p.next();
-											Target t = mainfact.createTarget();
+											Target t = this.mainfact.createTarget();
 											t.setLink(l);
 											scopeTs.getChildren().add(t);
 											
@@ -2402,8 +2402,6 @@ public class BPMNProcessTree extends DirectedGraph {
 	}
 	
 	private Scope AddHandlertoScope(BPMNProcessTree eventFlow, Scope actScope) {
-		
-		BPELFactoryImpl mainfact = new BPELFactoryImpl();
 		BPMNProcessTree eventHandler = eventFlow;
 		RPST EvHandlerRPST = new RPST(eventHandler);
 		FaultHandler faultH = null;
@@ -2413,13 +2411,13 @@ public class BPMNProcessTree extends DirectedGraph {
 		// the one
 		// passed as argument is null
 		if (actScope == null) {
-			actScope = mainfact.createScope();
-			faultH = mainfact.createFaultHandler();
+			actScope = this.mainfact.createScope();
+			faultH = this.mainfact.createFaultHandler();
 		} else {
 			faultH = actScope.getFaultHandlers();
 			
 			if (faultH == null) {
-				faultH = mainfact.createFaultHandler();
+				faultH = this.mainfact.createFaultHandler();
 			}
 		}
 		
@@ -2436,8 +2434,8 @@ public class BPMNProcessTree extends DirectedGraph {
 				org.eclipse.bpel.model.Activity ActHandler = this.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
 				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
-				Catch faultCatch = mainfact.createCatch();
-				Documentation handlerInfo = mainfact.createDocumentation();
+				Catch faultCatch = this.mainfact.createCatch();
+				Documentation handlerInfo = this.mainfact.createDocumentation();
 				
 				// The End specifies that the following handler ends without
 				// entering the main flow.
@@ -2474,17 +2472,17 @@ public class BPMNProcessTree extends DirectedGraph {
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
 					
 					if (EvHandler == null) {
-						EvHandler = mainfact.createEventHandler();
+						EvHandler = this.mainfact.createEventHandler();
 					}
 					
-					OnAlarm alarmEv = mainfact.createOnAlarm();
-					Empty alarmScope = mainfact.createEmpty();
+					OnAlarm alarmEv = this.mainfact.createOnAlarm();
+					Empty alarmScope = this.mainfact.createEmpty();
 					
-					Link link2Fault = mainfact.createLink();
-					Target target2Fault = mainfact.createTarget();
-					Targets targetCont = mainfact.createTargets();
-					Source faultFromTarget = mainfact.createSource();
-					Sources sourceCont = mainfact.createSources();
+					Link link2Fault = this.mainfact.createLink();
+					Target target2Fault = this.mainfact.createTarget();
+					Targets targetCont = this.mainfact.createTargets();
+					Source faultFromTarget = this.mainfact.createSource();
+					Sources sourceCont = this.mainfact.createSources();
 					
 					link2Fault.setName(event.getName() + " to Fault");
 					
@@ -2500,7 +2498,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					// The Activity of the alarm scope is set (in this case an
 					// empty with a source to the Fault Handler)
 					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
-					org.eclipse.bpel.model.Expression timeexp = mainfact.createExpression();
+					org.eclipse.bpel.model.Expression timeexp = this.mainfact.createExpression();
 					
 					// Set the date, duration or repeat cycle.
 					if (timeCyc != null) {
@@ -2534,17 +2532,17 @@ public class BPMNProcessTree extends DirectedGraph {
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
 					
 					if (EvHandler == null) {
-						EvHandler = mainfact.createEventHandler();
+						EvHandler = this.mainfact.createEventHandler();
 					}
 					
-					OnEvent eventEv = mainfact.createOnEvent();
-					Empty eventScope = mainfact.createEmpty();
+					OnEvent eventEv = this.mainfact.createOnEvent();
+					Empty eventScope = this.mainfact.createEmpty();
 					
-					Link link2Fault = mainfact.createLink();
-					Target target2Fault = mainfact.createTarget();
-					Targets targetCont = mainfact.createTargets();
-					Source faultFromTarget = mainfact.createSource();
-					Sources sourceCont = mainfact.createSources();
+					Link link2Fault = this.mainfact.createLink();
+					Target target2Fault = this.mainfact.createTarget();
+					Targets targetCont = this.mainfact.createTargets();
+					Source faultFromTarget = this.mainfact.createSource();
+					Sources sourceCont = this.mainfact.createSources();
 					
 					link2Fault.setName(event.getName() + " to Fault");
 					
@@ -2605,8 +2603,8 @@ public class BPMNProcessTree extends DirectedGraph {
 				org.eclipse.bpel.model.Activity ActHandler = this.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
 				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
-				Documentation handlerInfo = mainfact.createDocumentation();
-				Catch faultCatch = mainfact.createCatch();
+				Documentation handlerInfo = this.mainfact.createDocumentation();
+				Catch faultCatch = this.mainfact.createCatch();
 				
 				// The End specifies that the following handler ends without
 				// entering the main flow.
@@ -2630,18 +2628,18 @@ public class BPMNProcessTree extends DirectedGraph {
 					// TODO
 					TimerEventDefinition timevdef = (TimerEventDefinition) event.getEventDefinitions().get(0);
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
-					Throw throwEv = mainfact.createThrow();
+					Throw throwEv = this.mainfact.createThrow();
 					
 					if (EvHandler == null) {
-						EvHandler = mainfact.createEventHandler();
+						EvHandler = this.mainfact.createEventHandler();
 					}
-					OnAlarm alarmEv = mainfact.createOnAlarm();
+					OnAlarm alarmEv = this.mainfact.createOnAlarm();
 					
 					faultCatch.setFaultName(new QName(event.getName() + "fault"));
 					throwEv.setFaultName(new QName(event.getName() + "fault"));
 					
 					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
-					org.eclipse.bpel.model.Expression timeexp = mainfact.createExpression();
+					org.eclipse.bpel.model.Expression timeexp = this.mainfact.createExpression();
 					
 					// Set the date, duration or repeat cycle.
 					if (timeCyc != null) {
@@ -2675,12 +2673,12 @@ public class BPMNProcessTree extends DirectedGraph {
 					onMsgOperation.setName(msgOp.getName());
 					
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
-					Throw throwEv = mainfact.createThrow();
+					Throw throwEv = this.mainfact.createThrow();
 					
 					if (EvHandler == null) {
-						EvHandler = mainfact.createEventHandler();
+						EvHandler = this.mainfact.createEventHandler();
 					}
-					OnEvent msgEv = mainfact.createOnEvent();
+					OnEvent msgEv = this.mainfact.createOnEvent();
 					msgEv.setOperation(onMsgOperation);
 					
 					faultCatch.setFaultName(new QName(event.getName() + "fault"));
@@ -2698,7 +2696,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				} else if (event.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
 					
-					CompensationHandler compH = mainfact.createCompensationHandler();
+					CompensationHandler compH = this.mainfact.createCompensationHandler();
 					compH.setActivity(ActHandler);
 					actScope.setCompensationHandler(compH);
 					
