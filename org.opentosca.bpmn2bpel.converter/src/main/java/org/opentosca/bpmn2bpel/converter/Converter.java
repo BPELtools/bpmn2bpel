@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.bpel.model.impl.ProcessImpl;
 import org.eclipse.bpel.model.resource.BPELResource;
 import org.eclipse.bpel.model.resource.BPELResourceImpl;
 import org.eclipse.bpel.model.resource.BPELWriter;
@@ -77,7 +76,7 @@ public class Converter {
 		Converter.logger.debug("RPST after quasi component restructuring: " + rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
-		ProcessImpl bpelmodel = wt.BpmnProctree2BpelModel(rpstRoot);
+		org.eclipse.bpel.model.Process bpelmodel = wt.BpmnProctree2BpelModel(rpstRoot);
 		
 		// The BPELResource is declared with the bpel model as its content
 		BPELResourceImpl resbpel = new BPELResourceImpl();
