@@ -17,6 +17,8 @@ repositories {
     mavenCentral()
 }
 
+// all dependencies of the whole project
+// gradle is currently used only to fetch the jars, not for compilation
 dependencies {
 	// jersey
 	// these entries weren't needed at buildr configuration, but required at gradle
@@ -32,4 +34,6 @@ dependencies {
 	// mimepull
 	compile group:'org.jvnet.mimepull', name:'mimepull', version:'1.8', transitive:false
 
+	// we need xlogger
+	compile group:'org.slf4j', name:'slf4j-ext', version:'1.6.4', transitive:true
 }

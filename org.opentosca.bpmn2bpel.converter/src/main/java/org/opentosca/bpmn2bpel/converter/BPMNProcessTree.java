@@ -117,13 +117,13 @@ import org.jbpt.graph.algo.rpst.RPST;
 import org.jbpt.graph.algo.rpst.RPSTNode;
 import org.jbpt.graph.algo.tctree.TCType;
 import org.jbpt.hypergraph.abs.Vertex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 @SuppressWarnings("rawtypes")
 public class BPMNProcessTree extends DirectedGraph {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BPMNProcessTree.class);
+	private static final XLogger logger = XLoggerFactory.getXLogger(BPMNProcessTree.class);
 	
 	private Bpmn2Resource BPMN2Resource;
 	private RPST rpstg;

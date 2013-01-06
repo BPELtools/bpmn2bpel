@@ -16,8 +16,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.jbpt.graph.algo.rpst.RPST;
 import org.jbpt.graph.algo.rpst.RPSTNode;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 public class Converter {
+	
+	private static final XLogger logger = XLoggerFactory.getXLogger(Converter.class);
 	
 	public static void convert(String bpmnFilename, String bpelFilename) throws IOException {
 		// 1.: Create a BPMN resource
@@ -52,9 +56,9 @@ public class Converter {
 		RPST rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);
 		RPSTNode rpstRoot = rpstgraph.getRoot();
-		// System.out.println(rpstgraph.getRoot().getFragment());
-		System.out.println(rpstgraph.toString());
-		System.out.println(rpstgraph.countVertices());
+		// logger.debug(rpstgraph.getRoot().getFragment());
+		Converter.logger.debug(rpstgraph.toString());
+		Converter.logger.debug(Integer.toString(rpstgraph.countVertices()));
 		
 		// Transform any Rigid components (Generalised Flows( this graph may
 		// have
@@ -62,15 +66,15 @@ public class Converter {
 		rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);
 		rpstRoot = rpstgraph.getRoot();
-		System.out.println(rpstgraph.toString());
+		Converter.logger.debug(rpstgraph.toString());
 		
 		// Restructure any quasicomponents this graph may have
 		wt.restructureQuasi(rpstgraph, rpstRoot, null, null, false);
 		rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);
 		rpstRoot = rpstgraph.getRoot();
-		// System.out.println(wt.toString());
-		System.out.println(rpstgraph.toString());
+		// logger.debug(wt.toString());
+		Converter.logger.debug(rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
 		ProcessImpl bpelmodel = wt.BpmnProctree2BpelModel(rpstRoot);
