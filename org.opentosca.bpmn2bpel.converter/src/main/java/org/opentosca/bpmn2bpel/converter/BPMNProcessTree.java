@@ -549,7 +549,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	
 	// Returns the Bpel Model associated with this workflowgraph
 	public ProcessImpl BpmnProctree2BpelModel(RPSTNode rpstnode) {
-		BPMNProcessTree.logger.entry();
+		BPMNProcessTree.logger.entry("BpmnProctree2BpelModel");
 		
 		BPELFactoryImpl mainfact = new BPELFactoryImpl();
 		this.mainproc = (ProcessImpl) mainfact.createProcess();
@@ -563,7 +563,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 		this.mainproc.setActivity(a1);
 		
-		BPMNProcessTree.logger.exit();
+		BPMNProcessTree.logger.exit("BpmnProctree2BpelModel");
 		return this.mainproc;
 		
 	}
