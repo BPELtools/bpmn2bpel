@@ -25,4 +25,17 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>lib/xmlunit-1.3.jar</name>
+			<type>1</type>
+			<locationURI>GRADLE_USER_HOME/caches/artifacts-15/filestore/xmlunit/xmlunit/1.3/jar/4ecf4c68036ae37d889cc1744208abbc42704fb2/xmlunit-1.3.jar</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>GRADLE_USER_HOME</name>
+			<value>file:/C:/Users/Oliver/.gradle</value>
+		</variable>
+	</variableList>
 </projectDescription>

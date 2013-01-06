@@ -3,7 +3,7 @@
     <sequence>
         <empty name="Task1"/>
         <while name="Task2">
-			<condition><![CDATA[i > 5]]>
+			<condition><![CDATA[i > 5]]></condition>
 			<empty />
 		</while>
         <empty name="Task3"/>

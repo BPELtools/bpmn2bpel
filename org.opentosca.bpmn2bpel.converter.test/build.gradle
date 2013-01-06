@@ -1,0 +1,12 @@
+apply plugin: 'java'
+group = 'bpmn2bpel.test'
+version = '2012-10-01'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	// for testing only
+	compile group:'xmlunit', name:'xmlunit', version:'1.3'
+}
