@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <empty name="Task1"/>
+        <while name="Task2">
+			<condition><![CDATA[i > 5]]>
+			<empty />
+		</while>
+        <empty name="Task3"/>
+        <empty name="end"/>
+    </sequence>
+</process>
