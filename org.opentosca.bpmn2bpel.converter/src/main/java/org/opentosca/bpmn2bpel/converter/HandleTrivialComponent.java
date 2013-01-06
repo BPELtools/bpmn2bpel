@@ -26,6 +26,7 @@ import org.eclipse.bpel.model.Targets;
 import org.eclipse.bpel.model.Throw;
 import org.eclipse.bpel.model.Wait;
 import org.eclipse.bpel.model.impl.WhileImpl;
+import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.CatchEvent;
@@ -39,10 +40,12 @@ import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.ServiceTask;
@@ -51,6 +54,7 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.impl.ExpressionImpl;
 import org.eclipse.bpmn2.impl.LoopCharacteristicsImpl;
 import org.eclipse.bpmn2.impl.MultiInstanceLoopCharacteristicsImpl;
@@ -327,11 +331,10 @@ public class HandleTrivialComponent {
 		return HandleTrivialComponent.genericTaskHandling(wfNode, p1.getActivity());
 	}
 	
-	private static org.eclipse.bpel.model.Activity handleUnknownActivity(WFNode wfNode) {
-		HandleTrivialComponent.logger.debug("Handled unknown activity {}", wfNode);
+	private static org.eclipse.bpel.model.Activity handlPlainTask(WFNode wfNode) {
+		HandleTrivialComponent.logger.debug("Converted {} to empty", wfNode);
 		Empty e1 = BPMNProcessTree.mainfact.createEmpty();
-		e1.setName(wfNode.getName());
-		return e1;
+		return HandleTrivialComponent.genericTaskHandling(wfNode, e1);
 	}
 	
 	private static Scope addHandlertoScope(BPMNProcessTree eventFlow, Scope actScope) {
@@ -680,11 +683,29 @@ public class HandleTrivialComponent {
 					res = HandleTrivialComponent.handleSendTask(nentry, (SendTask) nentry.getElement());
 				} else if (nentry.getElement() instanceof ReceiveTask) {
 					res = HandleTrivialComponent.handleReceiveTask(nentry, (ReceiveTask) nentry.getElement());
-				} else if (nentry.getElement() instanceof CallActivity) {
-					res = HandleTrivialComponent.handleCallActivity(nentry, (CallActivity) nentry.getElement());
+				} else if (nentry.getElement() instanceof BusinessRuleTask) {
+					HandleTrivialComponent.logger.error("Business Rule Tasks not yet supported.");
+					res = HandleTrivialComponent.handlPlainTask(nentry);
+				} else if (nentry.getElement() instanceof ManualTask) {
+					HandleTrivialComponent.logger.error("Manual tasks may not appear in automated workflows");
+					res = HandleTrivialComponent.handlPlainTask(nentry);
+				} else if (nentry.getElement() instanceof ScriptTask) {
+					HandleTrivialComponent.logger.error("Script Tasks not yet supported.");
+					res = HandleTrivialComponent.handlPlainTask(nentry);
+				} else if (nentry.getElement() instanceof UserTask) {
+					HandleTrivialComponent.logger.error("User Tasks not yet supported.");
+					res = HandleTrivialComponent.handlPlainTask(nentry);
 				} else {
-					res = HandleTrivialComponent.handleUnknownActivity(nentry);
+					// Plain task
+					// There is no explicit type for a task without marker. The
+					// interface "Task" also models the plain task. Therefore,
+					// we cannot check for completeness here, but current
+					// implementation of bpmn2 model does not have more subtypes
+					// as checked above
+					res = HandleTrivialComponent.handlPlainTask(nentry);
 				}
+			} else if (nentry.getElement() instanceof CallActivity) {
+				res = HandleTrivialComponent.handleCallActivity(nentry, (CallActivity) nentry.getElement());
 			} else if (nentry.getElement() instanceof SubProcess) {
 				res = HandleTrivialComponent.handleSubProcess(nentry);
 			} else if (nentry.getElement() instanceof IntermediateCatchEvent) {
