@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <forEach name="Tareita" parallel="yes">
+            <startCounterValue><![CDATA[1]]></startCounterValue>
+            <finalCounterValue><![CDATA[i>5]]></finalCounterValue>
+            <scope>
+                <invoke name="Tareita"/>
+            </scope>
+        </forEach>
+        <empty name="Tareita2"/>
+        <empty name="end"/>
+    </sequence>
+</process>
