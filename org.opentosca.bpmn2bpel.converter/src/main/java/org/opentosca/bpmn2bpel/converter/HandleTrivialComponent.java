@@ -161,7 +161,8 @@ public class HandleTrivialComponent {
 			// TODO implement formal expressions
 			HandleTrivialComponent.logger.error("Formal expressions not yet implemented");
 		}
-		// in non-forrmal expressions, the "natural language text is captured using the documentation attribute" (BPMN Spec 2.0, 8.3.6)
+		// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
+		// Spec 2.0, 8.3.6)
 		List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
 		StringBuilder sb = new StringBuilder();
 		for (org.eclipse.bpmn2.Documentation doc : documentation) {
