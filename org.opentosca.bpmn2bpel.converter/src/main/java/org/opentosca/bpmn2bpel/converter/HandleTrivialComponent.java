@@ -240,21 +240,21 @@ public class HandleTrivialComponent {
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleServiceTask(WFNode wfNode, ServiceTask t) {
-		HandleTrivialComponent.logger.entry("handleServiceTask");
+		HandleTrivialComponent.logger.entry();
 		Activity res = HandleTrivialComponent.convertToInvoke(t.getOperationRef(), wfNode);
-		HandleTrivialComponent.logger.exit("handleServiceTask");
+		HandleTrivialComponent.logger.exit();
 		return res;
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleSendTask(WFNode wfNode, SendTask t) {
-		HandleTrivialComponent.logger.entry("handleSendTask");
+		HandleTrivialComponent.logger.entry();
 		Activity res = HandleTrivialComponent.convertToInvoke(t.getOperationRef(), wfNode);
-		HandleTrivialComponent.logger.exit("handleSendTask");
+		HandleTrivialComponent.logger.exit();
 		return res;
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleReceiveTask(WFNode wfNode, ReceiveTask t) {
-		HandleTrivialComponent.logger.entry("handleReceiveTask");
+		HandleTrivialComponent.logger.entry();
 		Receive r1 = BPMNProcessTree.mainfact.createReceive();
 		org.eclipse.bpmn2.Operation rt1Op = t.getOperationRef();
 		if (rt1Op != null) {
@@ -270,7 +270,7 @@ public class HandleTrivialComponent {
 		// Set name of the Receive
 		r1.setName(t.getName());
 		
-		HandleTrivialComponent.logger.exit("handleReceiveTask");
+		HandleTrivialComponent.logger.exit();
 		return HandleTrivialComponent.genericTaskHandling(wfNode, r1);
 	}
 	
@@ -685,7 +685,7 @@ public class HandleTrivialComponent {
 	}
 	
 	static Activity handleTrivialComponent(RPSTNode node, RPST rpstParent) {
-		HandleTrivialComponent.logger.entry("handleTrivialComponent", node);
+		HandleTrivialComponent.logger.entry(node);
 		Activity res;
 		// The Node is the last one in a sequence (Polygon)
 		boolean isLastOneInSequence = node.getDescription().equals("Last-Trivial");
@@ -741,7 +741,7 @@ public class HandleTrivialComponent {
 				}
 			}
 		}
-		HandleTrivialComponent.logger.exit("handleTrivialComponent");
+		HandleTrivialComponent.logger.exit();
 		return res;
 	}
 	

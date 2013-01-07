@@ -34,7 +34,7 @@ public class HandlePolygonComponent {
 	
 	
 	public static Activity handlePolygonComponent(BPMNProcessTree tree, RPSTNode node, RPST rpstParent) {
-		HandlePolygonComponent.logger.entry("handlePolygonComponent", node);
+		HandlePolygonComponent.logger.entry(node);
 		
 		// implementation assumption that getChidren() returns an ArrayList
 		@SuppressWarnings("unchecked")

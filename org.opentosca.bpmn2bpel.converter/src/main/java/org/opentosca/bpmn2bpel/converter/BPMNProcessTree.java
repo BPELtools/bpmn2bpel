@@ -400,7 +400,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	 * Transforms the given workflow graph to a BPEL process
 	 */
 	public org.eclipse.bpel.model.Process BpmnProctree2BpelModel(RPSTNode rpstnode) {
-		BPMNProcessTree.logger.entry("BpmnProctree2BpelModel");
+		BPMNProcessTree.logger.entry();
 		
 		org.eclipse.bpel.model.Process mainProc = this.mainfact.createProcess();
 		
@@ -412,13 +412,13 @@ public class BPMNProcessTree extends DirectedGraph {
 		
 		mainProc.setActivity(a1);
 		
-		BPMNProcessTree.logger.exit("BpmnProctree2BpelModel");
+		BPMNProcessTree.logger.exit();
 		return mainProc;
 	}
 	
 	
 	public org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node, RPST rpstParent) {
-		BPMNProcessTree.logger.entry("BpmnProctree2BpelModelPart");
+		BPMNProcessTree.logger.entry();
 		org.eclipse.bpel.model.Activity res;
 		switch (node.getType()) {
 		case T:
@@ -434,7 +434,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			res = null;
 			break;
 		}
-		BPMNProcessTree.logger.exit("BpmnProctree2BpelModelPart");
+		BPMNProcessTree.logger.exit();
 		return res;
 	}
 	
