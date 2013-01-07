@@ -55,7 +55,6 @@ import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.UserTask;
-import org.eclipse.bpmn2.impl.ExpressionImpl;
 import org.eclipse.bpmn2.impl.LoopCharacteristicsImpl;
 import org.eclipse.bpmn2.impl.MultiInstanceLoopCharacteristicsImpl;
 import org.eclipse.wst.wsdl.Operation;
@@ -125,37 +124,51 @@ public class HandleTrivialComponent {
 		if (bpmnTask.getLoopCharacteristics() == null) {
 			return bpelActivity;
 		} else if (bpmnTask.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
-			MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
 			ForEach fe1 = BPMNProcessTree.mainfact.createForEach();
+			
 			org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) BPMNProcessTree.mainfact.createExpression();
-			org.eclipse.bpel.model.impl.ExpressionImpl exprF = (org.eclipse.bpel.model.impl.ExpressionImpl) BPMNProcessTree.mainfact.createExpression();
-			ExpressionImpl exp = (ExpressionImpl) mloopchar.getCompletionCondition();
 			exprS.setBody("1");
-			exprF.setBody(exp.getId());
+			fe1.setStartCounterValue(exprS);
+			
+			MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
+			Condition exprF = HandleTrivialComponent.convertExpressionToCondition(mloopchar.getCompletionCondition());
+			fe1.setFinalCounterValue(exprF);
+			
+			fe1.setParallel(!mloopchar.isIsSequential());
+			
 			Scope scope1 = BPMNProcessTree.mainfact.createScope();
 			scope1.setActivity(bpelActivity);
-			fe1.setStartCounterValue(exprS);
-			fe1.setFinalCounterValue(exprF);
-			fe1.setParallel(!mloopchar.isIsSequential());
 			fe1.setActivity(scope1);
 			return fe1;
 		} else {
 			WhileImpl while1 = (WhileImpl) BPMNProcessTree.mainfact.createWhile();
 			
 			LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
-			Expression loopCond = (Expression) loopchar.eContents().get(0);
-			Condition BpelWhileCond = BPMNProcessTree.mainfact.createCondition();
-			
-			// The body of the condition set to the id.
-			BpelWhileCond.setBody(loopCond.getId());
+			Condition cond = HandleTrivialComponent.convertExpressionToCondition((Expression) loopchar.eContents().get(0));
 			
 			// The Bpel-While structure is filled with the
 			// activity and condition
 			while1.setActivity(bpelActivity);
-			while1.setCondition(BpelWhileCond);
+			while1.setCondition(cond);
 			
 			return while1;
 		}
+	}
+	
+	private static Condition convertExpressionToCondition(Expression expression) {
+		Condition cond = BPMNProcessTree.mainfact.createCondition();
+		if (expression instanceof FormalExpression) {
+			// TODO implement formal expressions
+			HandleTrivialComponent.logger.error("Formal expressions not yet implemented");
+		}
+		// in non-forrmal expressions, the "natural language text is captured using the documentation attribute" (BPMN Spec 2.0, 8.3.6)
+		List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
+		StringBuilder sb = new StringBuilder();
+		for (org.eclipse.bpmn2.Documentation doc : documentation) {
+			sb.append(doc.getText());
+		}
+		cond.setBody(sb.toString());
+		return cond;
 	}
 	
 	/**
