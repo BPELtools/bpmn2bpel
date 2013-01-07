@@ -57,7 +57,10 @@ public class HandlePolygonComponent {
 		RPSTNode lastChild = null;
 		String actId;
 		
-		if (childrenPsize == 1) {
+		if (childrenPsize == 0) {
+			HandlePolygonComponent.logger.error("No children");
+			return null;
+		} else if (childrenPsize == 1) {
 			HandlePolygonComponent.logger.debug("One child");
 			// There's only one component as a son and it's the Trivial (split
 			// -> join) SequenceFlow
