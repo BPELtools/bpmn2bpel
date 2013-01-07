@@ -5,7 +5,7 @@
          <outgoing>sid-5B9DDC7D-AD32-4ADC-856F-98B87AB07339</outgoing>
          <multiInstanceLoopCharacteristics behavior="All" id="sid-e2d9c5c4-6c8f-467c-82a6-faf9d1566af2" isSequential="false">
             <loopCardinality id="sid-fba46af1-ec26-47fe-a7b1-0f7a3fc99d49">40</loopCardinality>
-            <completionCondition id="sid-f1ddff9b-01a4-4fc8-867a-ec9ca3be5ffa">i&gt;5</completionCondition>
+            <bpmn:completionCondition xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"><bpmn:documentation>i&gt;5</bpmn:documentation></bpmn:completionCondition>
          </multiInstanceLoopCharacteristics>
       </sendTask>
       <startEvent id="sid-80A35A7E-75D4-4EDE-A182-FC82E55F65FD" name="start">
