@@ -14,6 +14,7 @@
   </xsl:template>
 
   <!-- Do adjustments for the loop condition -->
+  <!--  TODO: check for FormalExpression and Documentation Element. If one of that exists, do not match -->
   <xsl:template match="bpmn:loopCondition">
     <xsl:element name="bpmn:loopCondition">
       <bpmn:documentation>
