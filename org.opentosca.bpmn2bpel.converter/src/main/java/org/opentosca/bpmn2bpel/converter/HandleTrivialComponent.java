@@ -156,6 +156,9 @@ public class HandleTrivialComponent {
 	}
 	
 	private static Condition convertExpressionToCondition(Expression expression) {
+		if (expression == null) {
+			return null;
+		}
 		Condition cond = BPMNProcessTree.mainfact.createCondition();
 		if (expression instanceof FormalExpression) {
 			// TODO implement formal expressions
