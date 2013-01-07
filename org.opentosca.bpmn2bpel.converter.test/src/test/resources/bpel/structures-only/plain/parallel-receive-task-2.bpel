@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <forEach name="Activity1" parallel="yes">
+            <startCounterValue><![CDATA[1]]></startCounterValue>
+            <scope>
+                <invoke name="Activity1"/>
+            </scope>
+        </forEach>
+        <empty name="Activity2"/>
+        <empty name="end"/>
+    </sequence>
+</process>
