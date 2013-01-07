@@ -54,7 +54,7 @@ public class HandleBondComponent {
 	private static final XLogger logger = XLoggerFactory.getXLogger(HandleBondComponent.class);
 	
 	private static Activity handleXORstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, RPST rpstParent) {
-		IfImpl if1 = (IfImpl) BPMNProcessTree.mainfact.createIf();
+		IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
 		ElseIfImpl elseif1 = null;
 		org.eclipse.bpel.model.Activity actif;
 		ElseImpl else1 = null;
@@ -66,7 +66,7 @@ public class HandleBondComponent {
 			RPSTNode child = (RPSTNode) e;
 			SequenceFlow conditionFlow = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 			expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-			ConditionImpl cond1 = (ConditionImpl) BPMNProcessTree.mainfact.createCondition();
+			ConditionImpl cond1 = (ConditionImpl) BPMNProcessTree.getBPELFactory().createCondition();
 			
 			if (elseif1 == null) {
 				
@@ -78,7 +78,7 @@ public class HandleBondComponent {
 				} else {
 					// if it doesn't already exist an else
 					if (else1 == null) {
-						else1 = (ElseImpl) BPMNProcessTree.mainfact.createElse();
+						else1 = (ElseImpl) BPMNProcessTree.getBPELFactory().createElse();
 						else1.setActivity(tree.BpmnProctree2BpelModelPart(child, rpstParent));
 						if1.setElse(else1);
 					} else {
@@ -101,7 +101,7 @@ public class HandleBondComponent {
 				else {
 					// If it doesn't already exist an else
 					if (else1 == null) {
-						else1 = (ElseImpl) BPMNProcessTree.mainfact.createElse();
+						else1 = (ElseImpl) BPMNProcessTree.getBPELFactory().createElse();
 						else1.setActivity(tree.BpmnProctree2BpelModelPart(child, rpstParent));
 						if1.setElse(else1);
 					}
@@ -114,13 +114,13 @@ public class HandleBondComponent {
 				
 			}
 			
-			elseif1 = (ElseIfImpl) BPMNProcessTree.mainfact.createElseIf();
+			elseif1 = (ElseIfImpl) BPMNProcessTree.getBPELFactory().createElseIf();
 		}
 		return if1;
 	}
 	
 	private static Activity handleANDstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, RPST rpstParent) {
-		FlowImpl flow1 = (FlowImpl) BPMNProcessTree.mainfact.createFlow();
+		FlowImpl flow1 = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
 		org.eclipse.bpel.model.Activity actflow;
 		
 		// For every Polygon child of the Bond element
@@ -135,18 +135,18 @@ public class HandleBondComponent {
 	}
 	
 	private static Activity handleInclusiveORstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
-		FlowImpl flowp = (FlowImpl) BPMNProcessTree.mainfact.createFlow();
-		FlowImpl flowc = (FlowImpl) BPMNProcessTree.mainfact.createFlow();
+		FlowImpl flowp = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
+		FlowImpl flowc = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
 		org.eclipse.bpel.model.Activity actflow;
-		LinksImpl links = (LinksImpl) BPMNProcessTree.mainfact.createLinks();
-		LinkImpl link1 = (LinkImpl) BPMNProcessTree.mainfact.createLink();
-		LinkImpl link2 = (LinkImpl) BPMNProcessTree.mainfact.createLink();
-		SourcesImpl sources = (SourcesImpl) BPMNProcessTree.mainfact.createSources();
-		SourcesImpl sourcesc = (SourcesImpl) BPMNProcessTree.mainfact.createSources();
-		SourceImpl source1 = (SourceImpl) BPMNProcessTree.mainfact.createSource();
-		TargetsImpl targets = (TargetsImpl) BPMNProcessTree.mainfact.createTargets();
-		TargetsImpl targetsc = (TargetsImpl) BPMNProcessTree.mainfact.createTargets();
-		TargetImpl target1 = (TargetImpl) BPMNProcessTree.mainfact.createTarget();
+		LinksImpl links = (LinksImpl) BPMNProcessTree.getBPELFactory().createLinks();
+		LinkImpl link1 = (LinkImpl) BPMNProcessTree.getBPELFactory().createLink();
+		LinkImpl link2 = (LinkImpl) BPMNProcessTree.getBPELFactory().createLink();
+		SourcesImpl sources = (SourcesImpl) BPMNProcessTree.getBPELFactory().createSources();
+		SourcesImpl sourcesc = (SourcesImpl) BPMNProcessTree.getBPELFactory().createSources();
+		SourceImpl source1 = (SourceImpl) BPMNProcessTree.getBPELFactory().createSource();
+		TargetsImpl targets = (TargetsImpl) BPMNProcessTree.getBPELFactory().createTargets();
+		TargetsImpl targetsc = (TargetsImpl) BPMNProcessTree.getBPELFactory().createTargets();
+		TargetImpl target1 = (TargetImpl) BPMNProcessTree.getBPELFactory().createTarget();
 		SequenceFlow sourceSeqF, targetSeqF = null;
 		FormalExpressionImpl expr1 = null;
 		
@@ -156,7 +156,7 @@ public class HandleBondComponent {
 			RPSTNode child = (RPSTNode) e;
 			sourceSeqF = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 			targetSeqF = exit.getTargetOfPolygon((AbstractDirectedGraph) child.getFragment());
-			ConditionImpl cond1 = (ConditionImpl) BPMNProcessTree.mainfact.createCondition();
+			ConditionImpl cond1 = (ConditionImpl) BPMNProcessTree.getBPELFactory().createCondition();
 			expr1 = (FormalExpressionImpl) sourceSeqF.getConditionExpression();
 			
 			// Obtain the child-Bpel-Activity
@@ -217,7 +217,7 @@ public class HandleBondComponent {
 	
 	
 	private static Activity handlePickStructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
-		PickImpl pick1 = (PickImpl) BPMNProcessTree.mainfact.createPick();
+		PickImpl pick1 = (PickImpl) BPMNProcessTree.getBPELFactory().createPick();
 		
 		for (Object e : bondChildren) {
 			
@@ -235,7 +235,7 @@ public class HandleBondComponent {
 					
 					MessageEventDefinitionImpl msgEvent = (MessageEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 					
-					OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.mainfact.createOnMessage();
+					OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.getBPELFactory().createOnMessage();
 					
 					// Momentarily the OnMessage element's operation
 					// is given the Event's name + "operation"
@@ -254,10 +254,10 @@ public class HandleBondComponent {
 					
 					TimerEventDefinitionImpl timeEvent = (TimerEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 					
-					OnAlarmImpl onalrm1 = (OnAlarmImpl) BPMNProcessTree.mainfact.createOnAlarm();
+					OnAlarmImpl onalrm1 = (OnAlarmImpl) BPMNProcessTree.getBPELFactory().createOnAlarm();
 					
 					Expression exprTime = timeEvent.getTimeDuration();
-					org.eclipse.bpel.model.Expression exprOnAlarm = BPMNProcessTree.mainfact.createExpression();
+					org.eclipse.bpel.model.Expression exprOnAlarm = BPMNProcessTree.getBPELFactory().createExpression();
 					
 					if (timeEvent.getTimeDuration() != null) {
 						
@@ -287,7 +287,7 @@ public class HandleBondComponent {
 					
 					SignalEventDefinitionImpl sigEvent = (SignalEventDefinitionImpl) catchEvent.getEventDefinitions().get(0);
 					
-					OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.mainfact.createOnMessage();
+					OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.getBPELFactory().createOnMessage();
 					
 					onMsg1.setOperationName(sigEvent.getSignalRef().getName());
 					
@@ -306,7 +306,7 @@ public class HandleBondComponent {
 				// must be ignored (it's not part of the activity)
 				child.setDescription("ignore_rcv");
 				
-				OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.mainfact.createOnMessage();
+				OnMessageImpl onMsg1 = (OnMessageImpl) BPMNProcessTree.getBPELFactory().createOnMessage();
 				
 				// Momentarily the OnMessage element's operation is
 				// given the Event's name + "operation" (NOTE)
@@ -332,7 +332,7 @@ public class HandleBondComponent {
 		// If the entry and exit elements of the Bound are activities
 		// (NOT YET COMPLETELY SUPPORTED)
 		
-		Flow f1 = BPMNProcessTree.mainfact.createFlow();
+		Flow f1 = BPMNProcessTree.getBPELFactory().createFlow();
 		org.eclipse.bpel.model.Activity actflow;
 		
 		for (Object e : bondChildren) {
@@ -347,7 +347,7 @@ public class HandleBondComponent {
 		// Some Documentation is added to the flow element stating
 		// that the following activities should be parallel executed
 		// till the end of the process
-		Documentation doc = BPMNProcessTree.mainfact.createDocumentation();
+		Documentation doc = BPMNProcessTree.getBPELFactory().createDocumentation();
 		doc.setValue("FlowtillEnd");
 		f1.setDocumentation(doc);
 		
@@ -355,9 +355,9 @@ public class HandleBondComponent {
 	}
 	
 	private static Activity handleRepeatUntil(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
-		RepeatUntil repeat = BPMNProcessTree.mainfact.createRepeatUntil();
-		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.mainfact.createActivity();
-		IfImpl if1 = (IfImpl) BPMNProcessTree.mainfact.createIf();
+		RepeatUntil repeat = BPMNProcessTree.getBPELFactory().createRepeatUntil();
+		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.getBPELFactory().createActivity();
+		IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
 		int EntryToExit = entry.numberOfPathsto(bondChildren, exit);
 		FormalExpressionImpl expr1 = null;
 		org.eclipse.bpel.model.Activity actif;
@@ -384,7 +384,7 @@ public class HandleBondComponent {
 				
 				SequenceFlow backRep = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 				Expression exprbackRep = backRep.getConditionExpression();
-				Condition Repcond = BPMNProcessTree.mainfact.createCondition();
+				Condition Repcond = BPMNProcessTree.getBPELFactory().createCondition();
 				
 				// The condition is set with the negation of the
 				// Bpmn-expression's id
@@ -399,8 +399,8 @@ public class HandleBondComponent {
 	
 	private static Activity handleDoWhile(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
 		
-		While while1 = BPMNProcessTree.mainfact.createWhile();
-		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.mainfact.createActivity();
+		While while1 = BPMNProcessTree.getBPELFactory().createWhile();
+		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.getBPELFactory().createActivity();
 		int polygons = bondChildren.size();
 		
 		if (polygons == 2) {
@@ -412,7 +412,7 @@ public class HandleBondComponent {
 				if (whileCondFlow != null) {
 					
 					Expression whileCond = whileCondFlow.getConditionExpression();
-					Condition BpelWhileCond = BPMNProcessTree.mainfact.createCondition();
+					Condition BpelWhileCond = BPMNProcessTree.getBPELFactory().createCondition();
 					
 					// the main activity of the While is created and
 					// the body of the condition set
@@ -430,7 +430,7 @@ public class HandleBondComponent {
 		} else if (polygons > 2) {
 			
 			// ***** Create the if ******
-			IfImpl if1 = (IfImpl) BPMNProcessTree.mainfact.createIf();
+			IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
 			ElseIfImpl elseif1 = null;
 			org.eclipse.bpel.model.Activity actif;
 			ElseImpl else1 = null;
@@ -447,7 +447,7 @@ public class HandleBondComponent {
 				}
 				SequenceFlow conditionFlow = exit.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 				expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-				Condition cond1 = BPMNProcessTree.mainfact.createCondition();
+				Condition cond1 = BPMNProcessTree.getBPELFactory().createCondition();
 				
 				// The Body of the condition is filled with the id
 				// of the corresponding BPMN condition (NOTE)
@@ -477,7 +477,7 @@ public class HandleBondComponent {
 					
 				}
 				
-				elseif1 = (ElseIfImpl) BPMNProcessTree.mainfact.createElseIf();
+				elseif1 = (ElseIfImpl) BPMNProcessTree.getBPELFactory().createElseIf();
 			}
 			// ***********************
 			
@@ -495,17 +495,17 @@ public class HandleBondComponent {
 	
 	private static Activity handleRepeatAndWhile(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
 		// The Structure must be rearranged
-		SequenceImpl seq1 = (SequenceImpl) BPMNProcessTree.mainfact.createSequence();
-		SequenceImpl seq2 = (SequenceImpl) BPMNProcessTree.mainfact.createSequence();
-		SequenceImpl seq3 = (SequenceImpl) BPMNProcessTree.mainfact.createSequence();
-		IfImpl if1 = (IfImpl) BPMNProcessTree.mainfact.createIf();
+		SequenceImpl seq1 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
+		SequenceImpl seq2 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
+		SequenceImpl seq3 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
+		IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
 		org.eclipse.bpel.model.Activity if2 = null;
 		ElseIfImpl elseif1 = null;
 		org.eclipse.bpel.model.Activity actif;
 		ElseImpl else1 = null;
 		FormalExpressionImpl expr1 = null;
-		WhileImpl while1 = (WhileImpl) BPMNProcessTree.mainfact.createWhile();
-		Condition whileCondition1 = BPMNProcessTree.mainfact.createCondition();
+		WhileImpl while1 = (WhileImpl) BPMNProcessTree.getBPELFactory().createWhile();
+		Condition whileCondition1 = BPMNProcessTree.getBPELFactory().createCondition();
 		String WhileCondition = "";
 		
 		for (Object e : bondChildren) {
@@ -518,7 +518,7 @@ public class HandleBondComponent {
 				
 				SequenceFlow conditionFlow = centry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
 				expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-				Condition cond1 = BPMNProcessTree.mainfact.createCondition();
+				Condition cond1 = BPMNProcessTree.getBPELFactory().createCondition();
 				
 				cond1.setBody(expr1.getMixed().getValue(0));
 				// Get the text of the expression (value of the
@@ -548,10 +548,10 @@ public class HandleBondComponent {
 					}
 					
 				}
-				elseif1 = (ElseIfImpl) BPMNProcessTree.mainfact.createElseIf();
+				elseif1 = (ElseIfImpl) BPMNProcessTree.getBPELFactory().createElseIf();
 			} else if (centry.equals(entry) && cexit.equals(exit)) {
 				
-				seq1 = (SequenceImpl) BPMNProcessTree.mainfact.createSequence();
+				seq1 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
 				
 				if2 = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 				

@@ -42,13 +42,13 @@ public class HandlePolygonComponent {
 		
 		ArrayList<RPSTNode> childrenP = Utils.organizeRPST(node, origChildren);
 		int childrenPsize = childrenP.size();
-		SequenceImpl seq1 = (SequenceImpl) BPMNProcessTree.mainfact.createSequence();
+		SequenceImpl seq1 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
 		Flow flow1 = null;
 		Flow flow2 = null;
 		// Hashtable with the activity where a boundary event ends and the
 		// corresponding link to be added to it.
 		Map<String, Set<Link>> boundaryLinks = new Hashtable<String, Set<Link>>();
-		Links flowLinks = BPMNProcessTree.mainfact.createLinks();
+		Links flowLinks = BPMNProcessTree.getBPELFactory().createLinks();
 		Scope act1scope = null;
 		org.eclipse.bpel.model.Activity act1 = null;
 		org.eclipse.bpel.model.Activity lastAct = null;
@@ -64,7 +64,7 @@ public class HandlePolygonComponent {
 			HandlePolygonComponent.logger.debug("One child");
 			// There's only one component as a son and it's the Trivial (split
 			// -> join) SequenceFlow
-			return BPMNProcessTree.mainfact.createEmpty();
+			return BPMNProcessTree.getBPELFactory().createEmpty();
 			
 		} else {
 			HandlePolygonComponent.logger.debug("Multiple children");
@@ -98,8 +98,8 @@ public class HandlePolygonComponent {
 						// activity
 						if (nextActlink != null) {
 							
-							Targets scopeTs = BPMNProcessTree.mainfact.createTargets();
-							Target scopeT = BPMNProcessTree.mainfact.createTarget();
+							Targets scopeTs = BPMNProcessTree.getBPELFactory().createTargets();
+							Target scopeT = BPMNProcessTree.getBPELFactory().createTarget();
 							scopeT.setLink(nextActlink);
 							scopeTs.getChildren().add(scopeT);
 							act1scope.setTargets(scopeTs);
@@ -116,7 +116,7 @@ public class HandlePolygonComponent {
 								for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 									
 									Link l = p.next();
-									Target t = BPMNProcessTree.mainfact.createTarget();
+									Target t = BPMNProcessTree.getBPELFactory().createTarget();
 									t.setLink(l);
 									act1scope.getTargets().getChildren().add(t);
 									
@@ -128,7 +128,7 @@ public class HandlePolygonComponent {
 							
 						} else {
 							
-							Targets scopeTs = BPMNProcessTree.mainfact.createTargets();
+							Targets scopeTs = BPMNProcessTree.getBPELFactory().createTargets();
 							
 							Set<Link> linksact = boundaryLinks.get(actId);
 							
@@ -137,7 +137,7 @@ public class HandlePolygonComponent {
 								for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 									
 									Link l = p.next();
-									Target t = BPMNProcessTree.mainfact.createTarget();
+									Target t = BPMNProcessTree.getBPELFactory().createTarget();
 									t.setLink(l);
 									scopeTs.getChildren().add(t);
 									
@@ -162,7 +162,7 @@ public class HandlePolygonComponent {
 								// therefore a bpel-Flow structure should be
 								// created
 								if (flow1 == null) {
-									flow1 = BPMNProcessTree.mainfact.createFlow();
+									flow1 = BPMNProcessTree.getBPELFactory().createFlow();
 								}
 								
 								// If it ends in an activity, the id of the
@@ -180,18 +180,18 @@ public class HandlePolygonComponent {
 									// The link corresponding to the end of
 									// the Handler's activity is created and
 									// added.
-									Empty emptyL = BPMNProcessTree.mainfact.createEmpty();
-									Sources sourcesL = BPMNProcessTree.mainfact.createSources();
-									Source sourceL = BPMNProcessTree.mainfact.createSource();
-									Link afterBoundExec = BPMNProcessTree.mainfact.createLink();
+									Empty emptyL = BPMNProcessTree.getBPELFactory().createEmpty();
+									Sources sourcesL = BPMNProcessTree.getBPELFactory().createSources();
+									Source sourceL = BPMNProcessTree.getBPELFactory().createSource();
+									Link afterBoundExec = BPMNProcessTree.getBPELFactory().createLink();
 									afterBoundExec.setName(p[1]);
 									
 									// The Link corresponding to the correct
 									// execution of the activity (without
 									// influence of the Boundary) is created
-									Sources sourcesScope = BPMNProcessTree.mainfact.createSources();
-									Source sScope = BPMNProcessTree.mainfact.createSource();
-									Link linkScope = BPMNProcessTree.mainfact.createLink();
+									Sources sourcesScope = BPMNProcessTree.getBPELFactory().createSources();
+									Source sScope = BPMNProcessTree.getBPELFactory().createSource();
+									Link linkScope = BPMNProcessTree.getBPELFactory().createLink();
 									linkScope.setName(ChildPentry.getElement().getOutgoing().get(0).getName());
 									sScope.setLink(linkScope);
 									sourcesScope.getChildren().add(sScope);
@@ -205,7 +205,7 @@ public class HandlePolygonComponent {
 									// activity.
 									// by creating a new sequence that
 									// contains both.
-									Sequence catchSeq = BPMNProcessTree.mainfact.createSequence();
+									Sequence catchSeq = BPMNProcessTree.getBPELFactory().createSequence();
 									catchSeq.getActivities().add(a.getActivity());
 									catchSeq.getActivities().add(emptyL);
 									
@@ -238,9 +238,9 @@ public class HandlePolygonComponent {
 									// The Link corresponding to the correct
 									// execution of the activity (without
 									// influence of the Boundary) is created
-									Sources sourcesScope = BPMNProcessTree.mainfact.createSources();
-									Source sScope = BPMNProcessTree.mainfact.createSource();
-									Link linkScope = BPMNProcessTree.mainfact.createLink();
+									Sources sourcesScope = BPMNProcessTree.getBPELFactory().createSources();
+									Source sScope = BPMNProcessTree.getBPELFactory().createSource();
+									Link linkScope = BPMNProcessTree.getBPELFactory().createLink();
 									linkScope.setName(ChildPentry.getElement().getOutgoing().get(0).getName());
 									sScope.setLink(linkScope);
 									sourcesScope.getChildren().add(sScope);
@@ -270,8 +270,8 @@ public class HandlePolygonComponent {
 							// current activity
 							if (nextActlink != null) {
 								
-								Targets scopeTs = BPMNProcessTree.mainfact.createTargets();
-								Target scopeT = BPMNProcessTree.mainfact.createTarget();
+								Targets scopeTs = BPMNProcessTree.getBPELFactory().createTargets();
+								Target scopeT = BPMNProcessTree.getBPELFactory().createTarget();
 								scopeT.setLink(nextActlink);
 								scopeTs.getChildren().add(scopeT);
 								act1.setTargets(scopeTs);
@@ -292,7 +292,7 @@ public class HandlePolygonComponent {
 									for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 										
 										Link l = p.next();
-										Target t = BPMNProcessTree.mainfact.createTarget();
+										Target t = BPMNProcessTree.getBPELFactory().createTarget();
 										t.setLink(l);
 										act1.getTargets().getChildren().add(t);
 										
@@ -304,7 +304,7 @@ public class HandlePolygonComponent {
 								
 							} else {
 								
-								Targets scopeTs = BPMNProcessTree.mainfact.createTargets();
+								Targets scopeTs = BPMNProcessTree.getBPELFactory().createTargets();
 								
 								Set<Link> linksact = boundaryLinks.get(actId);
 								
@@ -313,7 +313,7 @@ public class HandlePolygonComponent {
 									for (Iterator<Link> p = linksact.iterator(); p.hasNext();) {
 										
 										Link l = p.next();
-										Target t = BPMNProcessTree.mainfact.createTarget();
+										Target t = BPMNProcessTree.getBPELFactory().createTarget();
 										t.setLink(l);
 										scopeTs.getChildren().add(t);
 										

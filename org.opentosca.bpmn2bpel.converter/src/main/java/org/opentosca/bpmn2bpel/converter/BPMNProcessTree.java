@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.bpel.model.BPELFactory;
 import org.eclipse.bpel.model.Link;
 import org.eclipse.bpel.model.impl.BPELFactoryImpl;
 import org.eclipse.bpmn2.BoundaryEvent;
@@ -53,7 +54,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	private Map<String, Set<Link>> boundaryLinks;
 	private boolean interruptsflow = false;
 	
-	final static BPELFactoryImpl mainfact = new BPELFactoryImpl();
+	private final static BPELFactory mainfact = new BPELFactoryImpl();
 	
 	/**
 	 * Creates an instance of the tree based on the given resource
@@ -402,7 +403,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	public org.eclipse.bpel.model.Process BpmnProctree2BpelModel(RPSTNode rpstnode) {
 		BPMNProcessTree.logger.entry();
 		
-		org.eclipse.bpel.model.Process mainProc = this.mainfact.createProcess();
+		org.eclipse.bpel.model.Process mainProc = this.getBPELFactory().createProcess();
 		
 		org.eclipse.bpel.model.Activity a1 = null;
 		
@@ -976,5 +977,9 @@ public class BPMNProcessTree extends DirectedGraph {
 			
 		}
 		
+	}
+	
+	public static BPELFactory getBPELFactory() {
+		return BPMNProcessTree.mainfact;
 	}
 }

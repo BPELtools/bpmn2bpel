@@ -77,11 +77,11 @@ public class HandleTrivialComponent {
 		if (nexit.getElement() instanceof EndEvent) {
 			EndEvent endEv = (EndEvent) nexit.getElement();
 			if (endEv.getEventDefinitions().isEmpty()) {
-				res = BPMNProcessTree.mainfact.createEmpty();
+				res = BPMNProcessTree.getBPELFactory().createEmpty();
 			} else {
 				EventDefinition eventDefinition = endEv.getEventDefinitions().get(0);
 				if (eventDefinition instanceof TerminateEventDefinition || eventDefinition instanceof CancelEventDefinition) {
-					res = BPMNProcessTree.mainfact.createExit();
+					res = BPMNProcessTree.getBPELFactory().createExit();
 				} else {
 					HandleTrivialComponent.logger.debug("Undhandled end event type {}", eventDefinition);
 					return null;
@@ -104,7 +104,7 @@ public class HandleTrivialComponent {
 			EventDefinition eventDefinition = inEv.getEventDefinitions().get(0);
 			Activity res;
 			if (eventDefinition instanceof MessageEventDefinition) {
-				Invoke i1 = BPMNProcessTree.mainfact.createInvoke();
+				Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
 				res = i1;
 			} else {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
@@ -124,9 +124,9 @@ public class HandleTrivialComponent {
 		if (bpmnTask.getLoopCharacteristics() == null) {
 			return bpelActivity;
 		} else if (bpmnTask.getLoopCharacteristics() instanceof MultiInstanceLoopCharacteristics) {
-			ForEach fe1 = BPMNProcessTree.mainfact.createForEach();
+			ForEach fe1 = BPMNProcessTree.getBPELFactory().createForEach();
 			
-			org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) BPMNProcessTree.mainfact.createExpression();
+			org.eclipse.bpel.model.impl.ExpressionImpl exprS = (org.eclipse.bpel.model.impl.ExpressionImpl) BPMNProcessTree.getBPELFactory().createExpression();
 			exprS.setBody("1");
 			fe1.setStartCounterValue(exprS);
 			
@@ -136,12 +136,12 @@ public class HandleTrivialComponent {
 			
 			fe1.setParallel(!mloopchar.isIsSequential());
 			
-			Scope scope1 = BPMNProcessTree.mainfact.createScope();
+			Scope scope1 = BPMNProcessTree.getBPELFactory().createScope();
 			scope1.setActivity(bpelActivity);
 			fe1.setActivity(scope1);
 			return fe1;
 		} else {
-			WhileImpl while1 = (WhileImpl) BPMNProcessTree.mainfact.createWhile();
+			WhileImpl while1 = (WhileImpl) BPMNProcessTree.getBPELFactory().createWhile();
 			
 			LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
 			Condition cond = HandleTrivialComponent.convertExpressionToCondition((Expression) loopchar.eContents().get(0));
@@ -159,7 +159,7 @@ public class HandleTrivialComponent {
 		if (expression == null) {
 			return null;
 		}
-		Condition cond = BPMNProcessTree.mainfact.createCondition();
+		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
 		if (expression instanceof FormalExpression) {
 			// TODO implement formal expressions
 			HandleTrivialComponent.logger.error("Formal expressions not yet implemented");
@@ -222,7 +222,7 @@ public class HandleTrivialComponent {
 	}
 	
 	private static org.eclipse.bpel.model.Activity convertToInvoke(org.eclipse.bpmn2.Operation opRef, WFNode wfNode) {
-		Invoke i1 = BPMNProcessTree.mainfact.createInvoke();
+		Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
 		WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
 		Operation i1Op = wsdlfact.createOperation();
 		if (opRef != null) {
@@ -235,7 +235,7 @@ public class HandleTrivialComponent {
 	
 	private static org.eclipse.bpel.model.Activity handleCallActivity(WFNode wfNode, CallActivity element) {
 		// TODO: real implementation, not a pseudo invoke
-		Invoke i1 = BPMNProcessTree.mainfact.createInvoke();
+		Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
 		return HandleTrivialComponent.genericTaskHandling(wfNode, i1);
 	}
 	
@@ -255,7 +255,7 @@ public class HandleTrivialComponent {
 	
 	private static org.eclipse.bpel.model.Activity handleReceiveTask(WFNode wfNode, ReceiveTask t) {
 		HandleTrivialComponent.logger.entry();
-		Receive r1 = BPMNProcessTree.mainfact.createReceive();
+		Receive r1 = BPMNProcessTree.getBPELFactory().createReceive();
 		org.eclipse.bpmn2.Operation rt1Op = t.getOperationRef();
 		if (rt1Op != null) {
 			WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
@@ -300,26 +300,26 @@ public class HandleTrivialComponent {
 	}
 	
 	private static Activity handleIntermediateConditionalEvent(ConditionalEventDefinition condDef) {
-		RepeatUntil repeat1 = BPMNProcessTree.mainfact.createRepeatUntil();
+		RepeatUntil repeat1 = BPMNProcessTree.getBPELFactory().createRepeatUntil();
 		FormalExpression condition = (FormalExpression) condDef.getCondition();
 		
 		if (condition != null) {
-			Condition repeatExp = BPMNProcessTree.mainfact.createCondition();
+			Condition repeatExp = BPMNProcessTree.getBPELFactory().createCondition();
 			repeatExp.setBody(condition.getMixed().getValue(0));
 			repeat1.setCondition(repeatExp);
 		}
 		
-		Empty empty1 = BPMNProcessTree.mainfact.createEmpty();
+		Empty empty1 = BPMNProcessTree.getBPELFactory().createEmpty();
 		repeat1.setActivity(empty1);
 		
 		return repeat1;
 	}
 	
 	private static Activity handleIntermediateTimerEvent(TimerEventDefinition timerDef) {
-		Wait wait1 = BPMNProcessTree.mainfact.createWait();
+		Wait wait1 = BPMNProcessTree.getBPELFactory().createWait();
 		Expression timedur = timerDef.getTimeDuration();
 		Expression timeDate = timerDef.getTimeDate();
-		org.eclipse.bpel.model.Expression waitExp = BPMNProcessTree.mainfact.createExpression();
+		org.eclipse.bpel.model.Expression waitExp = BPMNProcessTree.getBPELFactory().createExpression();
 		
 		if (timedur != null) {
 			waitExp.setBody(timedur.getAnyAttribute());
@@ -333,7 +333,7 @@ public class HandleTrivialComponent {
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleIntermediateMessageCatchEvent(MessageEventDefinition messageDef) {
-		Receive r1 = BPMNProcessTree.mainfact.createReceive();
+		Receive r1 = BPMNProcessTree.getBPELFactory().createReceive();
 		return r1;
 	}
 	
@@ -350,7 +350,7 @@ public class HandleTrivialComponent {
 	
 	private static org.eclipse.bpel.model.Activity handlPlainTask(WFNode wfNode) {
 		HandleTrivialComponent.logger.debug("Converted {} to empty", wfNode);
-		Empty e1 = BPMNProcessTree.mainfact.createEmpty();
+		Empty e1 = BPMNProcessTree.getBPELFactory().createEmpty();
 		return HandleTrivialComponent.genericTaskHandling(wfNode, e1);
 	}
 	
@@ -364,13 +364,13 @@ public class HandleTrivialComponent {
 		// the one
 		// passed as argument is null
 		if (actScope == null) {
-			actScope = BPMNProcessTree.mainfact.createScope();
-			faultH = BPMNProcessTree.mainfact.createFaultHandler();
+			actScope = BPMNProcessTree.getBPELFactory().createScope();
+			faultH = BPMNProcessTree.getBPELFactory().createFaultHandler();
 		} else {
 			faultH = actScope.getFaultHandlers();
 			
 			if (faultH == null) {
-				faultH = BPMNProcessTree.mainfact.createFaultHandler();
+				faultH = BPMNProcessTree.getBPELFactory().createFaultHandler();
 			}
 		}
 		
@@ -388,8 +388,8 @@ public class HandleTrivialComponent {
 				org.eclipse.bpel.model.Activity ActHandler = t.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
 				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
-				Catch faultCatch = BPMNProcessTree.mainfact.createCatch();
-				Documentation handlerInfo = BPMNProcessTree.mainfact.createDocumentation();
+				Catch faultCatch = BPMNProcessTree.getBPELFactory().createCatch();
+				Documentation handlerInfo = BPMNProcessTree.getBPELFactory().createDocumentation();
 				
 				// The End specifies that the following handler ends without
 				// entering the main flow.
@@ -426,17 +426,17 @@ public class HandleTrivialComponent {
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
 					
 					if (EvHandler == null) {
-						EvHandler = BPMNProcessTree.mainfact.createEventHandler();
+						EvHandler = BPMNProcessTree.getBPELFactory().createEventHandler();
 					}
 					
-					OnAlarm alarmEv = BPMNProcessTree.mainfact.createOnAlarm();
-					Empty alarmScope = BPMNProcessTree.mainfact.createEmpty();
+					OnAlarm alarmEv = BPMNProcessTree.getBPELFactory().createOnAlarm();
+					Empty alarmScope = BPMNProcessTree.getBPELFactory().createEmpty();
 					
-					Link link2Fault = BPMNProcessTree.mainfact.createLink();
-					Target target2Fault = BPMNProcessTree.mainfact.createTarget();
-					Targets targetCont = BPMNProcessTree.mainfact.createTargets();
-					Source faultFromTarget = BPMNProcessTree.mainfact.createSource();
-					Sources sourceCont = BPMNProcessTree.mainfact.createSources();
+					Link link2Fault = BPMNProcessTree.getBPELFactory().createLink();
+					Target target2Fault = BPMNProcessTree.getBPELFactory().createTarget();
+					Targets targetCont = BPMNProcessTree.getBPELFactory().createTargets();
+					Source faultFromTarget = BPMNProcessTree.getBPELFactory().createSource();
+					Sources sourceCont = BPMNProcessTree.getBPELFactory().createSources();
 					
 					link2Fault.setName(event.getName() + " to Fault");
 					
@@ -452,7 +452,7 @@ public class HandleTrivialComponent {
 					// The Activity of the alarm scope is set (in this case an
 					// empty with a source to the Fault Handler)
 					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
-					org.eclipse.bpel.model.Expression timeexp = BPMNProcessTree.mainfact.createExpression();
+					org.eclipse.bpel.model.Expression timeexp = BPMNProcessTree.getBPELFactory().createExpression();
 					
 					// Set the date, duration or repeat cycle.
 					if (timeCyc != null) {
@@ -486,17 +486,17 @@ public class HandleTrivialComponent {
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
 					
 					if (EvHandler == null) {
-						EvHandler = BPMNProcessTree.mainfact.createEventHandler();
+						EvHandler = BPMNProcessTree.getBPELFactory().createEventHandler();
 					}
 					
-					OnEvent eventEv = BPMNProcessTree.mainfact.createOnEvent();
-					Empty eventScope = BPMNProcessTree.mainfact.createEmpty();
+					OnEvent eventEv = BPMNProcessTree.getBPELFactory().createOnEvent();
+					Empty eventScope = BPMNProcessTree.getBPELFactory().createEmpty();
 					
-					Link link2Fault = BPMNProcessTree.mainfact.createLink();
-					Target target2Fault = BPMNProcessTree.mainfact.createTarget();
-					Targets targetCont = BPMNProcessTree.mainfact.createTargets();
-					Source faultFromTarget = BPMNProcessTree.mainfact.createSource();
-					Sources sourceCont = BPMNProcessTree.mainfact.createSources();
+					Link link2Fault = BPMNProcessTree.getBPELFactory().createLink();
+					Target target2Fault = BPMNProcessTree.getBPELFactory().createTarget();
+					Targets targetCont = BPMNProcessTree.getBPELFactory().createTargets();
+					Source faultFromTarget = BPMNProcessTree.getBPELFactory().createSource();
+					Sources sourceCont = BPMNProcessTree.getBPELFactory().createSources();
 					
 					link2Fault.setName(event.getName() + " to Fault");
 					
@@ -558,8 +558,8 @@ public class HandleTrivialComponent {
 				org.eclipse.bpel.model.Activity ActHandler = t.BpmnProctree2BpelModelPart(EvHandlerRoot, EvHandlerRPST);
 				
 				CatchEvent event = (CatchEvent) HandlerEntry.getElement();
-				Documentation handlerInfo = BPMNProcessTree.mainfact.createDocumentation();
-				Catch faultCatch = BPMNProcessTree.mainfact.createCatch();
+				Documentation handlerInfo = BPMNProcessTree.getBPELFactory().createDocumentation();
+				Catch faultCatch = BPMNProcessTree.getBPELFactory().createCatch();
 				
 				// The End specifies that the following handler ends without
 				// entering the main flow.
@@ -583,18 +583,18 @@ public class HandleTrivialComponent {
 					// TODO
 					TimerEventDefinition timevdef = (TimerEventDefinition) event.getEventDefinitions().get(0);
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
-					Throw throwEv = BPMNProcessTree.mainfact.createThrow();
+					Throw throwEv = BPMNProcessTree.getBPELFactory().createThrow();
 					
 					if (EvHandler == null) {
-						EvHandler = BPMNProcessTree.mainfact.createEventHandler();
+						EvHandler = BPMNProcessTree.getBPELFactory().createEventHandler();
 					}
-					OnAlarm alarmEv = BPMNProcessTree.mainfact.createOnAlarm();
+					OnAlarm alarmEv = BPMNProcessTree.getBPELFactory().createOnAlarm();
 					
 					faultCatch.setFaultName(new QName(event.getName() + "fault"));
 					throwEv.setFaultName(new QName(event.getName() + "fault"));
 					
 					FormalExpression timeCyc = (FormalExpression) timevdef.getTimeCycle();
-					org.eclipse.bpel.model.Expression timeexp = BPMNProcessTree.mainfact.createExpression();
+					org.eclipse.bpel.model.Expression timeexp = BPMNProcessTree.getBPELFactory().createExpression();
 					
 					// Set the date, duration or repeat cycle.
 					if (timeCyc != null) {
@@ -628,12 +628,12 @@ public class HandleTrivialComponent {
 					onMsgOperation.setName(msgOp.getName());
 					
 					org.eclipse.bpel.model.EventHandler EvHandler = actScope.getEventHandlers();
-					Throw throwEv = BPMNProcessTree.mainfact.createThrow();
+					Throw throwEv = BPMNProcessTree.getBPELFactory().createThrow();
 					
 					if (EvHandler == null) {
-						EvHandler = BPMNProcessTree.mainfact.createEventHandler();
+						EvHandler = BPMNProcessTree.getBPELFactory().createEventHandler();
 					}
-					OnEvent msgEv = BPMNProcessTree.mainfact.createOnEvent();
+					OnEvent msgEv = BPMNProcessTree.getBPELFactory().createOnEvent();
 					msgEv.setOperation(onMsgOperation);
 					
 					faultCatch.setFaultName(new QName(event.getName() + "fault"));
@@ -651,7 +651,7 @@ public class HandleTrivialComponent {
 					
 				} else if (event.getEventDefinitions().get(0) instanceof CompensateEventDefinition) {
 					
-					CompensationHandler compH = BPMNProcessTree.mainfact.createCompensationHandler();
+					CompensationHandler compH = BPMNProcessTree.getBPELFactory().createCompensationHandler();
 					compH.setActivity(ActHandler);
 					actScope.setCompensationHandler(compH);
 					
@@ -732,7 +732,7 @@ public class HandleTrivialComponent {
 			} else {
 				RPSTNode nodeP = rpstParent.getParent(node);
 				if (nentry.getElement() instanceof ParallelGateway && !nodeP.getEntry().equals(nentry)) {
-					res = BPMNProcessTree.mainfact.createEmpty();
+					res = BPMNProcessTree.getBPELFactory().createEmpty();
 				} else {
 					// If the entry element is a Start event or another event
 					// nothing is done (momentarily)
