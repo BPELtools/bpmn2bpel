@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="6.0.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-70abc1d9-cc03-4648-b74a-3e055352096d" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="6.0.0" expressionLanguage="http://www.w3.org/1999/XPath" id="sid-70abc1d9-cc03-4648-b74a-3e055352096d" targetNamespace="http://www.signavio.com/bpmn20" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
    <process id="sid-e97a92e9-c757-4b43-8cea-a9e372e136ae" isExecutable="false">
       <startEvent id="sid-2AC664C2-9BBA-4E7E-9968-FBFDE74D3AD7" name="start">
          <outgoing>sid-E2E3A294-1852-4F7C-BD5E-0D370BA548F2</outgoing>
@@ -12,7 +11,7 @@
          <incoming>sid-6D8AB201-CC1E-41BC-9BDB-03104E0214B4</incoming>
          <outgoing>sid-105AB2A4-C091-4B23-B996-4322C2D0A2DA</outgoing>
 		 <standardLoopCharacteristics id="sid-dc56d9d5-938e-44e2-8618-786ed9560b7b" loopMaximum="34" testBefore="false">
-            <loopCondition id="sid-f3fcc064-b64e-44d2-8f8c-7b4b7d74b4a7">i &gt; 5</loopCondition>
+            <bpmn:loopCondition xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"><bpmn:documentation>i &gt; 5</bpmn:documentation></bpmn:loopCondition>
          </standardLoopCharacteristics>
       </task>
       <task completionQuantity="1" id="sid-683AA71D-6E6B-4DE9-B113-6BBE4EFAF684" isForCompensation="false" name="Task3" startQuantity="1">
