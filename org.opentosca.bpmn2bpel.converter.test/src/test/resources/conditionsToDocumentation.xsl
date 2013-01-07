@@ -13,10 +13,20 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- Do adjustments for the loop condition -->
-  <!--  TODO: check for FormalExpression and Documentation Element. If one of that exists, do not match -->
-  <xsl:template match="bpmn:loopCondition">
+  <!-- Do adjustments for the condition elements -->
+  <!-- documentation element: correct expression
+       evaluatesToTypeRef attribute: indicator for formal expression -->
+
+  <xsl:template match="bpmn:loopCondition[not(bpmn:documentation) and not(@evaluatesToTypeRef)]">
     <xsl:element name="bpmn:loopCondition">
+      <bpmn:documentation>
+        <xsl:apply-templates />
+      </bpmn:documentation>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="bpmn:completionCondition[not(bpmn:documentation) and not(@evaluatesToTypeRef)]">
+    <xsl:element name="bpmn:completionCondition">
       <bpmn:documentation>
         <xsl:apply-templates />
       </bpmn:documentation>
