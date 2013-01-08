@@ -4,14 +4,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.bpel.model.Condition;
+import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FormalExpression;
 import org.jbpt.graph.algo.rpst.RPSTNode;
 import org.jbpt.graph.algo.tctree.TCType;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 public class Utils {
 	
+	private static final XLogger logger = XLoggerFactory.getXLogger(Utils.class);
+
+
 	/**
 	 * @return We need an ArrayList as the calling method checks with the index
 	 *         if a last element is a sequence is found
@@ -84,6 +93,26 @@ public class Utils {
 			// codigo nuevo****
 		}
 		
+	}
+	
+	public static Condition convertExpressionToCondition(Expression expression) {
+		if (expression == null) {
+			return null;
+		}
+		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
+		if (expression instanceof FormalExpression) {
+			// TODO implement formal expressions
+			Utils.logger.error("Formal expressions not yet implemented");
+		}
+		// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
+		// Spec 2.0, 8.3.6)
+		List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
+		StringBuilder sb = new StringBuilder();
+		for (org.eclipse.bpmn2.Documentation doc : documentation) {
+			sb.append(doc.getText());
+		}
+		cond.setBody(sb.toString());
+		return cond;
 	}
 	
 }

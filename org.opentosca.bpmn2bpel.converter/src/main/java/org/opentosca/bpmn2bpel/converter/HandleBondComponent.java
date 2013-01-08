@@ -48,6 +48,8 @@ import org.jbpt.graph.algo.rpst.RPSTNode;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
+import de.uni_stuttgart.iaas.bpmn.model.utilities.BPMNutils;
+
 
 public class HandleBondComponent {
 	
@@ -116,6 +118,7 @@ public class HandleBondComponent {
 			
 			elseif1 = (ElseIfImpl) BPMNProcessTree.getBPELFactory().createElseIf();
 		}
+		HandleBondComponent.logger.exit();
 		return if1;
 	}
 	
@@ -573,6 +576,7 @@ public class HandleBondComponent {
 	}
 	
 	static Activity handleBondComponent(BPMNProcessTree tree, RPSTNode node, RPST rpstParent) {
+		HandleBondComponent.logger.entry(node);
 		WFNode entry = (WFNode) node.getEntry();
 		WFNode exit = (WFNode) node.getExit();
 		boolean iscyclic = false;
@@ -580,43 +584,46 @@ public class HandleBondComponent {
 		FlowNode entryNode = entry.getElement();
 		FlowNode exitNode = exit.getElement();
 		Collection<RPSTNode> bondChildren = rpstParent.getChildren(node);
+		Activity res;
 		
 		if (entry.isCyclic(bondChildren, exit)) {
 			// the structure is cyclic
 			if (exit.numberOfPathsto(bondChildren, entry) == 1 && exit.numberOfEdgesto(bondChildren, entry) == 1 && exitNode instanceof ExclusiveGateway) {
 				// the structure is that of Repeat
-				return HandleBondComponent.handleRepeatUntil(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handleRepeatUntil(tree, bondChildren, entry, exit, rpstParent);
 			} else if (entry.numberOfPathsto(bondChildren, exit) == 1 && entry.numberOfEdgesto(bondChildren, exit) == 1 && exitNode instanceof ExclusiveGateway) {
 				// the structure is that of While
-				return HandleBondComponent.handleDoWhile(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handleDoWhile(tree, bondChildren, entry, exit, rpstParent);
 			} else if ((exit.numberOfPathsto(bondChildren, entry) > 1 || exit.numberOfPathsto(bondChildren, exit) == 1 && exit.numberOfEdgesto(bondChildren, exit) == 0) && entry.numberOfPathsto(bondChildren, exit) > 1 && entry.numberOfEdgesto(bondChildren, exit) == 0 && exitNode instanceof ExclusiveGateway) {
 				// The Remaining structure is that of a Repeat + while
-				return HandleBondComponent.handleRepeatAndWhile(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handleRepeatAndWhile(tree, bondChildren, entry, exit, rpstParent);
 			} else {
 				HandleBondComponent.logger.debug("Unsupported cyclic structural case");
-				return null;
+				res = null;
 			}
 		} else {
 			// the B Component is Acyclic
 			if (entryNode instanceof ExclusiveGateway && exitNode instanceof ExclusiveGateway) {
 				// If an XOR Structure is found
-				return HandleBondComponent.handleXORstructure(tree, bondChildren, entry, rpstParent);
+				res = HandleBondComponent.handleXORstructure(tree, bondChildren, entry, rpstParent);
 			} else if (entryNode instanceof ParallelGateway && exitNode instanceof ParallelGateway) {
 				// If an AND Structure is found
-				return HandleBondComponent.handleANDstructure(tree, bondChildren, rpstParent);
+				res = HandleBondComponent.handleANDstructure(tree, bondChildren, rpstParent);
 			} else if (entryNode instanceof InclusiveGateway && exitNode instanceof InclusiveGateway) {
 				// If an Inclusive OR Structure is found
-				return HandleBondComponent.handleInclusiveORstructure(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handleInclusiveORstructure(tree, bondChildren, entry, exit, rpstParent);
 			} else if (entryNode instanceof EventBasedGateway && exitNode instanceof ExclusiveGateway) {
 				// Pick structure
-				return HandleBondComponent.handlePickStructure(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handlePickStructure(tree, bondChildren, entry, exit, rpstParent);
 			} else if (entryNode instanceof Task && exitNode instanceof Task) {
-				return HandleBondComponent.handleSpecialTaskStructure(tree, bondChildren, entry, exit, rpstParent);
+				res = HandleBondComponent.handleSpecialTaskStructure(tree, bondChildren, entry, exit, rpstParent);
 			} else {
 				HandleBondComponent.logger.debug("Unsupported structural case {} -> {}", entry, exit);
-				return null;
+				res = null;
 			}
 		}
+		HandleBondComponent.logger.exit();
+		return res;
 	}
 	
 }

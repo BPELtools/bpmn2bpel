@@ -131,7 +131,7 @@ public class HandleTrivialComponent {
 			fe1.setStartCounterValue(exprS);
 			
 			MultiInstanceLoopCharacteristicsImpl mloopchar = (MultiInstanceLoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
-			Condition exprF = HandleTrivialComponent.convertExpressionToCondition(mloopchar.getCompletionCondition());
+			Condition exprF = Utils.convertExpressionToCondition(mloopchar.getCompletionCondition());
 			fe1.setFinalCounterValue(exprF);
 			
 			fe1.setParallel(!mloopchar.isIsSequential());
@@ -144,7 +144,7 @@ public class HandleTrivialComponent {
 			WhileImpl while1 = (WhileImpl) BPMNProcessTree.getBPELFactory().createWhile();
 			
 			LoopCharacteristicsImpl loopchar = (LoopCharacteristicsImpl) bpmnTask.getLoopCharacteristics();
-			Condition cond = HandleTrivialComponent.convertExpressionToCondition((Expression) loopchar.eContents().get(0));
+			Condition cond = Utils.convertExpressionToCondition((Expression) loopchar.eContents().get(0));
 			
 			// The Bpel-While structure is filled with the
 			// activity and condition
@@ -153,26 +153,6 @@ public class HandleTrivialComponent {
 			
 			return while1;
 		}
-	}
-	
-	private static Condition convertExpressionToCondition(Expression expression) {
-		if (expression == null) {
-			return null;
-		}
-		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
-		if (expression instanceof FormalExpression) {
-			// TODO implement formal expressions
-			HandleTrivialComponent.logger.error("Formal expressions not yet implemented");
-		}
-		// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
-		// Spec 2.0, 8.3.6)
-		List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
-		StringBuilder sb = new StringBuilder();
-		for (org.eclipse.bpmn2.Documentation doc : documentation) {
-			sb.append(doc.getText());
-		}
-		cond.setBody(sb.toString());
-		return cond;
 	}
 	
 	/**

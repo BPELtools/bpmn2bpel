@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.eclipse.bpel.model.BPELFactory;
 import org.eclipse.bpel.model.Link;
-import org.eclipse.bpel.model.impl.BPELFactoryImpl;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.Definitions;
@@ -39,6 +38,7 @@ import org.jbpt.graph.algo.rpst.RPST;
 import org.jbpt.graph.algo.rpst.RPSTNode;
 import org.jbpt.graph.algo.tctree.TCType;
 import org.jbpt.hypergraph.abs.Vertex;
+import org.opentosca.bpmn2bpel.converter.debug.LoggingBPELFactoryImpl;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -46,6 +46,7 @@ import org.slf4j.ext.XLoggerFactory;
 public class BPMNProcessTree extends DirectedGraph {
 	
 	private static final XLogger logger = XLoggerFactory.getXLogger(BPMNProcessTree.class);
+	private final static BPELFactory mainfact = new LoggingBPELFactoryImpl();
 	
 	// private Bpmn2Resource BPMN2Resource;
 	private RPST rpstg;
@@ -53,8 +54,6 @@ public class BPMNProcessTree extends DirectedGraph {
 	private String name;
 	private Map<String, Set<Link>> boundaryLinks;
 	private boolean interruptsflow = false;
-	
-	private final static BPELFactory mainfact = new BPELFactoryImpl();
 	
 	/**
 	 * Creates an instance of the tree based on the given resource
@@ -303,7 +302,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	
 	private void fillProcTree(WFNode n1) {
 		FlowNode son = n1.getElement();
-		BPMNProcessTree.logger.debug("son: " + son.getName());
+		BPMNProcessTree.logger.debug("son: {}", son.getName());
 		
 		BPMNProcessTree subTree = new BPMNProcessTree();
 		// If the vertex isn't part of the Graph
@@ -318,24 +317,23 @@ public class BPMNProcessTree extends DirectedGraph {
 				
 			}
 			if (this.addVertex(n1) != null) {
-				BPMNProcessTree.logger.debug("Vertex " + n1.getName() + " newly added succesfully");
+				BPMNProcessTree.logger.debug("Vertex {} newly added succesfully", n1.getName());
 				n1.setVisited();
 				n1.setMainFlow();
 			}
 		} else {
 			n1 = this.containsVertex(n1.getId());
-			BPMNProcessTree.logger.debug("Vertex " + n1.getName() + " not added, already exists");
+			BPMNProcessTree.logger.debug("Vertex {} not added, already exists", n1.getName());
 			n1.setVisited();
 			n1.setMainFlow();
 		}
-		BPMNProcessTree.logger.debug("vertices: " + this.countVertices());
-		
-		BPMNProcessTree.logger.debug(Integer.toString(n1.getElement().getOutgoing().size()));
+		BPMNProcessTree.logger.debug("vertices: {}", this.countVertices());
+		BPMNProcessTree.logger.debug("n1: outgoing count: {}", Integer.toString(n1.getElement().getOutgoing().size()));
 		
 		// Get outgoing SequenceFlows if any
 		for (SequenceFlow s : n1.getElement().getOutgoing()) {
 			
-			BPMNProcessTree.logger.debug("verticesd: " + this.countVertices());
+			BPMNProcessTree.logger.debug("vertices: {} ", this.countVertices());
 			String targetid = s.getTargetRef().getId();
 			WFNode ntarget = this.containsVertex(targetid);
 			WFEdge edge1;
@@ -344,7 +342,7 @@ public class BPMNProcessTree extends DirectedGraph {
 				// NOTE: The testing of correct creation of edge is missing!
 				
 				if (this.addEdge(s, n1, ntarget) != null) {
-					BPMNProcessTree.logger.debug("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully1");
+					BPMNProcessTree.logger.debug("Edge ({},{}) created succesfully", n1.getName(), ntarget.getName());
 				} else {
 					BPMNProcessTree.logger.debug("Edge not created");
 				}
@@ -367,12 +365,11 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 				}
 				if (this.addVertex(ntarget) != null) {
-					BPMNProcessTree.logger.debug("Vertex " + ntarget.getName() + " added succesfully");
-					BPMNProcessTree.logger.debug("vertices: " + this.countVertices());
+					BPMNProcessTree.logger.debug("Vertex {} added succesfully", ntarget.getName());
+					BPMNProcessTree.logger.debug("vertices: {}", Integer.toString(this.countVertices()));
 					if (this.addEdge(s, n1, ntarget) != null) {
-						BPMNProcessTree.logger.debug("verticess: " + this.countVertices());
-						BPMNProcessTree.logger.debug("Edge " + n1.getName() + "," + ntarget.getName() + " created succesfully2");
-						
+						BPMNProcessTree.logger.debug("vertices: {}", Integer.toString(this.countVertices()));
+						BPMNProcessTree.logger.debug("Edge {}, {} created succesfully", n1.getName(), ntarget.getName());
 					} else {
 						BPMNProcessTree.logger.debug("Edge not created");
 					}
@@ -380,11 +377,9 @@ public class BPMNProcessTree extends DirectedGraph {
 						this.fillProcTree(ntarget);
 					}
 				}
-				
 			}
-			BPMNProcessTree.logger.debug("->  outgoing: " + s.getName());
-			BPMNProcessTree.logger.debug("out target: " + s.getTargetRef().getName());
-			
+			BPMNProcessTree.logger.debug("->  outgoing: {}", s.getName());
+			BPMNProcessTree.logger.debug("out target: {}", s.getTargetRef().getName());
 		}
 		
 	}
@@ -453,6 +448,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			while (i.hasNext()) {
 				WFEdge e = (WFEdge) i.next();
 				if (e.getVertices().size() == 2) {
+					BPMNProcessTree.logger.debug("Edge between s and t found (edge with source s and target t), which really connects s and t (2 vertices)");
 					return null;
 				}
 			}
