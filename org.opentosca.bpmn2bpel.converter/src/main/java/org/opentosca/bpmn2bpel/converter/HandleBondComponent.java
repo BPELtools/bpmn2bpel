@@ -65,8 +65,9 @@ public class HandleBondComponent {
 		
 		// helper variable to transform a single else without any condition
 		// to an elseBranch, if there is no default sequence flow at the gateway
-		ElseIf elseWithoutCondition = null;
-
+		ElseIf elseIfWithoutCondition = null;
+		boolean moreThanOneElseIfWithoutCondition = false;
+		
 		// For every Polygon child of the Bond element
 		for (RPSTNode child : bondChildren) {
 			SequenceFlow conditionFlow = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
@@ -80,28 +81,53 @@ public class HandleBondComponent {
 			} else if (ifActivity == null) {
 				// first branch in the if activity
 				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
-				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
-				ifActivity.setCondition(condition);
 				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 				ifActivity.setActivity(activity);
+				
+				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
+				ifActivity.setCondition(condition);
 			} else {
 				// else branch in the if activity
 				ElseIf elseIf = BPMNProcessTree.getBPELFactory().createElseIf();
-				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
-				elseIf.setCondition(condition);
 				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 				elseIf.setActivity(activity);
-				ifActivity.getElseIf().add(elseIf);
+				
+				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
+				if (condition == null) {
+					if (elseIfWithoutCondition == null) {
+						elseIfWithoutCondition = elseIf;
+					} else {
+						moreThanOneElseIfWithoutCondition = true;
+						ifActivity.getElseIf().add(elseIf);
+					}
+				} else {
+					elseIf.setCondition(condition);
+					ifActivity.getElseIf().add(elseIf);
+				}
 			}
 		}
 		if (elseBranch == null) {
-			HandleBondComponent.logger.info("No default flow used at gateway. It is possible that the execution differs because of the implicit elseif in BPEL");
+			if (elseIfWithoutCondition == null) {
+				HandleBondComponent.logger.info("No default flow used at gateway. It is possible that the execution differs because of the implicit elseif in BPEL");
+			} else {
+				elseBranch = BPMNProcessTree.getBPELFactory().createElse();
+				elseBranch.setActivity(elseIfWithoutCondition.getActivity());
+				ifActivity.setElse(elseBranch);
+				if (moreThanOneElseIfWithoutCondition) {
+					// the other else ifs without condition already have been added to the if
+					HandleBondComponent.logger.info("More than one outgoing sequence flow without condition");
+				}
+			}
 		} else {
 			// elseBranch exists
 			if (ifActivity == null) {
+				assert elseIfWithoutCondition == null;
 				HandleBondComponent.logger.debug("Special case: gateway with only outgoing sequence flow being the default flow");
 				// (invalid BPMN?)
 				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
+			} else if (elseIfWithoutCondition != null) {
+				HandleBondComponent.logger.info("An else branch and a sequence flow without condition exists.");
+				ifActivity.getElseIf().add(elseIfWithoutCondition);
 			}
 			ifActivity.setElse(elseBranch);
 		}
