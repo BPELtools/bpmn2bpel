@@ -73,7 +73,7 @@ public class Converter {
 		wt.setRPST(rpstgraph);
 		rpstRoot = rpstgraph.getRoot();
 		// logger.debug(wt.toString());
-		Converter.logger.debug("RPST after quasi component restructuring:", rpstgraph.toString());
+		Converter.logger.debug("RPST after quasi component restructuring:\n{}", rpstgraph.toString());
 		
 		// Traverse the workflowtree and create BpelModel
 		org.eclipse.bpel.model.Process bpelmodel = wt.BpmnProctree2BpelModel(rpstRoot);

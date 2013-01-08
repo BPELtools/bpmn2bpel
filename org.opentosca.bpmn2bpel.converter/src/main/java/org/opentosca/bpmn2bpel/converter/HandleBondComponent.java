@@ -137,6 +137,7 @@ public class HandleBondComponent {
 	}
 	
 	private static Activity handleANDstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		FlowImpl flow1 = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
 		org.eclipse.bpel.model.Activity actflow;
 		
@@ -148,10 +149,12 @@ public class HandleBondComponent {
 			actflow = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 			flow1.getActivities().add(actflow);
 		}
+		HandleBondComponent.logger.exit();
 		return flow1;
 	}
 	
 	private static Activity handleInclusiveORstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		FlowImpl flowp = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
 		FlowImpl flowc = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
 		org.eclipse.bpel.model.Activity actflow;
@@ -229,11 +232,13 @@ public class HandleBondComponent {
 			flowp.getActivities().add(flowc);
 			
 		}
+		HandleBondComponent.logger.exit();
 		return flowp;
 	}
 	
 	
 	private static Activity handlePickStructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		PickImpl pick1 = (PickImpl) BPMNProcessTree.getBPELFactory().createPick();
 		
 		for (Object e : bondChildren) {
@@ -340,12 +345,13 @@ public class HandleBondComponent {
 			}
 			
 		}
+		HandleBondComponent.logger.exit();
 		return pick1;
-		
 	}
 	
 	
 	private static Activity handleSpecialTaskStructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		// If the entry and exit elements of the Bound are activities
 		// (NOT YET COMPLETELY SUPPORTED)
 		
@@ -367,11 +373,12 @@ public class HandleBondComponent {
 		Documentation doc = BPMNProcessTree.getBPELFactory().createDocumentation();
 		doc.setValue("FlowtillEnd");
 		f1.setDocumentation(doc);
-		
+		HandleBondComponent.logger.exit();
 		return f1;
 	}
 	
 	private static Activity handleRepeatUntil(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		RepeatUntil repeat = BPMNProcessTree.getBPELFactory().createRepeatUntil();
 		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.getBPELFactory().createActivity();
 		IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
@@ -411,10 +418,12 @@ public class HandleBondComponent {
 			}
 			
 		}
+		HandleBondComponent.logger.exit();
 		return repeat;
 	}
 	
 	private static Activity handleDoWhile(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		
 		While while1 = BPMNProcessTree.getBPELFactory().createWhile();
 		org.eclipse.bpel.model.Activity a1 = BPMNProcessTree.getBPELFactory().createActivity();
@@ -503,14 +512,17 @@ public class HandleBondComponent {
 			
 			// Add the condition of the while
 			// cond1 or cond2 or .... condN
+			HandleBondComponent.logger.exit();
 			return while1;
 		} else {
 			HandleBondComponent.logger.debug("Unsupported while case {}", polygons);
+			HandleBondComponent.logger.exit();
 			return null;
 		}
 	}
 	
 	private static Activity handleRepeatAndWhile(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, WFNode exit, RPST rpstParent) {
+		HandleBondComponent.logger.entry();
 		// The Structure must be rearranged
 		SequenceImpl seq1 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
 		SequenceImpl seq2 = (SequenceImpl) BPMNProcessTree.getBPELFactory().createSequence();
@@ -586,6 +598,7 @@ public class HandleBondComponent {
 		seq3.getActivities().add(if2);
 		seq3.getActivities().add(while1);
 		
+		HandleBondComponent.logger.exit();
 		return seq3;
 	}
 	
