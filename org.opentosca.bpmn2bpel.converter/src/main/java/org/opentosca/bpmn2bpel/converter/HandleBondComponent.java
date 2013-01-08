@@ -81,6 +81,7 @@ public class HandleBondComponent {
 			} else if (ifActivity == null) {
 				// first branch in the if activity
 				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
+				ifActivity.setName(entry.getName());
 				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 				ifActivity.setActivity(activity);
 				

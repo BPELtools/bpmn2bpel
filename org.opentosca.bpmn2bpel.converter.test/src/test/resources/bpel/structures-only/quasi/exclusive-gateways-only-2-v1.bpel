@@ -9,7 +9,15 @@
                     <condition><![CDATA[MountainBike()]]></condition>
                     <empty name="Buy MountainBike"/>
                     <else>
-                        <empty name="AnyBike"/>
+                        <sequence>
+                            <if name="split3">
+                                <condition><![CDATA[CityBike()]]></condition>
+                                <empty name="Buy City Bike"/>
+                                <else>
+                                    <empty name="Buy Skates"/>
+                                </else>
+                            </if>
+                        </sequence>
                     </else>
                 </if>
             </sequence>
