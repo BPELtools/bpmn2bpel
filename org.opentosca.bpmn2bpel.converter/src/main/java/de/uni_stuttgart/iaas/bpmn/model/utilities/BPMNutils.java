@@ -15,19 +15,20 @@ public class BPMNutils {
 	
 	public static boolean isDefault(SequenceFlow sequenceFlow) {
 		FlowNode source = sequenceFlow.getSourceRef();
-		boolean res;
+		SequenceFlow defaultFlow;
 		if (source instanceof Activity) {
-			res = ((Activity) source).getDefault().equals(sequenceFlow);
+			defaultFlow = ((Activity) source).getDefault();
 		} else if (source instanceof ComplexGateway) {
-			res = ((ComplexGateway) source).getDefault().equals(sequenceFlow);
+			defaultFlow = ((ComplexGateway) source).getDefault();
 		} else if (source instanceof ExclusiveGateway) {
-			res = ((ExclusiveGateway) source).getDefault().equals(sequenceFlow);
+			defaultFlow = ((ExclusiveGateway) source).getDefault();
 		} else if (source instanceof InclusiveGateway) {
-			res = ((InclusiveGateway) source).getDefault().equals(sequenceFlow);
+			defaultFlow = ((InclusiveGateway) source).getDefault();
 		} else {
 			BPMNutils.logger.error("Unhandled instance {}", source.getClass().toString());
-			res = false;
+			defaultFlow = null;
 		}
+		boolean res = sequenceFlow.equals(defaultFlow);
 		return res;
 	}
 	
