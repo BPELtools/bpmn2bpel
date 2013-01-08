@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <if>
+            <condition><![CDATA[NeedCar()]]></condition>
+            <empty name="BuyCar"/>
+            <elseif>
+                <condition><![CDATA[NeedBike()]]></condition>
+                <sequence>
+                    <empty name="ChooseBike"/>
+                    <if>
+                        <condition><![CDATA[MountainBike()]]></condition>
+                        <empty name="Buy MountainBike"/>
+                        <else>
+                            <empty name="AnyBike"/>
+                        </else>
+                    </if>
+                </sequence>
+            </elseif>
+        </if>
+        <empty name="end"/>
+    </sequence>
+</process>
