@@ -81,7 +81,7 @@ public class HandleBondComponent {
 			} else if (ifActivity == null) {
 				// first branch in the if activity
 				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
-				ifActivity.setName(entry.getName());
+				Utils.copyName(entry, ifActivity);
 				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 				ifActivity.setActivity(activity);
 				
@@ -136,17 +136,14 @@ public class HandleBondComponent {
 		return ifActivity;
 	}
 	
-	private static Activity handleANDstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, RPST rpstParent) {
+	private static Activity handleANDstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, RPST rpstParent) {
 		HandleBondComponent.logger.entry();
-		FlowImpl flow1 = (FlowImpl) BPMNProcessTree.getBPELFactory().createFlow();
-		org.eclipse.bpel.model.Activity actflow;
+		Flow flow1 = BPMNProcessTree.getBPELFactory().createFlow();
+		Utils.copyName(entry, flow1);
 		
 		// For every Polygon child of the Bond element
-		for (Object e : bondChildren) {
-			
-			RPSTNode child = (RPSTNode) e;
-			
-			actflow = tree.BpmnProctree2BpelModelPart(child, rpstParent);
+		for (RPSTNode child : bondChildren) {
+			org.eclipse.bpel.model.Activity actflow = tree.BpmnProctree2BpelModelPart(child, rpstParent);
 			flow1.getActivities().add(actflow);
 		}
 		HandleBondComponent.logger.exit();
@@ -635,7 +632,7 @@ public class HandleBondComponent {
 				res = HandleBondComponent.handleXORstructure(tree, bondChildren, entry, rpstParent);
 			} else if (entryNode instanceof ParallelGateway && exitNode instanceof ParallelGateway) {
 				// If an AND Structure is found
-				res = HandleBondComponent.handleANDstructure(tree, bondChildren, rpstParent);
+				res = HandleBondComponent.handleANDstructure(tree, bondChildren, entry, rpstParent);
 			} else if (entryNode instanceof InclusiveGateway && exitNode instanceof InclusiveGateway) {
 				// If an Inclusive OR Structure is found
 				res = HandleBondComponent.handleInclusiveORstructure(tree, bondChildren, entry, exit, rpstParent);

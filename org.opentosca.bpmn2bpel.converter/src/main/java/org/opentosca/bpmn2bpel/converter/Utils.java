@@ -120,4 +120,17 @@ public class Utils {
 		return cond;
 	}
 	
+	/**
+	 * 
+	 * @param wfNode the current wfNode
+	 * @param activity the BPEL activity already converted based on bpmnTask,
+	 *            this is MODIFIED
+	 */
+	public static void copyName(final WFNode wfNode, final org.eclipse.bpel.model.Activity bpelActivity) {
+		String name = wfNode.getName();
+		if (!name.equals("")) {
+			bpelActivity.setName(name);
+		}
+	}
+	
 }

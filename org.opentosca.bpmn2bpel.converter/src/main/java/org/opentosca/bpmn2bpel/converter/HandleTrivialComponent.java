@@ -37,6 +37,7 @@ import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
@@ -91,7 +92,7 @@ public class HandleTrivialComponent {
 			HandleTrivialComponent.logger.debug("Unhandled end node type {}", nexit.getClass());
 			return null;
 		}
-		HandleTrivialComponent.copyName(nexit, res);
+		Utils.copyName(nexit, res);
 		return res;
 	}
 	
@@ -110,7 +111,7 @@ public class HandleTrivialComponent {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
 				return null;
 			}
-			HandleTrivialComponent.copyName(wfNode, res);
+			Utils.copyName(wfNode, res);
 			return res;
 		}
 	}
@@ -184,21 +185,8 @@ public class HandleTrivialComponent {
 		org.eclipse.bpel.model.Activity res = bpelActivity;
 		res = HandleTrivialComponent.handleLoopCharacteristics((Task) wfNode.getElement(), res);
 		res = HandleTrivialComponent.handleBoundaryEvents(wfNode, res);
-		HandleTrivialComponent.copyName(wfNode, res);
+		Utils.copyName(wfNode, res);
 		return res;
-	}
-	
-	/**
-	 * 
-	 * @param wfNode the current wfNode
-	 * @param activity the BPEL activity already converted based on bpmnTask,
-	 *            this is MODIFIED
-	 */
-	private static void copyName(final WFNode wfNode, final org.eclipse.bpel.model.Activity bpelActivity) {
-		String name = wfNode.getName();
-		if (!name.equals("")) {
-			bpelActivity.setName(name);
-		}
 	}
 	
 	private static org.eclipse.bpel.model.Activity convertToInvoke(org.eclipse.bpmn2.Operation opRef, WFNode wfNode) {
@@ -274,7 +262,7 @@ public class HandleTrivialComponent {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
 				return null;
 			}
-			HandleTrivialComponent.copyName(wfNode, res);
+			Utils.copyName(wfNode, res);
 			return res;
 		}
 	}
@@ -714,9 +702,16 @@ public class HandleTrivialComponent {
 				if (nentry.getElement() instanceof ParallelGateway && !nodeP.getEntry().equals(nentry)) {
 					res = BPMNProcessTree.getBPELFactory().createEmpty();
 				} else {
+					if (HandleTrivialComponent.logger.isDebugEnabled()) {
+						FlowNode element = nentry.getElement();
+						if (element instanceof ParallelGateway) {
+							HandleTrivialComponent.logger.debug("Parallel Gateway is handled by HAndleBondComponent");
+						} else {
+							HandleTrivialComponent.logger.debug("Not handled event {}", element);
+						}
+					}
 					// If the entry element is a Start event or another event
 					// nothing is done (momentarily)
-					HandleTrivialComponent.logger.debug("Not handled event {}", nentry.getElement().getClass());
 					res = null;
 				}
 			}
