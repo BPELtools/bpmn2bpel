@@ -5,7 +5,10 @@ import java.util.Collection;
 import org.eclipse.bpel.model.Activity;
 import org.eclipse.bpel.model.Condition;
 import org.eclipse.bpel.model.Documentation;
+import org.eclipse.bpel.model.Else;
+import org.eclipse.bpel.model.ElseIf;
 import org.eclipse.bpel.model.Flow;
+import org.eclipse.bpel.model.If;
 import org.eclipse.bpel.model.RepeatUntil;
 import org.eclipse.bpel.model.While;
 import org.eclipse.bpel.model.impl.ConditionImpl;
@@ -56,70 +59,54 @@ public class HandleBondComponent {
 	private static final XLogger logger = XLoggerFactory.getXLogger(HandleBondComponent.class);
 	
 	private static Activity handleXORstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, WFNode entry, RPST rpstParent) {
-		IfImpl if1 = (IfImpl) BPMNProcessTree.getBPELFactory().createIf();
-		ElseIfImpl elseif1 = null;
-		org.eclipse.bpel.model.Activity actif;
-		ElseImpl else1 = null;
-		FormalExpressionImpl expr1 = null;
+		HandleBondComponent.logger.entry();
+		If ifActivity = null;
+		Else elseBranch = null;
 		
+		// helper variable to transform a single else without any condition
+		// to an elseBranch, if there is no default sequence flow at the gateway
+		ElseIf elseWithoutCondition = null;
+
 		// For every Polygon child of the Bond element
-		for (Object e : bondChildren) {
-			
-			RPSTNode child = (RPSTNode) e;
+		for (RPSTNode child : bondChildren) {
 			SequenceFlow conditionFlow = entry.getSourceOfPolygon((AbstractDirectedGraph) child.getFragment());
-			expr1 = (FormalExpressionImpl) conditionFlow.getConditionExpression();
-			ConditionImpl cond1 = (ConditionImpl) BPMNProcessTree.getBPELFactory().createCondition();
 			
-			if (elseif1 == null) {
-				
-				if (expr1 != null) {
-					cond1.setBody(expr1.getMixed().getValue(0));
-					if1.setCondition(cond1);
-					actif = tree.BpmnProctree2BpelModelPart(child, rpstParent);
-					if1.setActivity(actif);
-				} else {
-					// if it doesn't already exist an else
-					if (else1 == null) {
-						else1 = (ElseImpl) BPMNProcessTree.getBPELFactory().createElse();
-						else1.setActivity(tree.BpmnProctree2BpelModelPart(child, rpstParent));
-						if1.setElse(else1);
-					} else {
-						// IF STRUCTURE ERROR! (more than one
-						// conditionless branch)
-					}
-				}
-				
+			if (BPMNutils.isDefault(conditionFlow)) {
+				// the elseBranch is not directly attached to the ifActivtiy as the default flow might have been hit as first and
+				// the if activity is not already created in this case
+				elseBranch = BPMNProcessTree.getBPELFactory().createElse();
+				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
+				elseBranch.setActivity(activity);
+			} else if (ifActivity == null) {
+				// first branch in the if activity
+				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
+				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
+				ifActivity.setCondition(condition);
+				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
+				ifActivity.setActivity(activity);
 			} else {
-				// If the expression is not null it's an elseif
-				if (expr1 != null) {
-					cond1.setBody(expr1.getMixed().getValue(0));
-					elseif1.setCondition(cond1);
-					actif = tree.BpmnProctree2BpelModelPart(child, rpstParent);
-					elseif1.setActivity(actif);
-					if1.getElseIf().add(elseif1);
-				}
-				// Otherwise is a default sequenceflow (the
-				// remaining else)
-				else {
-					// If it doesn't already exist an else
-					if (else1 == null) {
-						else1 = (ElseImpl) BPMNProcessTree.getBPELFactory().createElse();
-						else1.setActivity(tree.BpmnProctree2BpelModelPart(child, rpstParent));
-						if1.setElse(else1);
-					}
-					// If there is already an else
-					else {
-						// IF STRUCTURE ERROR! (more than one
-						// conditionless branch)
-					}
-				}
-				
+				// else branch in the if activity
+				ElseIf elseIf = BPMNProcessTree.getBPELFactory().createElseIf();
+				Condition condition = Utils.convertExpressionToCondition(conditionFlow.getConditionExpression());
+				elseIf.setCondition(condition);
+				org.eclipse.bpel.model.Activity activity = tree.BpmnProctree2BpelModelPart(child, rpstParent);
+				elseIf.setActivity(activity);
+				ifActivity.getElseIf().add(elseIf);
 			}
-			
-			elseif1 = (ElseIfImpl) BPMNProcessTree.getBPELFactory().createElseIf();
+		}
+		if (elseBranch == null) {
+			HandleBondComponent.logger.info("No default flow used at gateway. It is possible that the execution differs because of the implicit elseif in BPEL");
+		} else {
+			// elseBranch exists
+			if (ifActivity == null) {
+				HandleBondComponent.logger.debug("Special case: gateway with only outgoing sequence flow being the default flow");
+				// (invalid BPMN?)
+				ifActivity = BPMNProcessTree.getBPELFactory().createIf();
+			}
+			ifActivity.setElse(elseBranch);
 		}
 		HandleBondComponent.logger.exit();
-		return if1;
+		return ifActivity;
 	}
 	
 	private static Activity handleANDstructure(BPMNProcessTree tree, Collection<RPSTNode> bondChildren, RPST rpstParent) {

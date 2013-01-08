@@ -19,8 +19,8 @@ import org.slf4j.ext.XLoggerFactory;
 public class Utils {
 	
 	private static final XLogger logger = XLoggerFactory.getXLogger(Utils.class);
-
-
+	
+	
 	/**
 	 * @return We need an ArrayList as the calling method checks with the index
 	 *         if a last element is a sequence is found
@@ -100,18 +100,23 @@ public class Utils {
 			return null;
 		}
 		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
+		String body;
 		if (expression instanceof FormalExpression) {
-			// TODO implement formal expressions
-			Utils.logger.error("Formal expressions not yet implemented");
+			Utils.logger.debug("Hit formal expression");
+			FormalExpression formalExpression = (FormalExpression) expression;
+			body = formalExpression.getBody();
+		} else {
+			Utils.logger.debug("Hit non-formal expression");
+			// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
+			// Spec 2.0, 8.3.6)
+			List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
+			StringBuilder sb = new StringBuilder();
+			for (org.eclipse.bpmn2.Documentation doc : documentation) {
+				sb.append(doc.getText());
+			}
+			body = sb.toString();
 		}
-		// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
-		// Spec 2.0, 8.3.6)
-		List<org.eclipse.bpmn2.Documentation> documentation = expression.getDocumentation();
-		StringBuilder sb = new StringBuilder();
-		for (org.eclipse.bpmn2.Documentation doc : documentation) {
-			sb.append(doc.getText());
-		}
-		cond.setBody(sb.toString());
+		cond.setBody(body);
 		return cond;
 	}
 	
