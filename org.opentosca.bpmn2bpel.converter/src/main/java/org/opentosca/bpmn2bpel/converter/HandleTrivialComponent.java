@@ -97,23 +97,27 @@ public class HandleTrivialComponent {
 	}
 	
 	private static Activity handleIntermediateThrowEvent(WFNode wfNode, IntermediateThrowEvent inEv) {
+		HandleTrivialComponent.logger.entry();
+		Activity res;
 		if (inEv.getEventDefinitions().isEmpty()) {
 			HandleTrivialComponent.logger.debug("Intermediate throw wihtout any event definitions");
-			return null;
+			res = null;
 		} else {
 			// type checking
 			EventDefinition eventDefinition = inEv.getEventDefinitions().get(0);
-			Activity res;
 			if (eventDefinition instanceof MessageEventDefinition) {
 				Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
 				res = i1;
 			} else {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
-				return null;
+				res = null;
 			}
-			Utils.copyName(wfNode, res);
-			return res;
+			if (res != null) {
+				Utils.copyName(wfNode, res);
+			}
 		}
+		HandleTrivialComponent.logger.exit();
+		return res;
 	}
 	
 	/**
@@ -243,15 +247,16 @@ public class HandleTrivialComponent {
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleIntermediateCatchEvent(WFNode wfNode, IntermediateCatchEvent inEv) {
+		HandleTrivialComponent.logger.entry();
+		Activity res;
 		if (inEv.getEventDefinitions().isEmpty()) {
 			HandleTrivialComponent.logger.debug("Intermediate catch wihtout any event definitions");
-			return null;
+			res = null;
 		} else {
 			// If the entry element of the Trivial component is an
 			// intermediate catch event its definition is checked to
 			// determine the concrete type type
 			EventDefinition eventDefinition = inEv.getEventDefinitions().get(0);
-			Activity res;
 			if (eventDefinition instanceof MessageEventDefinition) {
 				res = HandleTrivialComponent.handleIntermediateMessageCatchEvent((MessageEventDefinition) eventDefinition);
 			} else if (eventDefinition instanceof TimerEventDefinition) {
@@ -260,11 +265,14 @@ public class HandleTrivialComponent {
 				res = HandleTrivialComponent.handleIntermediateConditionalEvent((ConditionalEventDefinition) eventDefinition);
 			} else {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
-				return null;
+				res = null;
 			}
-			Utils.copyName(wfNode, res);
-			return res;
+			if (res != null) {
+				Utils.copyName(wfNode, res);
+			}
 		}
+		HandleTrivialComponent.logger.exit();
+		return res;
 	}
 	
 	private static Activity handleIntermediateConditionalEvent(ConditionalEventDefinition condDef) {
@@ -284,6 +292,7 @@ public class HandleTrivialComponent {
 	}
 	
 	private static Activity handleIntermediateTimerEvent(TimerEventDefinition timerDef) {
+		HandleTrivialComponent.logger.entry();
 		Wait wait1 = BPMNProcessTree.getBPELFactory().createWait();
 		Expression timedur = timerDef.getTimeDuration();
 		Expression timeDate = timerDef.getTimeDate();
@@ -297,11 +306,14 @@ public class HandleTrivialComponent {
 			wait1.setUntil(waitExp);
 		}
 		
+		HandleTrivialComponent.logger.exit();
 		return wait1;
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleIntermediateMessageCatchEvent(MessageEventDefinition messageDef) {
+		HandleTrivialComponent.logger.entry();
 		Receive r1 = BPMNProcessTree.getBPELFactory().createReceive();
+		HandleTrivialComponent.logger.exit();
 		return r1;
 	}
 	
