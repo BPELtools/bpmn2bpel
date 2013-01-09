@@ -111,6 +111,9 @@ public class Utils {
 				sb.append(doc.getText());
 			}
 			res = sb.toString();
+			if (res.isEmpty()) {
+				Utils.logger.debug("Hit empty condition. Possibly, an invalid BPMN produced by Yaoqiang BPMN Editor 2.1.16 is used.");
+			}
 		}
 		return res;
 	}
