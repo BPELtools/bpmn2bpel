@@ -126,6 +126,9 @@ public class ConverterTest {
 	@Test
 	public void testdata_data_4() throws IOException, SAXException {
 		this.testProcess("data", "data-4");
+	@Test
+	public void testdata_process_input_process_output() throws IOException, SAXException {
+		this.testProcess("data", "process-input-process-output");
 	}
 	
 	@Test
