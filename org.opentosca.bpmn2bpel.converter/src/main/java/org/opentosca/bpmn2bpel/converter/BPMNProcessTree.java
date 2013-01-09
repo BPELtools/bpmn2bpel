@@ -158,41 +158,37 @@ public class BPMNProcessTree extends DirectedGraph {
 	public void fillTree(EObject eobj) {
 		
 		for (EObject son : eobj.eContents()) {
-			
 			WFNode n1 = null;
 			
 			if (son != null) {
-				
-				// Check if element is a Flow WFNode of the bpmn2 File
-				if (son instanceof FlowNode && !(son instanceof BoundaryEvent) && son instanceof StartEvent) {
-					
+				if (son instanceof BoundaryEvent) {
+					// When a BoundaryEvent is found the creation of the main flow
+					// BPMN Process Tree is finished
+					// break;
+				} else if (son instanceof FlowNode) {
+					// old code: only start events
 					// It's defined what type of element it is Event, Activity
 					// or Gateway
 					FlowNode nodo = (FlowNode) son;
 					n1 = new WFNode(nodo);
 					this.fillProcTree(n1);
-					break;
-					
-				}
-				// When a BoundaryEvent is found the creation of the main flow
-				// BPMN Process Tree is finished
-				else if (son instanceof BoundaryEvent) {
-					break;
+					// when the break is active, a check of StartEvent has to be done instead of "FlowNode"
+					// Then, only BPMN sub structures with a Start Event work.
+					// break;
 				} else if (son instanceof SubProcess) {
 					if (((SubProcess) son).isTriggeredByEvent()) {
-						break;
+						// break;
 					}
-				}
-				BPMNProcessTree.logger.debug("clase: " + son.getClass());
-				if (son instanceof Process) {
+				} else if (son instanceof Process) {
 					this.setName(((Process) son).getName());
 					this.fillTree(son);
+					// break;
+				} else {
+					BPMNProcessTree.logger.debug("Unhandled case");
+					BPMNProcessTree.logger.debug("class: {}", son.getClass());
 				}
-				
 			}
-			
 		}
-		
 	}
 	
 	// Returns the graph corresponding to an exception flow either error,
@@ -359,7 +355,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					
 					// The subtree is filled.
 					subTree.fillTree(s.getTargetRef());
-					subTree.transfrom2SESE();
+					subTree.transform2SESE();
 					ntarget.setSubProcessTree(subTree);
 					// The Handlers are searched and established as Boundaries.
 					
@@ -786,7 +782,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	 * Exit Graph
 	 * in order for it to be used in the RPST functions
 	 */
-	public void transfrom2SESE() {
+	public void transform2SESE() {
 		// TODO Auto-generated method stub
 		
 		Collection vertices = this.getVertices();
