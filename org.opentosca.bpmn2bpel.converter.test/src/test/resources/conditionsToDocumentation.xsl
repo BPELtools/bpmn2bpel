@@ -17,6 +17,14 @@
   <!-- documentation element: correct expression
        evaluatesToTypeRef attribute: indicator for formal expression -->
 
+  <xsl:template match="bpmn:condition[not(bpmn:documentation) and not(@evaluatesToTypeRef)]">
+    <xsl:element name="bpmn:condition">
+      <bpmn:documentation>
+        <xsl:apply-templates />
+      </bpmn:documentation>
+    </xsl:element>
+  </xsl:template>
+
   <xsl:template match="bpmn:loopCondition[not(bpmn:documentation) and not(@evaluatesToTypeRef)]">
     <xsl:element name="bpmn:loopCondition">
       <bpmn:documentation>

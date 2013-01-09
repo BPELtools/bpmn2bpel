@@ -249,6 +249,11 @@ public class ConverterTest {
 	}
 	
 	@Test
+	public void teststructures_only_plain_business_rule() throws IOException, SAXException {
+		this.testProcess("structures-only/plain", "business-rule");
+	}
+
+	@Test
 	public void teststructures_only_plain_parallel_receive_task_1() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "parallel-receive-task-1");
 	}

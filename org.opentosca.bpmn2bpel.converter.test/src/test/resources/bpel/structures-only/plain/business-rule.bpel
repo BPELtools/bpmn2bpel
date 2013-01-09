@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <repeatUntil name="Intermediate Catch Event">
+        <empty/>
+        <condition><![CDATA[Jahr = 2050]]></condition>
+    </repeatUntil>
+</process>
