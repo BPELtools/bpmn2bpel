@@ -275,6 +275,12 @@ public class HandleTrivialComponent {
 		return res;
 	}
 	
+	/**
+	 * Handles Intermediate Conditional Events. BPMN Spec page 241 (PDF page 271)
+	 *
+	 * The execution of conditional events is not specified in BPMN 2.0.
+	 * We transform it to a busy wait, which is one of the worst solutions.
+	 */
 	private static Activity handleIntermediateConditionalEvent(ConditionalEventDefinition condDef) {
 		RepeatUntil repeat1 = BPMNProcessTree.getBPELFactory().createRepeatUntil();
 		Condition condition = Utils.convertExpressionToCondition(condDef.getCondition());
@@ -283,7 +289,6 @@ public class HandleTrivialComponent {
 		}
 		Empty empty1 = BPMNProcessTree.getBPELFactory().createEmpty();
 		repeat1.setActivity(empty1);
-		
 		return repeat1;
 	}
 	

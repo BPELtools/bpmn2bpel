@@ -115,14 +115,22 @@ public class Utils {
 		return res;
 	}
 	
+	/**
+	 * @param expression
+	 * @return null if expression does not exist or is empty
+	 */
 	public static Condition convertExpressionToCondition(Expression expression) {
 		if (expression == null) {
 			return null;
 		}
-		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
 		String body = Utils.convertExpressionToString(expression);
-		cond.setBody(body);
-		return cond;
+		if (body.isEmpty()) {
+			return null;
+		} else {
+			Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
+			cond.setBody(body);
+			return cond;
+		}
 	}
 	
 	/**
