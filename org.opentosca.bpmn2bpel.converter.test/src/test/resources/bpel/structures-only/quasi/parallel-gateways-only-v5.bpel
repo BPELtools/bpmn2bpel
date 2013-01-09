@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <flow name="split1">
+            <sequence>
+                <flow name="split4">
+                    <empty name="Buy House"/>
+                    <empty name="Buy Kitchen"/>
+                </flow>
+                <empty/>
+            </sequence>
+            <sequence>
+                <flow name="split1'">
+                    <empty name="BuyCar"/>
+                    <sequence>
+                        <empty name="ChooseBike"/>
+                        <flow name="split2">
+                            <empty name="Buy City Bike"/>
+                            <empty name="Buy MountainBike"/>
+                        </flow>
+                        <empty/>
+                    </sequence>
+                </flow>
+                <empty/>
+                <empty name="Buy Pizza"/>
+            </sequence>
+        </flow>
+        <empty/>
+        <empty name="end"/>
+    </sequence>
+</process>

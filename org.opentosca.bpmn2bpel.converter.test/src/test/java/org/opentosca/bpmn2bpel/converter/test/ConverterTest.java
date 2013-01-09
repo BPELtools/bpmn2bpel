@@ -247,12 +247,13 @@ public class ConverterTest {
 	public void teststructures_only_loops_while_4_with_repeat() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "while-4-with-repeat");
 	}
+	// */
 	
 	@Test
 	public void teststructures_only_plain_business_rule() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "business-rule");
 	}
-
+	
 	@Test
 	public void teststructures_only_plain_parallel_receive_task_1() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "parallel-receive-task-1");
@@ -268,12 +269,10 @@ public class ConverterTest {
 		this.testProcess("structures-only/plain", "task-loop-test-after");
 	}
 	
-	// */
 	@Test
 	public void teststructures_only_quasi_exclusive_gateways_only_1() throws IOException, SAXException {
 		this.testProcess("structures-only/quasi", "exclusive-gateways-only-1");
 	}
-/*
 	
 	@Test
 	public void teststructures_only_quasi_exclusive_gateways_only_2() throws IOException, SAXException {
@@ -284,6 +283,7 @@ public class ConverterTest {
 	public void teststructures_only_quasi_parallel_gateways_only() throws IOException, SAXException {
 		this.testProcess("structures-only/quasi", "parallel-gateways-only");
 	}
+	// */
 	
 	/*
 	@Test
