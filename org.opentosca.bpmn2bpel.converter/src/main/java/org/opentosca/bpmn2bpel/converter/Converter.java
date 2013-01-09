@@ -48,16 +48,22 @@ public class Converter {
 		// creates the internal graph representation of the given process
 		BPMNProcessTree wt = new BPMNProcessTree(res);
 		
-		// Transform the BPMN Process Tree into a single entry Single Exit
-		// process tree
-		wt.transfrom2SESE();
-		
 		RPST rpstgraph = new RPST(wt);
-		wt.setRPST(rpstgraph);
-		RPSTNode rpstRoot = rpstgraph.getRoot();
-		// logger.debug(rpstgraph.getRoot().getFragment());
+		Converter.logger.debug("After loading");
 		Converter.logger.debug("RPST:\n{}", rpstgraph.toString());
 		Converter.logger.debug("Vertex count: {}", Integer.toString(rpstgraph.countVertices()));
+		
+		// Transform the BPMN Process Tree into a single entry Single Exit
+		// process tree
+		wt.transform2SESE();
+		
+		rpstgraph = new RPST(wt);
+		wt.setRPST(rpstgraph);
+		Converter.logger.debug("After transform2SESE");
+		Converter.logger.debug("RPST:\n{}", rpstgraph.toString());
+		Converter.logger.debug("Vertex count: {}", Integer.toString(rpstgraph.countVertices()));
+		RPSTNode rpstRoot = rpstgraph.getRoot();
+		// logger.debug(rpstgraph.getRoot().getFragment());
 		
 		// Transform any Rigid components (Generalised Flows this graph may
 		// have)

@@ -95,16 +95,12 @@ public class Utils {
 		
 	}
 	
-	public static Condition convertExpressionToCondition(Expression expression) {
-		if (expression == null) {
-			return null;
-		}
-		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
-		String body;
+	private static String convertExpressionToString(Expression expression) {
+		String res;
 		if (expression instanceof FormalExpression) {
 			Utils.logger.debug("Hit formal expression");
 			FormalExpression formalExpression = (FormalExpression) expression;
-			body = formalExpression.getBody();
+			res = formalExpression.getBody();
 		} else {
 			Utils.logger.debug("Hit non-formal expression");
 			// in non-formal expressions, the "natural language text is captured using the documentation attribute" (BPMN
@@ -114,10 +110,34 @@ public class Utils {
 			for (org.eclipse.bpmn2.Documentation doc : documentation) {
 				sb.append(doc.getText());
 			}
-			body = sb.toString();
+			res = sb.toString();
 		}
+		return res;
+	}
+	
+	public static Condition convertExpressionToCondition(Expression expression) {
+		if (expression == null) {
+			return null;
+		}
+		Condition cond = BPMNProcessTree.getBPELFactory().createCondition();
+		String body = Utils.convertExpressionToString(expression);
 		cond.setBody(body);
 		return cond;
+	}
+	
+	/**
+	 * Converts a BPMN expression to a BPEL expression
+	 */
+	public static org.eclipse.bpel.model.Expression convertExpressionToExpression(org.eclipse.bpmn2.Expression expression) {
+		org.eclipse.bpel.model.Expression res;
+		if (expression == null) {
+			res = null;
+		} else {
+			res = BPMNProcessTree.getBPELFactory().createExpression();
+			String body = Utils.convertExpressionToString(expression);
+			res.setBody(body);
+		}
+		return res;
 	}
 	
 	/**

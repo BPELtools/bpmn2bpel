@@ -277,14 +277,10 @@ public class HandleTrivialComponent {
 	
 	private static Activity handleIntermediateConditionalEvent(ConditionalEventDefinition condDef) {
 		RepeatUntil repeat1 = BPMNProcessTree.getBPELFactory().createRepeatUntil();
-		FormalExpression condition = (FormalExpression) condDef.getCondition();
-		
+		Condition condition = Utils.convertExpressionToCondition(condDef.getCondition());
 		if (condition != null) {
-			Condition repeatExp = BPMNProcessTree.getBPELFactory().createCondition();
-			repeatExp.setBody(condition.getMixed().getValue(0));
-			repeat1.setCondition(repeatExp);
+			repeat1.setCondition(condition);
 		}
-		
 		Empty empty1 = BPMNProcessTree.getBPELFactory().createEmpty();
 		repeat1.setActivity(empty1);
 		
@@ -294,16 +290,18 @@ public class HandleTrivialComponent {
 	private static Activity handleIntermediateTimerEvent(TimerEventDefinition timerDef) {
 		HandleTrivialComponent.logger.entry();
 		Wait wait1 = BPMNProcessTree.getBPELFactory().createWait();
-		Expression timedur = timerDef.getTimeDuration();
-		Expression timeDate = timerDef.getTimeDate();
-		org.eclipse.bpel.model.Expression waitExp = BPMNProcessTree.getBPELFactory().createExpression();
+		org.eclipse.bpel.model.Expression bpelExpression;
 		
-		if (timedur != null) {
-			waitExp.setBody(timedur.getAnyAttribute());
-			wait1.setFor(waitExp);
-		} else if (timeDate != null) {
-			waitExp.setBody(timeDate.getAnyAttribute());
-			wait1.setUntil(waitExp);
+		Expression expression = timerDef.getTimeDuration();
+		if (expression != null) {
+			bpelExpression = Utils.convertExpressionToExpression(expression);
+			wait1.setFor(bpelExpression);
+		} else {
+			expression = timerDef.getTimeDate();
+			if (expression != null) {
+				bpelExpression = Utils.convertExpressionToExpression(expression);
+				wait1.setUntil(bpelExpression);
+			}
 		}
 		
 		HandleTrivialComponent.logger.exit();
@@ -665,7 +663,7 @@ public class HandleTrivialComponent {
 	}
 	
 	static Activity handleTrivialComponent(RPSTNode node, RPST rpstParent) {
-		HandleTrivialComponent.logger.entry(node);
+		HandleTrivialComponent.logger.entry(node, node.getName());
 		Activity res;
 		// The Node is the last one in a sequence (Polygon)
 		boolean isLastOneInSequence = node.getDescription().equals("Last-Trivial");
