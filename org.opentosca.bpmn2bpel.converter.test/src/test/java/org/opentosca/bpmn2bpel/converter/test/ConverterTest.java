@@ -252,6 +252,7 @@ public class ConverterTest {
 	}
 	// */
 	
+/* * * working * * *
 	@Test
 	public void teststructures_only_plain_business_rule() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "business-rule");
