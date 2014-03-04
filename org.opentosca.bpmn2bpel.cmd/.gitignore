@@ -1,2 +1,11 @@
 .metadata
+config.ini
+dev.properties
+*.log
 bin/
+org.eclipse.core.runtime/
+org.eclipse.runtime/
+org.eclipse.equinox.app/
+org.eclipse.equinox.simpleconfigurator/
+org.eclipse.osgi/
+org.eclipse.update/
