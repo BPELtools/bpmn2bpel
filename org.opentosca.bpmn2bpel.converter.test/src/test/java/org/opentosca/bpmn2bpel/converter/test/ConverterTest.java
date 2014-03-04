@@ -58,7 +58,7 @@ public class ConverterTest {
 	/**
 	 * @param path the subpath in src/test/resources/bpmn
 	 * @param fileName the file name without suffix
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws SAXException
 	 */
@@ -102,27 +102,27 @@ public class ConverterTest {
 	public void testcomplete_SugarCRM_v1_sugarCRMBuildPlan() throws IOException, SAXException {
 		this.testProcess("complete/SugarCRM/v1", "sugarCRMBuildPlan");
 	}
-	
+
 	@Test
 	public void testcomplete_SugarCRM_v2_sugarCRMBuildPlan2() throws IOException, SAXException {
 		this.testProcess("complete/SugarCRM/v2", "sugarCRMBuildPlan2");
 	}
-	
+
 	@Test
 	public void testdata_data_1() throws IOException, SAXException {
 		this.testProcess("data", "data-1");
 	}
-	
+
 	@Test
 	public void testdata_data_2() throws IOException, SAXException {
 		this.testProcess("data", "data-2");
 	}
-	
+
 	@Test
 	public void testdata_data_3() throws IOException, SAXException {
 		this.testProcess("data", "data-3");
 	}
-	
+
 	@Test
 	public void testdata_data_4() throws IOException, SAXException {
 		this.testProcess("data", "data-4");
@@ -130,201 +130,204 @@ public class ConverterTest {
 	public void testdata_process_input_process_output() throws IOException, SAXException {
 		this.testProcess("data", "process-input-process-output");
 	}
-	
+
 	@Test
 	public void testinvalid_process_definition_testN2() throws IOException, SAXException {
 		this.testProcess("invalid-process-definition", "testN2");
 	}
-	
+
 	@Test
 	public void teststructures_only_Grossesbeispiel() throws IOException, SAXException {
 		this.testProcess("structures-only", "Grossesbeispiel");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_compensation_1() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "compensation-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_compensation_2() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "compensation-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_error_1() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "error-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_error_2() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "error-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_error_3_rejoining() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "error-3-rejoining");
 	}
-	
+
 	@Test
 	public void teststructures_only_boundary_error_4() throws IOException, SAXException {
 		this.testProcess("structures-only/boundary", "error-4");
 	}
-	
+
 	@Test
 	public void teststructures_only_end_events_2_end_events() throws IOException, SAXException {
 		this.testProcess("structures-only/end-events", "2-end-events");
 	}
-	
+
 	@Test
 	public void teststructures_only_gateways_exclusive_fork_without_join() throws IOException, SAXException {
 		this.testProcess("structures-only/gateways/exclusive", "fork-without-join");
 	}
-	
+
 	@Test
 	public void teststructures_only_gateways_exclusive_sequence() throws IOException, SAXException {
 		this.testProcess("structures-only/gateways/exclusive", "sequence");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_only_1() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-only-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_only_2() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-only-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_only_3() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-only-3");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_only_4() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-only-4");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_only_5() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-only-5");
 	}
-	
+
 	@Test
 	public void teststructures_only_generalized_flow_genflow_parallel_with_subprocess() throws IOException, SAXException {
 		this.testProcess("structures-only/generalized-flow", "genflow-parallel-with-subprocess");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_repeat_unti_with_inner_if() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "repeat-unti-with-inner-if");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_repeat_until_with_while() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "repeat-until-with-while");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_repeat_until() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "repeat-until");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_while_1() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "while-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_while_2() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "while-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_while_3_with_if() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "while-3-with-if");
 	}
-	
+
 	@Test
 	public void teststructures_only_loops_while_4_with_repeat() throws IOException, SAXException {
 		this.testProcess("structures-only/loops", "while-4-with-repeat");
 	}
 	// */
 	
-/* * * working * * *
+/* * * working * * */
+	/*
 	@Test
 	public void teststructures_only_plain_business_rule() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "business-rule");
 	}
-	
+
 	@Test
 	public void teststructures_only_plain_parallel_receive_task_1() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "parallel-receive-task-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_plain_parallel_receive_task_2() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "parallel-receive-task-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_plain_task_loop_test_after() throws IOException, SAXException {
 		this.testProcess("structures-only/plain", "task-loop-test-after");
 	}
-	
+
 	@Test
 	public void teststructures_only_quasi_exclusive_gateways_only_1() throws IOException, SAXException {
 		this.testProcess("structures-only/quasi", "exclusive-gateways-only-1");
 	}
-	
+
 	@Test
 	public void teststructures_only_quasi_exclusive_gateways_only_2() throws IOException, SAXException {
 		this.testProcess("structures-only/quasi", "exclusive-gateways-only-2");
 	}
-	
+
 	@Test
 	public void teststructures_only_quasi_parallel_gateways_only() throws IOException, SAXException {
 		this.testProcess("structures-only/quasi", "parallel-gateways-only");
 	}
 	// */
 	
-	/*
 	@Test
 	public void teststructures_only_sequence_non_interrupting_events() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "non-interrupting-events");
 	}
-	
+	/*
+
 	@Test
 	public void teststructures_only_sequence_one_task() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "one-task");
 	}
-	
+
+
+
 	@Test
 	public void teststructures_only_start_events_one_task_without_incoming_sequence_flow() throws IOException, SAXException {
 		this.testProcess("structures-only/start-events", "one task without incoming sequence flow");
 	}
-	
+
 	@Test
 	public void teststructures_only_structured_no_gateways() throws IOException, SAXException {
 		this.testProcess("structures-only/structured", "no-gateways");
 	}
-	
+
 	@Test
 	public void teststructures_only_structured_pick() throws IOException, SAXException {
 		this.testProcess("structures-only/structured", "pick");
 	}
-	
+
 	@Test
 	public void teststructures_only_subprocess_subprocess_collapsed() throws IOException, SAXException {
 		this.testProcess("structures-only/subprocess", "subprocess-collapsed");
 	}
-	
+
 	@Test
 	public void teststructures_only_subprocess_subprocess_nested_with_error_handling() throws IOException, SAXException {
 		this.testProcess("structures-only/subprocess", "subprocess-nested-with-error-handling");
 	}
-	
+
 	@Test
 	public void testWSDL_service_task_service_task() throws IOException, SAXException {
 		this.testProcess("WSDL/service-task", "service-task");
