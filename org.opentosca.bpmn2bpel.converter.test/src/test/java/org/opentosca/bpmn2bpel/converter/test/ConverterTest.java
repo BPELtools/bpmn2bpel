@@ -290,6 +290,9 @@ public class ConverterTest {
 	}
 	// */
 	
+	/**
+	 * This tests a sequence of all available non-interrupting events
+	 */
 	@Test
 	public void teststructures_only_sequence_non_interrupting_events() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "non-interrupting-events");
