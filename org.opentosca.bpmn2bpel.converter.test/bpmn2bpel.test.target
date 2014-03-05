@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="41">
+<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="43">
 <locations>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-servlet\1.14\jar\4b87041a59ee152757b62e47a21d5b63fde20ffe" type="Directory"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-server\1.14\jar\b1a21724c9b708ed54d42d41bb19ff45ae1d49d9" type="Directory"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\org.apache.felix\org.apache.felix.http.jetty\2.2.0\jar\25c085c6d53d4673f2e086b9e6b8d80dc8cb2261" type="Directory"/>
-<location path="${eclipse_home}" type="Profile"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\org.jvnet.mimepull\mimepull\1.8\jar\e0b2ed6e9ccaafe3e96294a181c09e3aae18aa90" type="Directory"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\org.slf4j\slf4j-ext\1.6.4\jar\81f98bf2c4a6b5c005f67bc2f161157cf6b42435" type="Directory"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-core\1.14\jar\693061de8b9b352b11e997b1dd4052677778852d" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey.contribs\jersey-multipart\1.14\jar\7282dd3c2168d6eba9e5a8fdf7b591a3103c7d4b" type="Directory"/>
+<location path="${eclipse_home}" type="Profile"/>
+<location path="${gradle_home}\caches\artifacts-14\filestore\org.apache.felix\org.apache.felix.http.jetty\2.2.0\jar\25c085c6d53d4673f2e086b9e6b8d80dc8cb2261" type="Directory"/>
+<location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-server\1.14\jar\b1a21724c9b708ed54d42d41bb19ff45ae1d49d9" type="Directory"/>
+<location path="${settings.localRepository}\org\slf4j\slf4j-ext\1.7.5" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\ch.qos.cal10n\cal10n-api\0.7.4\jar\132b7e1702af0335cf4259d30aaf959264db688f" type="Directory"/>
+<location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-core\1.14\jar\693061de8b9b352b11e997b1dd4052677778852d" type="Directory"/>
+<location path="${gradle_home}\caches\artifacts-14\filestore\org.jvnet.mimepull\mimepull\1.8\jar\e0b2ed6e9ccaafe3e96294a181c09e3aae18aa90" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="com.sun.jersey.jersey-server"/>
