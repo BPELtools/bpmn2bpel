@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="45">
+<?pde version="3.8"?><target name="bpmn2bpel.rest" sequenceNumber="53">
 <locations>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-servlet\1.14\jar\4b87041a59ee152757b62e47a21d5b63fde20ffe" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\org.apache.felix\org.apache.felix.http.jetty\2.2.0\jar\25c085c6d53d4673f2e086b9e6b8d80dc8cb2261" type="Directory"/>
 <location path="${eclipse_home}" type="Profile"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey.contribs\jersey-multipart\1.14\jar\7282dd3c2168d6eba9e5a8fdf7b591a3103c7d4b" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-server\1.14\jar\b1a21724c9b708ed54d42d41bb19ff45ae1d49d9" type="Directory"/>
-<location path="${gradle_home}\caches\artifacts-14\filestore\ch.qos.cal10n\cal10n-api\0.7.4\jar\132b7e1702af0335cf4259d30aaf959264db688f" type="Directory"/>
-<location path="${settings.localRepository}\org\slf4j\slf4j-ext\1.7.5" type="Directory"/>
+<location path="${settings.localRepository}\org\slf4j\slf4j-ext\1.6.6" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\org.jvnet.mimepull\mimepull\1.8\jar\e0b2ed6e9ccaafe3e96294a181c09e3aae18aa90" type="Directory"/>
 <location path="${gradle_home}\caches\artifacts-14\filestore\com.sun.jersey\jersey-core\1.14\jar\693061de8b9b352b11e997b1dd4052677778852d" type="Directory"/>
+<location path="${settings.localRepository}\ch\qos\cal10n\cal10n-api\0.7.4" type="Directory"/>
+<location path="${settings.localRepository}\ch\qos\logback\logback-core\1.0.13" type="Directory"/>
+<location path="${settings.localRepository}\ch\qos\logback\logback-classic\1.0.13" type="Directory"/>
 </locations>
 <includeBundles>
-<plugin id="org.apache.xerces"/>
 <plugin id="org.eclipse.jetty.io.source"/>
-<plugin id="org.junit.source"/>
+<plugin id="org.apache.xerces"/>
 <plugin id="org.eclipse.emf.ecore.edit"/>
-<plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.eclipse.jem.util"/>
+<plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.eclipse.jetty.continuation.source"/>
 <plugin id="org.eclipse.e4.ui.services.source"/>
 <plugin id="org.eclipse.e4.ui.css.swt.source"/>
@@ -27,39 +28,39 @@
 <plugin id="com.ibm.icu"/>
 <plugin id="org.eclipse.core.databinding"/>
 <plugin id="org.eclipse.equinox.app"/>
-<plugin id="org.eclipse.core.contenttype"/>
 <plugin id="org.apache.felix.gogo.shell.source"/>
-<plugin id="org.eclipse.equinox.ds"/>
+<plugin id="org.eclipse.core.contenttype"/>
 <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+<plugin id="org.eclipse.equinox.ds"/>
 <plugin id="javax.mail"/>
 <plugin id="org.eclipse.help.source"/>
 <plugin id="org.eclipse.wst.common.frameworks"/>
+<plugin id="org.junit.source"/>
 <plugin id="org.eclipse.ui.intro.source"/>
 <plugin id="org.eclipse.wst.sse.core"/>
 <plugin id="org.eclipse.e4.core.contexts"/>
 <plugin id="org.eclipse.e4.ui.di.source"/>
 <plugin id="org.eclipse.help"/>
-<plugin id="org.eclipse.equinox.util"/>
 <plugin id="org.eclipse.e4.ui.workbench.swt"/>
+<plugin id="org.eclipse.equinox.util"/>
 <plugin id="org.eclipse.wst.wsdl"/>
 <plugin id="org.eclipse.equinox.p2.repository.source"/>
 <plugin id="slf4j.api"/>
 <plugin id="org.eclipse.ui.forms.source"/>
 <plugin id="org.eclipse.ui.source"/>
 <plugin id="org.eclipse.equinox.http.jetty.source"/>
-<plugin id="org.eclipse.core.databinding.property.source"/>
 <plugin id="org.eclipse.ui.win32"/>
-<plugin id="org.junit"/>
+<plugin id="org.eclipse.core.databinding.property.source"/>
 <plugin id="org.eclipse.e4.ui.workbench.source"/>
+<plugin id="org.eclipse.emf.edit.source"/>
 <plugin id="javax.activation"/>
 <plugin id="com.sun.jersey.core"/>
-<plugin id="org.eclipse.emf.edit.source"/>
 <plugin id="org.eclipse.osgi.source"/>
 <plugin id="org.eclipse.e4.core.commands"/>
 <plugin id="org.eclipse.ui.intro"/>
 <plugin id="org.eclipse.compare.core"/>
-<plugin id="org.objectweb.asm"/>
 <plugin id="org.eclipse.equinox.app.source"/>
+<plugin id="org.objectweb.asm"/>
 <plugin id="org.eclipse.ui.navigator"/>
 <plugin id="org.eclipse.m2e.maven.runtime"/>
 <plugin id="org.eclipse.e4.ui.di"/>
@@ -70,29 +71,28 @@
 <plugin id="org.eclipse.ltk.core.refactoring"/>
 <plugin id="org.eclipse.core.runtime.source"/>
 <plugin id="org.eclipse.core.resources"/>
-<plugin id="org.eclipse.emf.ecore.change"/>
-<plugin id="org.eclipse.ui.views.source"/>
 <plugin id="org.eclipse.osgi"/>
+<plugin id="org.eclipse.ui.views.source"/>
+<plugin id="org.eclipse.emf.ecore.change"/>
 <plugin id="org.eclipse.wst.common.environment"/>
-<plugin id="org.apache.lucene"/>
 <plugin id="org.eclipse.equinox.http.servlet" version="1.1.400.v20130418-1354"/>
 <plugin id="org.w3c.dom.smil"/>
 <plugin id="org.eclipse.core.databinding.observable.source"/>
 <plugin id="org.eclipse.core.runtime"/>
 <plugin id="org.apache.batik.css" version="1.7.0.v201011041433"/>
 <plugin id="org.eclipse.jface.databinding.source"/>
-<plugin id="org.eclipse.equinox.http.jetty" version="3.0.100.v20130327-1442"/>
 <plugin id="org.eclipse.equinox.registry"/>
+<plugin id="org.eclipse.equinox.http.jetty" version="3.0.100.v20130327-1442"/>
 <plugin id="ch.qos.logback.slf4j"/>
 <plugin id="org.eclipse.core.runtime.compatibility.registry.source"/>
 <plugin id="org.eclipse.core.databinding.property"/>
 <plugin id="org.eclipse.jdt.junit4.runtime"/>
 <plugin id="org.apache.xml.serializer"/>
-<plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
 <plugin id="org.eclipse.osgi.util.source"/>
+<plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
 <plugin id="org.eclipse.ui.win32.source"/>
-<plugin id="org.eclipse.e4.ui.css.swt"/>
 <plugin id="ch.qos.logback.classic"/>
+<plugin id="org.eclipse.e4.ui.css.swt"/>
 <plugin id="org.eclipse.osgi.util"/>
 <plugin id="org.eclipse.emf.ecore.xmi"/>
 <plugin id="javax.wsdl"/>
@@ -102,18 +102,17 @@
 <plugin id="com.sun.jersey.contribs.jersey-multipart"/>
 <plugin id="org.eclipse.e4.ui.model.workbench"/>
 <plugin id="javax.servlet.jsp"/>
-<plugin id="org.eclipse.e4.ui.css.core"/>
-<plugin id="org.apache.felix.gogo.runtime.source"/>
 <plugin id="com.ning.async-http-client"/>
-<plugin id="org.eclipse.jdt.junit4.runtime.source"/>
+<plugin id="org.apache.felix.gogo.runtime.source"/>
+<plugin id="org.eclipse.e4.ui.css.core"/>
 <plugin id="javax.servlet.jsp.source"/>
+<plugin id="org.eclipse.jdt.junit4.runtime.source"/>
 <plugin id="org.apache.batik.util.gui" version="1.7.0.v200903091627"/>
 <plugin id="org.eclipse.ant.core"/>
-<plugin id="org.eclipse.core.contenttype.source"/>
-<plugin id="org.eclipse.e4.ui.bindings"/>
 <plugin id="org.eclipse.e4.ui.css.swt.theme"/>
+<plugin id="org.eclipse.e4.ui.bindings"/>
+<plugin id="org.eclipse.core.contenttype.source"/>
 <plugin id="org.eclipse.emf.ecore.edit.source"/>
-<plugin id="org.junit.source"/>
 <plugin id="org.eclipse.jface.databinding"/>
 <plugin id="org.eclipse.ui.console"/>
 <plugin id="com.sun.jersey.jersey-server"/>
@@ -123,24 +122,24 @@
 <plugin id="org.eclipse.jdt.junit.runtime.source"/>
 <plugin id="org.eclipse.jetty.servlet.source"/>
 <plugin id="org.eclipse.wst.validation"/>
-<plugin id="org.eclipse.equinox.event"/>
 <plugin id="ch.qos.logback.core"/>
+<plugin id="org.eclipse.equinox.event"/>
 <plugin id="org.eclipse.emf.ecore.source"/>
 <plugin id="org.eclipse.equinox.http.servlet.source"/>
-<plugin id="org.apache.lucene.queries"/>
 <plugin id="org.eclipse.e4.ui.css.swt.theme.source"/>
+<plugin id="org.apache.lucene.queries"/>
 <plugin id="cal10n.api"/>
-<plugin id="org.hamcrest.core.source"/>
 <plugin id="org.eclipse.ltk.core.refactoring.source"/>
+<plugin id="org.hamcrest.core.source"/>
 <plugin id="org.eclipse.team.core.source"/>
 <plugin id="org.eclipse.e4.ui.workbench.swt.source"/>
-<plugin id="org.apache.felix.gogo.command"/>
 <plugin id="org.eclipse.ui.forms"/>
+<plugin id="org.apache.felix.gogo.command"/>
 <plugin id="org.eclipse.equinox.registry.source"/>
 <plugin id="org.eclipse.e4.core.services"/>
 <plugin id="org.eclipse.wst.common.uriresolver"/>
-<plugin id="org.eclipse.core.variables"/>
 <plugin id="org.eclipse.core.filesystem.source"/>
+<plugin id="org.eclipse.core.variables"/>
 <plugin id="org.eclipse.wst.xml.core"/>
 <plugin id="org.eclipse.equinox.preferences"/>
 <plugin id="org.eclipse.core.commands.source"/>
@@ -149,47 +148,48 @@
 <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.source"/>
 <plugin id="org.apache.felix.http.jetty"/>
 <plugin id="org.eclipse.equinox.preferences.source"/>
-<plugin id="org.eclipse.e4.core.commands.source"/>
 <plugin id="org.eclipse.m2e.core.ui"/>
+<plugin id="org.eclipse.e4.core.commands.source"/>
 <plugin id="org.eclipse.equinox.security.source"/>
 <plugin id="org.apache.xml.resolver"/>
 <plugin id="org.eclipse.m2e.archetype.common"/>
-<plugin id="org.eclipse.emf.ecore.change.source"/>
 <plugin id="org.eclipse.ui"/>
+<plugin id="org.eclipse.emf.ecore.change.source"/>
 <plugin id="org.eclipse.equinox.p2.core.source"/>
 <plugin id="org.eclipse.e4.core.services.source"/>
 <plugin id="org.eclipse.jface.text.source"/>
 <plugin id="org.eclipse.emf.ecore"/>
-<plugin id="org.w3c.dom.svg"/>
 <plugin id="org.eclipse.e4.core.di.extensions.source"/>
+<plugin id="org.w3c.dom.svg"/>
 <plugin id="org.eclipse.e4.core.di"/>
+<plugin id="org.apache.lucene.core"/>
 <plugin id="org.eclipse.ui.console.source"/>
 <plugin id="javax.el.source"/>
 <plugin id="org.eclipse.jetty.server.source"/>
-<plugin id="org.eclipse.jface.text"/>
 <plugin id="org.eclipse.equinox.p2.metadata"/>
+<plugin id="org.eclipse.jface.text"/>
 <plugin id="org.eclipse.jetty.continuation" version="8.1.14.v20131031"/>
 <plugin id="org.eclipse.xsd"/>
 <plugin id="org.apache.lucene.analysis.source"/>
 <plugin id="org.eclipse.jetty.http" version="8.1.14.v20131031"/>
-<plugin id="org.eclipse.e4.core.di.extensions"/>
-<plugin id="org.eclipse.jetty.servlet" version="8.1.14.v20131031"/>
 <plugin id="org.eclipse.core.databinding.observable"/>
-<plugin id="javax.el"/>
+<plugin id="org.eclipse.jetty.servlet" version="8.1.14.v20131031"/>
+<plugin id="org.eclipse.e4.core.di.extensions"/>
 <plugin id="org.eclipse.m2e.logback.appender"/>
+<plugin id="javax.el"/>
 <plugin id="org.eclipse.text"/>
-<plugin id="org.eclipse.equinox.p2.metadata.source"/>
 <plugin id="org.eclipse.swt"/>
+<plugin id="org.eclipse.equinox.p2.metadata.source"/>
 <plugin id="org.eclipse.equinox.common"/>
 <plugin id="org.eclipse.wst.common.emfworkbench.integration"/>
 <plugin id="com.sun.jersey.servlet"/>
-<plugin id="org.hamcrest.core"/>
 <plugin id="org.eclipse.equinox.util.source"/>
+<plugin id="org.hamcrest.core"/>
 <plugin id="org.eclipse.jetty.security.source"/>
 <plugin id="org.eclipse.equinox.console"/>
-<plugin id="org.junit"/>
-<plugin id="org.eclipse.e4.ui.bindings.source"/>
 <plugin id="org.apache.batik.util" version="1.7.0.v201011041433"/>
+<plugin id="org.eclipse.e4.ui.bindings.source"/>
+<plugin id="org.junit"/>
 <plugin id="org.jboss.netty"/>
 <plugin id="org.eclipse.core.runtime.compatibility.registry"/>
 <plugin id="org.apache.felix.gogo.command.source"/>
@@ -203,16 +203,16 @@
 <plugin id="org.eclipse.help.base.source"/>
 <plugin id="javax.annotation"/>
 <plugin id="org.eclipse.e4.core.contexts.source"/>
-<plugin id="org.eclipse.jetty.security" version="8.1.14.v20131031"/>
-<plugin id="org.eclipse.jface.source"/>
 <plugin id="org.eclipse.equinox.p2.engine.source"/>
+<plugin id="org.eclipse.jface.source"/>
+<plugin id="org.eclipse.jetty.security" version="8.1.14.v20131031"/>
 <plugin id="org.eclipse.ui.workbench"/>
 <plugin id="javax.servlet.source"/>
-<plugin id="org.eclipse.equinox.p2.repository"/>
 <plugin id="org.apache.lucene.misc"/>
+<plugin id="org.eclipse.equinox.p2.repository"/>
 <plugin id="org.eclipse.core.databinding.source"/>
-<plugin id="org.eclipse.core.filesystem"/>
 <plugin id="org.eclipse.jetty.http.source"/>
+<plugin id="org.eclipse.core.filesystem"/>
 <plugin id="com.ibm.icu.source"/>
 <plugin id="org.eclipse.jetty.io" version="8.1.14.v20131031"/>
 <plugin id="org.eclipse.core.variables.source"/>
@@ -222,37 +222,36 @@
 <plugin id="org.eclipse.jface"/>
 <plugin id="org.eclipse.equinox.security"/>
 <plugin id="org.apache.lucene.source"/>
-<plugin id="org.apache.lucene"/>
 <plugin id="org.apache.felix.gogo.runtime"/>
 <plugin id="org.eclipse.equinox.console.source"/>
 <plugin id="slf4j.ext"/>
 <plugin id="org.eclipse.wst.common.project.facet.core"/>
 <plugin id="javax.xml"/>
 <plugin id="org.eclipse.xsd.source"/>
-<plugin id="org.apache.lucene.core"/>
+<plugin id="org.apache.lucene"/>
 <plugin id="org.eclipse.e4.ui.workbench3"/>
 <plugin id="org.eclipse.equinox.ds.source"/>
-<plugin id="org.eclipse.equinox.p2.core"/>
 <plugin id="org.eclipse.ui.views"/>
-<plugin id="org.eclipse.m2e.core"/>
+<plugin id="org.eclipse.equinox.p2.core"/>
 <plugin id="org.eclipse.e4.ui.model.workbench.source"/>
+<plugin id="org.eclipse.m2e.core"/>
 <plugin id="org.eclipse.jetty.util" version="8.1.14.v20131031"/>
 <plugin id="org.eclipse.equinox.common.source"/>
-<plugin id="org.w3c.css.sac"/>
 <plugin id="org.eclipse.e4.ui.workbench3.source"/>
-<plugin id="org.eclipse.wst.xsd.core"/>
+<plugin id="org.w3c.css.sac"/>
 <plugin id="org.eclipse.team.core"/>
-<plugin id="org.eclipse.ui.workbench.texteditor.source"/>
+<plugin id="org.eclipse.wst.xsd.core"/>
 <plugin id="org.eclipse.wst.common.core"/>
+<plugin id="org.eclipse.ui.workbench.texteditor.source"/>
 <plugin id="javax.servlet"/>
 <plugin id="org.eclipse.core.jobs.source"/>
 <plugin id="org.eclipse.core.filebuffers"/>
 <plugin id="org.apache.lucene.core.source"/>
-<plugin id="org.eclipse.wst.common.emf"/>
 <plugin id="org.eclipse.equinox.p2.engine"/>
-<plugin id="org.eclipse.emf.common.source"/>
-<plugin id="org.objectweb.asm.source"/>
+<plugin id="org.eclipse.wst.common.emf"/>
 <plugin id="org.eclipse.e4.ui.css.core.source"/>
+<plugin id="org.objectweb.asm.source"/>
+<plugin id="org.eclipse.emf.common.source"/>
 <plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="org.eclipse.emf.edit"/>
 <plugin id="org.eclipse.e4.ui.workbench"/>
@@ -260,7 +259,6 @@
 <plugin id="org.eclipse.ui.ide"/>
 <plugin id="javax.inject"/>
 <plugin id="org.eclipse.emf.common"/>
-<plugin id="org.apache.lucene.core"/>
 <plugin id="org.eclipse.ant.core.source"/>
 <plugin id="org.eclipse.core.resources.source"/>
 <plugin id="org.eclipse.ui.workbench.texteditor"/>

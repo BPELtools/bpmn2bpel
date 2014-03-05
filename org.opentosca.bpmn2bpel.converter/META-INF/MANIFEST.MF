@@ -12,6 +12,6 @@ Bundle-ClassPath: .,
 Import-Package: org.eclipse.bpel.model,
  org.eclipse.bpel.model.impl,
  org.eclipse.bpel.model.resource,
- org.slf4j;version="[1.6.0,1.8.0)",
- org.slf4j.ext;version="[1.6.0,1.8.0)"
+ org.slf4j;version="[1.6.0,1.7.0)",
+ org.slf4j.ext;version="[1.6.0,1.7.0)"
 Export-Package: org.opentosca.bpmn2bpel.converter
