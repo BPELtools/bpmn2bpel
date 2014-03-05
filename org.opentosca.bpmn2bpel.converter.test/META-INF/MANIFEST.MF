@@ -8,4 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  lib/xmlunit-1.3.jar
 Import-Package: org.opentosca.bpmn2bpel.converter,
- org.slf4j;version="[1.6.0,1.7.0)"
+ org.slf4j;version="[1.6.0,1.8.0)"
