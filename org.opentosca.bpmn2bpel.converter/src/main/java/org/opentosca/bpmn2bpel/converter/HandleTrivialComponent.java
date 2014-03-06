@@ -284,7 +284,7 @@ public class HandleTrivialComponent {
 			} else if (eventDefinition instanceof ConditionalEventDefinition) {
 				res = HandleTrivialComponent.handleIntermediateConditionalEvent((ConditionalEventDefinition) eventDefinition);
 			} else {
-				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
+				HandleTrivialComponent.logger.error("Unknown intermediate event type {}.", eventDefinition.getClass());
 				res = null;
 			}
 			if (res != null) {
