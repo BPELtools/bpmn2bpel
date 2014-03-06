@@ -40,7 +40,7 @@ public class Converter {
 	
 	/**
 	 * Converts a given BPMN process into a BPEL process
-	 * 
+	 *
 	 * @param res the BPMN process to convert
 	 * @return the BPEL process representing the BPMN process in BPEL
 	 */
@@ -84,7 +84,7 @@ public class Converter {
 		// Traverse the workflowtree and create BpelModel
 		org.eclipse.bpel.model.Process bpelmodel = wt.BpmnProctree2BpelModel(rpstRoot);
 		
-		// The BPELResource is declared with the bpel model as its content
+		// The BPELResource is declared with the BPEL model as its content
 		BPELResourceImpl resbpel = new BPELResourceImpl();
 		resbpel.getContents().add(bpelmodel);
 		

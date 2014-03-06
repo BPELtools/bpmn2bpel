@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process exitOnStandardFault="yes">
+    <sequence>
+        <empty name="Task1"/>
+        <receive name="Receive1"/>
+        <empty name="Task3"/>
+        <wait name="Time1">
+            <until><![CDATA[15.04.2013]]></until>
+        </wait>
+        <repeatUntil name="condition1">
+            <empty/>
+            <condition><![CDATA[Jahr=2050]]></condition>
+        </repeatUntil>
+        <invoke name="sendy1"/>
+        <invoke name="endy"/>
+    </sequence>
+</process>

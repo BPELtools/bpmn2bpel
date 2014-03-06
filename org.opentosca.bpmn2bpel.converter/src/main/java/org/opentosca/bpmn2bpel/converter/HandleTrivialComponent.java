@@ -81,8 +81,13 @@ public class HandleTrivialComponent {
 				res = BPMNProcessTree.getBPELFactory().createEmpty();
 			} else {
 				EventDefinition eventDefinition = endEv.getEventDefinitions().get(0);
-				if (eventDefinition instanceof TerminateEventDefinition || eventDefinition instanceof CancelEventDefinition) {
+				if (eventDefinition instanceof TerminateEventDefinition) {
 					res = BPMNProcessTree.getBPELFactory().createExit();
+				} else if (eventDefinition instanceof CancelEventDefinition) {
+					HandleTrivialComponent.logger.error("Cancel is not yet implemented. Converted as empty.");
+					res = BPMNProcessTree.getBPELFactory().createEmpty();
+				} else if (eventDefinition instanceof MessageEventDefinition) {
+					res = HandleTrivialComponent.convertMessageEventDefinitionToInvoke((MessageEventDefinition) eventDefinition);
 				} else {
 					HandleTrivialComponent.logger.debug("Undhandled end event type {}", eventDefinition);
 					return null;
@@ -96,6 +101,24 @@ public class HandleTrivialComponent {
 		return res;
 	}
 	
+	private static void copyInformationToInvoke(org.eclipse.bpmn2.Operation opRef, org.eclipse.bpel.model.Invoke invoke) {
+		if (opRef != null) {
+			Operation i1Op = HandleTrivialComponent.wsdlfact.createOperation();
+			i1Op.setName(opRef.getName());
+			Object implementation = opRef.getImplementationRef();
+			if (implementation != null) {
+				HandleTrivialComponent.logger.error("implementation not handled yet. {}", implementation.getClass().toString());
+			}
+			invoke.setOperation(i1Op);
+		}
+	}
+	
+	private static Activity convertMessageEventDefinitionToInvoke(MessageEventDefinition eventDefinition) {
+		Invoke invoke = BPMNProcessTree.getBPELFactory().createInvoke();
+		HandleTrivialComponent.copyInformationToInvoke(eventDefinition.getOperationRef(), invoke);
+		return invoke;
+	}
+	
 	private static Activity handleIntermediateThrowEvent(WFNode wfNode, IntermediateThrowEvent inEv) {
 		HandleTrivialComponent.logger.entry();
 		Activity res;
@@ -106,8 +129,7 @@ public class HandleTrivialComponent {
 			// type checking
 			EventDefinition eventDefinition = inEv.getEventDefinitions().get(0);
 			if (eventDefinition instanceof MessageEventDefinition) {
-				Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
-				res = i1;
+				res = HandleTrivialComponent.convertMessageEventDefinitionToInvoke((MessageEventDefinition) eventDefinition);
 			} else {
 				HandleTrivialComponent.logger.debug("Unknown intermediate event type {}.", eventDefinition.getClass());
 				res = null;
@@ -121,7 +143,7 @@ public class HandleTrivialComponent {
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param bpmnTask the BPMN task
 	 * @param activity the BPEL activity already converted based on bpmnTask
 	 */
@@ -161,7 +183,7 @@ public class HandleTrivialComponent {
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param bpmnTask the BPMN task
 	 * @param activity the BPEL activity already converted based on bpmnTask
 	 */
@@ -181,7 +203,7 @@ public class HandleTrivialComponent {
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param wfNode.getElement() the BPMN task
 	 * @param activity the BPEL activity already converted based on bpmnTask
 	 */
@@ -193,16 +215,14 @@ public class HandleTrivialComponent {
 		return res;
 	}
 	
-	private static org.eclipse.bpel.model.Activity convertToInvoke(org.eclipse.bpmn2.Operation opRef, WFNode wfNode) {
+	
+	private static WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
+	
+	
+	private static org.eclipse.bpel.model.Invoke convertToInvoke(org.eclipse.bpmn2.Operation opRef, WFNode wfNode) {
 		Invoke i1 = BPMNProcessTree.getBPELFactory().createInvoke();
-		WSDLFactory wsdlfact = new org.eclipse.wst.wsdl.internal.impl.WSDLFactoryImpl();
-		Operation i1Op = wsdlfact.createOperation();
-		if (opRef != null) {
-			i1Op.setName(opRef.getName());
-			i1.setOperation(i1Op);
-		}
-		i1.setName(wfNode.getName());
-		return HandleTrivialComponent.genericTaskHandling(wfNode, i1);
+		HandleTrivialComponent.copyInformationToInvoke(opRef, i1);
+		return (Invoke) HandleTrivialComponent.genericTaskHandling(wfNode, i1);
 	}
 	
 	private static org.eclipse.bpel.model.Activity handleCallActivity(WFNode wfNode, CallActivity element) {
@@ -648,16 +668,16 @@ public class HandleTrivialComponent {
 				 * this.BpmnProctree2BpelModelPart(EvHandlerRoot,
 				 * EvHandlerRPST); CatchEvent event = (CatchEvent)
 				 * HandlerEntry.getElement();
-				 * 
+				 *
 				 * if (event.getEventDefinitions().get(0) instanceof
 				 * MessageEventDefinition) {
-				 * 
+				 *
 				 * faultCatch.setFaultName(new QName(event.getName()));
 				 * faultH.getCatch().add(faultCatch);
 				 * actScope.setFaultHandlers(faultH);
-				 * 
+				 *
 				 * faultCatch.setActivity(ActHandler);
-				 * 
+				 *
 				 * }
 				 */
 			}
