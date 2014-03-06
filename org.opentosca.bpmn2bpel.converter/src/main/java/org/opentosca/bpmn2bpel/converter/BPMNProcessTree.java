@@ -55,9 +55,10 @@ public class BPMNProcessTree extends DirectedGraph {
 	private Map<String, Set<Link>> boundaryLinks;
 	private boolean interruptsflow = false;
 	
+	
 	/**
 	 * Creates an instance of the tree based on the given resource
-	 * 
+	 *
 	 * @param res the EMF BPMN representation to represent in the tree
 	 */
 	public BPMNProcessTree(Bpmn2Resource res) {
@@ -394,7 +395,7 @@ public class BPMNProcessTree extends DirectedGraph {
 	public org.eclipse.bpel.model.Process BpmnProctree2BpelModel(RPSTNode rpstnode) {
 		BPMNProcessTree.logger.entry();
 		
-		org.eclipse.bpel.model.Process mainProc = this.getBPELFactory().createProcess();
+		org.eclipse.bpel.model.Process mainProc = BPMNProcessTree.getBPELFactory().createProcess();
 		
 		org.eclipse.bpel.model.Activity a1 = null;
 		
@@ -407,8 +408,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		BPMNProcessTree.logger.exit();
 		return mainProc;
 	}
-	
-	
+
 	public org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node, RPST rpstParent) {
 		BPMNProcessTree.logger.entry();
 		org.eclipse.bpel.model.Activity res;
@@ -869,8 +869,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			this.addEdge(exitGw, exitb);
 		}
 	}
-	
-	
+
 	void searchBoundaryEvents(EObject eobj, BPMNProcessTree parent, BPMNProcessTree gparent) {
 		// TODO Auto-generated method stub
 		
