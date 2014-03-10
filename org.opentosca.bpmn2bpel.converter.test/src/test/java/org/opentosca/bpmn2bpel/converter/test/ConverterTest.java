@@ -293,28 +293,28 @@ public class ConverterTest {
 	/**
 	 * This tests a sequence of all available non-interrupting events
 	 */
-	// @Test
+/*	@Test
 	public void teststructures_only_sequence_non_interrupting_events() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "non-interrupting-events");
 	}
-	
+
 	@Test
 	public void teststructures_only_sequence_one_task() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "one-task");
 	}
-	
-	
-/*
-	@Test
+
+
+	//Currently not working
+	//@Test
 	public void teststructures_only_start_events_one_task_without_incoming_sequence_flow() throws IOException, SAXException {
 		this.testProcess("structures-only/start-events", "one task without incoming sequence flow");
 	}
-
+ */
 	@Test
 	public void teststructures_only_structured_no_gateways() throws IOException, SAXException {
 		this.testProcess("structures-only/structured", "no-gateways");
 	}
-
+/*
 	@Test
 	public void teststructures_only_structured_pick() throws IOException, SAXException {
 		this.testProcess("structures-only/structured", "pick");
