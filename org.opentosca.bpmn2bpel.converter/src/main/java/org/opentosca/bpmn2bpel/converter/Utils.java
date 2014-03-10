@@ -38,8 +38,6 @@ public class Utils {
 			return children;
 		} else {
 			
-			// codigo nuevo****
-			
 			Map<String, Set<RPSTNode>> entry = new Hashtable<String, Set<RPSTNode>>();
 			
 			// Fill Hash
@@ -152,7 +150,7 @@ public class Utils {
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param wfNode the current wfNode
 	 * @param activity the BPEL activity already converted based on bpmnTask,
 	 *            this is MODIFIED

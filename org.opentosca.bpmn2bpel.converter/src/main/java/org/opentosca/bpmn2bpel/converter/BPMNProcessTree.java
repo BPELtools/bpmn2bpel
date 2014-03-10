@@ -11,6 +11,7 @@ import java.util.Set;
 import org.eclipse.bpel.model.BPELFactory;
 import org.eclipse.bpel.model.Link;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
@@ -27,6 +28,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.emf.ecore.EObject;
@@ -69,6 +71,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		for (EObject content : root.eContents()) {
 			if (content instanceof Definitions) {
 				Definitions def = (Definitions) content;
+				BPMNProcessTree.logger.debug("Generating tree out of definitions");
 				BPMNProcessTree.logger.debug("id: " + def.getId());
 				BPMNProcessTree.logger.debug("class: " + def.getClass());
 				
@@ -104,9 +107,6 @@ public class BPMNProcessTree extends DirectedGraph {
 		return this.interruptsflow;
 	}
 	
-	// NOTE: Here it could be factorized the function by returning the vertex or
-	// null instead of iterating twice
-	// the VertexSet
 	@SuppressWarnings("unchecked")
 	public WFNode containsVertex(String id) {
 		
@@ -114,35 +114,24 @@ public class BPMNProcessTree extends DirectedGraph {
 		// Set<WFNode> vSet = (Set<WFNode>) vertexSet();
 		WFNode node = null;
 		
-		WFNode nodei;
-		
-		for (Iterator<Vertex> p = vertices.iterator(); p.hasNext();) {
-			
-			nodei = (WFNode) p.next();
-			
+		for (Vertex nodei : vertices) {
 			if (nodei.getId().equals(id)) {
-				
-				node = nodei;
+				node = (WFNode) nodei;
 				break;
 			}
-			
 		}
 		
 		return node;
 	}
 	
 	public WFNode getRoot() {
-		
 		Collection<Vertex> vertices = this.getVertices();
 		WFNode node = null;
 		WFNode nodei;
 		
 		for (Iterator<Vertex> p = vertices.iterator(); p.hasNext();) {
-			
 			nodei = (WFNode) p.next();
-			
 			if (nodei.getElement().getIncoming().size() == 0) {
-				
 				node = nodei;
 				break;
 			}
@@ -152,8 +141,22 @@ public class BPMNProcessTree extends DirectedGraph {
 	}
 	
 	public void setRPST(RPST rpstGraph) {
-		
 		this.rpstg = rpstGraph;
+	}
+	
+	
+	private static int nameCount = 0;
+	
+	
+	/**
+	 * Returns a name even if getName() returns null;
+	 */
+	public static String getName(CallableElement e) {
+		String name = e.getName();
+		if (name == null) {
+			name = "Name_" + Integer.toString(++BPMNProcessTree.nameCount);
+		}
+		return name;
 	}
 	
 	public void fillTree(EObject eobj) {
@@ -168,8 +171,7 @@ public class BPMNProcessTree extends DirectedGraph {
 					// break;
 				} else if (son instanceof FlowNode) {
 					// old code: only start events
-					// It's defined what type of element it is Event, Activity
-					// or Gateway
+					// It's defined what type of element it is Event, Activity or Gateway
 					FlowNode nodo = (FlowNode) son;
 					n1 = new WFNode(nodo);
 					this.fillProcTree(n1);
@@ -181,9 +183,12 @@ public class BPMNProcessTree extends DirectedGraph {
 						// break;
 					}
 				} else if (son instanceof Process) {
-					this.setName(((Process) son).getName());
+					String name = BPMNProcessTree.getName((Process) son);
+					this.setName(name);
 					this.fillTree(son);
 					// break;
+				} else if (son instanceof BPMNDiagram) {
+					// Nothing to do. We do not rely on any graphical information
 				} else {
 					BPMNProcessTree.logger.debug("Unhandled case");
 					BPMNProcessTree.logger.debug("class: {}", son.getClass());
@@ -308,15 +313,15 @@ public class BPMNProcessTree extends DirectedGraph {
 			// If the element found is a subprocess, it's intern graph should be
 			// filled
 			if (son instanceof SubProcess) {
-				
 				subTree.fillTree(son);
 				n1.setSubProcessTree(subTree);
-				
 			}
 			if (this.addVertex(n1) != null) {
 				BPMNProcessTree.logger.debug("Vertex {} newly added succesfully", n1.getName());
 				n1.setVisited();
 				n1.setMainFlow();
+			} else {
+				BPMNProcessTree.logger.debug("Could not add vertex {}", n1.getName());
 			}
 		} else {
 			n1 = this.containsVertex(n1.getId());
@@ -324,11 +329,13 @@ public class BPMNProcessTree extends DirectedGraph {
 			n1.setVisited();
 			n1.setMainFlow();
 		}
-		BPMNProcessTree.logger.debug("vertices: {}", this.countVertices());
+		BPMNProcessTree.logger.debug("vertices before the loop: {}", this.countVertices());
 		BPMNProcessTree.logger.debug("n1: outgoing count: {}", Integer.toString(n1.getElement().getOutgoing().size()));
 		
 		// Get outgoing SequenceFlows if any
+		// TODO: It seems that cross-boundary flows are not checked
 		for (SequenceFlow s : n1.getElement().getOutgoing()) {
+			BPMNProcessTree.logger.trace("Handling {} in the foreach", s);
 			
 			BPMNProcessTree.logger.debug("vertices: {} ", this.countVertices());
 			String targetid = s.getTargetRef().getId();
@@ -373,6 +380,8 @@ public class BPMNProcessTree extends DirectedGraph {
 					if (!ntarget.isVisited()) {
 						this.fillProcTree(ntarget);
 					}
+				} else {
+					BPMNProcessTree.logger.debug("Vertex {} not added", ntarget.getName());
 				}
 			}
 			BPMNProcessTree.logger.debug("->  outgoing: {}", s.getName());
@@ -408,7 +417,7 @@ public class BPMNProcessTree extends DirectedGraph {
 		BPMNProcessTree.logger.exit();
 		return mainProc;
 	}
-
+	
 	public org.eclipse.bpel.model.Activity BpmnProctree2BpelModelPart(RPSTNode node, RPST rpstParent) {
 		BPMNProcessTree.logger.entry();
 		org.eclipse.bpel.model.Activity res;
@@ -869,7 +878,7 @@ public class BPMNProcessTree extends DirectedGraph {
 			this.addEdge(exitGw, exitb);
 		}
 	}
-
+	
 	void searchBoundaryEvents(EObject eobj, BPMNProcessTree parent, BPMNProcessTree gparent) {
 		// TODO Auto-generated method stub
 		

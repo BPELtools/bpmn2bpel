@@ -20,44 +20,49 @@ public class WFNode extends Vertex {
 	
 	// Attributes of the Node
 	private FlowNode elem;
-	private String id;
-	private String nome;
+	// private String id;
 	private boolean visited;
 	private BPMNProcessTree SubprocessTree;
 	private List<BPMNProcessTree> BoundaryEventGraphs;
 	private boolean mainFlow;
 	
+	private static int nameCount = 0;
+	
+	
+	/**
+	 * Returns a name even if getName() returns null;
+	 *
+	 * SIDE EFFECT: Sets the name at the element
+	 */
+	public static String getName(FlowNode e) {
+		String name = e.getName();
+		if (name == null) {
+			name = "Name_" + Integer.toString(++WFNode.nameCount);
+			e.setName(name);
+		}
+		return name;
+	}
 	
 	public WFNode(FlowNode son) {
-		
-		super(son.getName(), "");
+		super(WFNode.getName(son), "");
 		this.elem = son;
 		this.SubprocessTree = null;
 		this.visited = false;
 		this.mainFlow = false;
 		this.BoundaryEventGraphs = new LinkedList<BPMNProcessTree>();
-		
-	}
-	
-	public WFNode() {
-		
-		super("", "");
 	}
 	
 	@Override
 	public String getId() {
-		
 		return this.elem.getId();
 	}
 	
 	@Override
 	public String getName() {
-		
-		return this.elem.getName();
+		return this.name;
 	}
 	
 	public FlowNode getElement() {
-		
 		return this.elem;
 		
 	}
@@ -66,61 +71,52 @@ public class WFNode extends Vertex {
 		return this.visited;
 	}
 	
-	// Returns true if the node of the BPMNProcessTree belongs to the main flow
-	// Otherwise (if it belongs to an exception flow) false is returned
+	/**
+	 * @eturn true if the node of the BPMNProcessTree belongs to the main flow
+	 * Otherwise (if it belongs to an exception flow) false is returned
+	 */
 	public boolean isMainFlow() {
-		
 		return this.mainFlow;
 	}
 	
 	public BPMNProcessTree getSubprocessTree() {
-		
 		return this.SubprocessTree;
 		
 	}
 	
 	public List<BPMNProcessTree> getBoundaryEventFlows() {
-		
 		return this.BoundaryEventGraphs;
 	}
 	
 	public void addBoundaryEvent(BPMNProcessTree EventFlow) {
-		
 		this.BoundaryEventGraphs.add(EventFlow);
 		
 	}
 	
 	public void setSubProcessTree(BPMNProcessTree subprocessT) {
-		
 		this.SubprocessTree = subprocessT;
 		
 	}
 	
 	public void setVisited() {
-		
 		this.visited = true;
 	}
 	
 	public void setMainFlow() {
-		
 		this.mainFlow = true;
 	}
 	
 	// Gets a List of the edges that belong to the component whose entry node is
 	// .this
 	public boolean isCyclic(Collection<RPSTNode> BondChildren, WFNode node2) {
-		
 		boolean iscyclic = false;
 		
 		for (Object e : BondChildren) {
-			
 			RPSTNode poly = (RPSTNode) e;
 			if (poly.getEntry().equals(node2) && poly.getExit().equals(this)) {
-				
 				iscyclic = true;
 				break;
 			}
-			
 		}
 		
 		return iscyclic;
@@ -140,7 +136,6 @@ public class WFNode extends Vertex {
 			AbstractDirectedEdge e = it.next();
 			WFNode nodeT = (WFNode) e.getTarget();
 			for (SequenceFlow flow : nodeT.getElement().getIncoming()) {
-				
 				if (flow.getSourceRef().equals(this.getElement()) && !flow.equals(gate.getDefault())) {
 					expr = flow.getConditionExpression();
 				}
@@ -223,18 +218,13 @@ public class WFNode extends Vertex {
 	// Get the number of paths that go directly from .this to node2 (no
 	// intermediates)
 	public int numberOfEdgesto(Collection<RPSTNode> BondChildren, WFNode node2) {
-		
 		int paths = 0;
 		
 		for (Object e : BondChildren) {
-			
 			RPSTNode poly = (RPSTNode) e;
-			
 			if (poly.getType().equals(TCType.T) && poly.getEntry().equals(this) && poly.getExit().equals(node2)) {
-				
 				paths++;
 			}
-			
 		}
 		
 		return paths;
@@ -243,18 +233,15 @@ public class WFNode extends Vertex {
 	
 	//
 	public boolean isBasicStartEvent() {
-		
 		FlowNode n = this.getElement();
 		
 		if (n instanceof StartEvent) {
-			
 			StartEvent st = (StartEvent) n;
 			if (st.getEventDefinitions().size() == 0) {
 				return true;
 			} else {
 				return false;
 			}
-			
 		} else {
 			return false;
 		}

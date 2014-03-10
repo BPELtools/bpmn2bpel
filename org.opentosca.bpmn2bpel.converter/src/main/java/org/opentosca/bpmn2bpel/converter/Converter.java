@@ -53,8 +53,7 @@ public class Converter {
 		Converter.logger.debug("RPST:\n{}", rpstgraph.toString());
 		Converter.logger.debug("Vertex count: {}", Integer.toString(rpstgraph.countVertices()));
 		
-		// Transform the BPMN Process Tree into a single entry Single Exit
-		// process tree
+		// Transform the BPMN Process Tree into a single entry Single Exit process tree
 		wt.transform2SESE();
 		
 		rpstgraph = new RPST(wt);
@@ -65,8 +64,7 @@ public class Converter {
 		RPSTNode rpstRoot = rpstgraph.getRoot();
 		// logger.debug(rpstgraph.getRoot().getFragment());
 		
-		// Transform any Rigid components (Generalised Flows this graph may
-		// have)
+		// Transform any Rigid components (Generalized Flows this graph may have)
 		wt.TransformGenFlows(rpstgraph, rpstRoot);
 		rpstgraph = new RPST(wt);
 		wt.setRPST(rpstgraph);

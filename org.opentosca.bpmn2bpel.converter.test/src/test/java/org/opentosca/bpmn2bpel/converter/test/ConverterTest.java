@@ -298,7 +298,6 @@ public class ConverterTest {
 		this.testProcess("structures-only/sequence", "non-interrupting-events");
 	}
 	
-	
 	@Test
 	public void teststructures_only_sequence_one_task() throws IOException, SAXException {
 		this.testProcess("structures-only/sequence", "one-task");
