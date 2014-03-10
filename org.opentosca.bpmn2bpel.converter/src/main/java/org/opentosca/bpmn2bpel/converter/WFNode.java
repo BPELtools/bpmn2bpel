@@ -59,7 +59,7 @@ public class WFNode extends Vertex {
 	
 	@Override
 	public String getName() {
-		return this.name;
+		return super.getName();
 	}
 	
 	public FlowNode getElement() {
