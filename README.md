@@ -12,6 +12,10 @@ This project provides a BPMN2BPEL converter using Eclipse technology
 6. Click "Set as target platform"
 7. Run all tests
 
+## Further reading
+
+- Diploma Thesis [Eine BPMN-nach-BPEL-Transformation](http://www2.informatik.uni-stuttgart.de/cgi-bin/NCSTRL/NCSTRL_view.pl?id=DIP-3324&mod=0&engl=0&inst=IAAS)
+
 ## License
 
 This work is licenced under the [Apache License v2.0].
