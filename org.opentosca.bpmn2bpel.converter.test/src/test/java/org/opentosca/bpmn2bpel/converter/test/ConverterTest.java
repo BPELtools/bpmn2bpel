@@ -312,7 +312,7 @@ public class ConverterTest {
  */
 	@Test
 	public void teststructures_only_structured_no_gateways() throws IOException, SAXException {
-		this.testProcess("structures-only/structured", "no-gateways");
+		this.testProcess("structures-only/structured", "simple-merge");
 	}
 /*
 	@Test
